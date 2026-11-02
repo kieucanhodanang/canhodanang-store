@@ -1,0 +1,63 @@
+
+---
+import '../styles/global.css';
+
+const {
+  title = 'Căn Hộ Đà Nẵng | Dự án và căn hộ',
+  description = 'Thông tin căn hộ, dự án và bất động sản Đà Nẵng.',
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, 'https://canhodanang.store').href;
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="wrap headflex">
+        <a class="brand" href="/">CĂN HỘ ĐÀ NẴNG</a>
+        <nav aria-label="Menu chính">
+          <a href="/">Trang chủ</a>
+          <a href="/du-an/">Dự án</a>
+          <a href="/can-ho/">Căn hộ</a>
+          <a href="/tin-tuc/">Tin tức</a>
+          <a href="/lien-he/">Liên hệ</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <h3>CĂN HỘ ĐÀ NẴNG</h3>
+        <p>Thông tin dự án và căn hộ tại Đà Nẵng.</p>
+        <p>Hotline: <a href="tel:0869437415">0869 437 415</a></p>
+        <p>
+          Email:
+          <a href="mailto:batdongsandanang8888@gmail.com">
+            batdongsandanang8888@gmail.com
+          </a>
+        </p>
+        <p>© {new Date().getFullYear()} canhodanang.store</p>
+      </div>
+    </footer>
+  </body>
+</html>
