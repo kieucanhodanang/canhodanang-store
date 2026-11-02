@@ -35,9 +35,25 @@ export async function onRequestGet(context) {
     return page(`
       (function () {
         const message = ${payload};
-        if (window.opener) {
-          window.opener.postMessage(message, window.location.origin);
-          window.close();
+       
+if (window.opener) {
+  const origin = window.location.origin;
+
+  window.addEventListener("message", function (event) {
+    if (event.origin !== origin) return;
+
+    if (event.data === "authorizing:github") {
+      window.opener.postMessage(message, origin);
+      window.close();
+    }
+  });
+
+  window.opener.postMessage(
+    "authorizing:github",
+    origin
+  );
+}
+
         } else {
           document.body.textContent =
             "Vui lòng quay lại trang quản trị và thử lại.";
