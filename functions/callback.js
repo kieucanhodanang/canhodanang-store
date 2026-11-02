@@ -1,8 +1,6 @@
 
-export async function onRequestGet(context) {
-  const { request, env } = context;
+export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
-
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
   const error = url.searchParams.get("error");
@@ -15,52 +13,53 @@ export async function onRequestGet(context) {
       "cms_oauth_state=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0"
   };
 
-  const page = (script) => new Response(
-    `<!doctype html>
+  function sendResult(status, data) {
+    const message =
+      `authorization:github:${status}:${JSON.stringify(data)}`;
+
+    const script = `
+      (function () {
+        const message = ${JSON.stringify(message)};
+        const origin = window.location.origin;
+
+        if (!window.opener) {
+          document.body.textContent =
+            "Khong tim thay cua so CMS.";
+          return;
+        }
+
+        window.addEventListener("message", function (event) {
+          if (event.source !== window.opener) return;
+          if (event.origin !== origin) return;
+
+          if (event.data === "authorizing:github") {
+            window.opener.postMessage(message, origin);
+            window.close();
+          }
+        });
+
+        window.opener.postMessage(
+          "authorizing:github",
+          origin
+        );
+      })();
+    `;
+
+    return new Response(
+      `<!doctype html>
 <html lang="vi">
-<head><meta charset="utf-8"></head>
+<head>
+  <meta charset="utf-8">
+  <title>GitHub Login</title>
+</head>
 <body>
-<p>Đang hoàn tất đăng nhập...</p>
-<script>${script}</script>
+  <p>Đang hoàn tất đăng nhập...</p>
+  <script>${script}</script>
 </body>
 </html>`,
-    { headers }
-  );
-
-  const sendResult = (status, data) => {
-    const payload = JSON.stringify(
-      `authorization:github:${status}:${JSON.stringify(data)}`
+      { status: 200, headers }
     );
-
-    return page(`
-      (function () {
-        const message = ${payload};
-       
-if (window.opener) {
-  const origin = window.location.origin;
-
-  window.addEventListener("message", function (event) {
-    if (event.origin !== origin) return;
-
-    if (event.data === "authorizing:github") {
-      window.opener.postMessage(message, origin);
-      window.close();
-    }
-  });
-
-  window.opener.postMessage(
-    "authorizing:github",
-    origin
-  );
-}
-
-        } else {
-          document.body.textContent =
-            "Vui lòng quay lại trang quản trị và thử lại.";
-        }
-      })();
-    `);
-  };
+  }
 
   if (error) {
     return sendResult("error", {
@@ -69,10 +68,11 @@ if (window.opener) {
   }
 
   const cookie = request.headers.get("Cookie") || "";
+
   const savedState = cookie
     .split(";")
-    .map(v => v.trim())
-    .find(v => v.startsWith("cms_oauth_state="))
+    .map(item => item.trim())
+    .find(item => item.startsWith("cms_oauth_state="))
     ?.slice("cms_oauth_state=".length);
 
   if (!code || !state || !savedState || state !== savedState) {
@@ -101,9 +101,10 @@ if (window.opener) {
         body: JSON.stringify({
           client_id: env.GITHUB_CLIENT_ID,
           client_secret: env.GITHUB_CLIENT_SECRET,
-          code,
-          redirect_uri: "https://canhodanang.store/callback",
-          state
+          code: code,
+          state: state,
+          redirect_uri:
+            "https://canhodanang.store/callback"
         })
       }
     );
@@ -119,9 +120,9 @@ if (window.opener) {
     }
 
     return sendResult("success", {
-      token: data.access_token,
-      provider: "github"
+      token: data.access_token
     });
+
   } catch (err) {
     return sendResult("error", {
       message: "Unable to complete GitHub login"
