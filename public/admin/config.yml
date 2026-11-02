@@ -1,0 +1,55 @@
+
+backend:
+  name: github
+  repo: kieucanhodanang/canhodanang-store
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+locale: "vi"
+
+slug:
+  encoding: "ascii"
+  clean_accents: true
+
+collections:
+  - name: "can-ho"
+    label: "Căn hộ"
+    folder: "src/content/can-ho"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Tiêu đề", name: "title", widget: "string" }
+      - { label: "Mô tả ngắn", name: "description", widget: "text" }
+      - { label: "Giá", name: "price", widget: "string" }
+      - { label: "Diện tích", name: "area", widget: "string" }
+      - { label: "Phòng ngủ", name: "bedrooms", widget: "number", required: false }
+      - { label: "Địa chỉ", name: "address", widget: "string" }
+      - { label: "Ảnh đại diện", name: "image", widget: "image" }
+      - { label: "Nội dung chi tiết", name: "body", widget: "markdown" }
+
+  - name: "du-an"
+    label: "Dự án bất động sản"
+    folder: "src/content/du-an"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Tên dự án", name: "title", widget: "string" }
+      - { label: "Mô tả SEO", name: "description", widget: "text" }
+      - { label: "Chủ đầu tư", name: "developer", widget: "string", required: false }
+      - { label: "Vị trí", name: "location", widget: "string" }
+      - { label: "Ảnh dự án", name: "image", widget: "image" }
+      - { label: "Nội dung dự án", name: "body", widget: "markdown" }
+
+  - name: "bai-viet"
+    label: "Bài viết SEO"
+    folder: "src/content/bai-viet"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Tiêu đề SEO", name: "title", widget: "string" }
+      - { label: "Mô tả Google", name: "description", widget: "text" }
+      - { label: "Ngày đăng", name: "date", widget: "datetime" }
+      - { label: "Ảnh đại diện", name: "image", widget: "image", required: false }
+      - { label: "Nội dung bài viết", name: "body", widget: "markdown" }
