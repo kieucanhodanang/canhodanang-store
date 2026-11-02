@@ -1,5 +1,7 @@
 
 backend:
+  base_url: https://canhodanang.store
+  auth_endpoint: auth
   name: github
   repo: kieucanhodanang/canhodanang-store
   branch: main
