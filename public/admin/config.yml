@@ -15,39 +15,102 @@ slug:
   encoding: "ascii"
   clean_accents: true
 
-collections:
-  - name: "can-ho"
-    label: "Căn hộ"
-    folder: "src/content/can-ho"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Tiêu đề", name: "title", widget: "string" }
-      - { label: "Mô tả ngắn", name: "description", widget: "text" }
-      - { label: "Giá", name: "price", widget: "string" }
-      - { label: "Diện tích", name: "area", widget: "string" }
-      - { label: "Phòng ngủ", name: "bedrooms", widget: "number", required: false }
-      - { label: "Địa chỉ", name: "address", widget: "string" }
-      - { label: "Ảnh đại diện", name: "image", widget: "image" }
-      - { label: "Nội dung chi tiết", name: "body", widget: "markdown" }
 
+collections:
   - name: "du-an"
     label: "Dự án bất động sản"
     folder: "src/content/du-an"
     create: true
+    extension: "md"
+    format: "frontmatter"
     slug: "{{slug}}"
     fields:
-      - { label: "Tên dự án", name: "title", widget: "string" }
+      - label: "Tên dự án"
+        name: "title"
+        widget: "string"
+
+      - label: "Mô tả SEO"
+        name: "description"
+        widget: "text"
+
+      - label: "Chủ đầu tư"
+        name: "developer"
+        widget: "string"
+        required: false
+
+      - label: "Vị trí"
+        name: "location"
+        widget: "string"
+
+      - label: "Ảnh đại diện"
+        name: "image"
+        widget: "image"
+
+      - label: "Loại hình bất động sản"
+        name: "propertyTypes"
+        widget: "select"
+        multiple: true
+        options:
+          - { label: "Căn hộ", value: "can-ho" }
+          - { label: "Biệt thự", value: "biet-thu" }
+          - { label: "Shophouse", value: "shophouse" }
+          - { label: "Nhà phố", value: "nha-pho" }
+          - { label: "Đất nền", value: "dat-nen" }
+
+      - label: "Nội dung dự án"
+        name: "body"
+        widget: "markdown"
+
+  - name: "san-pham"
+    label: "Sản phẩm bất động sản"
+    folder: "src/content/san-pham"
+    create: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    fields:
+      - { label: "Tiêu đề", name: "title", widget: "string" }
       - { label: "Mô tả SEO", name: "description", widget: "text" }
-      - { label: "Chủ đầu tư", name: "developer", widget: "string", required: false }
-      - { label: "Vị trí", name: "location", widget: "string" }
-      - { label: "Ảnh dự án", name: "image", widget: "image" }
-      - { label: "Nội dung dự án", name: "body", widget: "markdown" }
+
+      - label: "Thuộc dự án"
+        name: "project"
+        widget: "relation"
+        collection: "du-an"
+        search_fields: ["title"]
+        value_field: "{{slug}}"
+        display_fields: ["title"]
+        required: false
+
+      - label: "Loại hình"
+        name: "propertyType"
+        widget: "select"
+        options:
+          - { label: "Căn hộ", value: "can-ho" }
+          - { label: "Biệt thự", value: "biet-thu" }
+          - { label: "Shophouse", value: "shophouse" }
+          - { label: "Nhà phố", value: "nha-pho" }
+          - { label: "Đất nền", value: "dat-nen" }
+
+      - label: "Hình thức giao dịch"
+        name: "transaction"
+        widget: "select"
+        options:
+          - { label: "Bán", value: "ban" }
+          - { label: "Cho thuê", value: "cho-thue" }
+
+      - { label: "Giá", name: "price", widget: "string" }
+      - { label: "Diện tích", name: "area", widget: "string" }
+      - { label: "Số phòng ngủ", name: "bedrooms", widget: "number", required: false }
+      - { label: "Địa chỉ", name: "address", widget: "string" }
+      - { label: "Ảnh đại diện", name: "image", widget: "image" }
+      - { label: "Nội dung chi tiết", name: "body", widget: "markdown" }
 
   - name: "bai-viet"
-    label: "Bài viết SEO"
+    label: "Tin tức và bài viết SEO"
     folder: "src/content/bai-viet"
     create: true
+    extension: "md"
+    format: "frontmatter"
     slug: "{{slug}}"
     fields:
       - { label: "Tiêu đề SEO", name: "title", widget: "string" }
