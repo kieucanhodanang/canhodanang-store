@@ -35,7 +35,7 @@ const slideSeconds = clamp(homepage.slideInterval, 3, 12, 5);
 const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft')
   .sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
 const slideData = JSON.stringify(slides).replace(/</g, '\\u003c');
-const khuVuc = const khuVuc = [
+const khuVuc = [
   {
     title: 'Căn hộ Sơn Trà',
     place: 'Sơn Trà, Đà Nẵng',
