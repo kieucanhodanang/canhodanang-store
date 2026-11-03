@@ -271,3 +271,55 @@ collections:
       - { label: "Ngày đăng", name: "date", widget: "datetime" }
       - { label: "Ảnh đại diện", name: "image", widget: "image", required: false }
       - { label: "Nội dung bài viết", name: "body", widget: "markdown" }
+      
+  # 5. CAI DAT TRANG CHU
+  - name: "cai-dat-trang-chu"
+    label: "Cài đặt trang chủ"
+    files:
+      - name: "trang-chu"
+        label: "Banner và nội dung trang chủ"
+        file: "src/data/homepage.json"
+        create: true
+        format: "json"
+        fields:
+          - label: "Ảnh banner trang chủ"
+            name: "bannerImage"
+            widget: "image"
+            required: false
+            hint: "Tải ảnh từ máy tính. Khuyến nghị ảnh ngang 1920 x 900 px, định dạng WebP hoặc JPG."
+
+          - label: "Dòng chữ nhỏ phía trên banner"
+            name: "bannerEyebrow"
+            widget: "string"
+            default: "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG"
+
+          - label: "Tiêu đề chính banner"
+            name: "bannerTitle"
+            widget: "string"
+            default: "Căn Hộ Đà Nẵng – Mua Bán, Cho Thuê & Dự Án Nổi Bật"
+
+          - label: "Mô tả banner"
+            name: "bannerDescription"
+            widget: "text"
+            default: "Khám phá căn hộ Đà Nẵng, các dự án nổi bật và lựa chọn bất động sản phù hợp."
+
+          - label: "Chữ nút chính"
+            name: "primaryButtonText"
+            widget: "string"
+            default: "Khám phá căn hộ"
+
+          - label: "Đường dẫn nút chính"
+            name: "primaryButtonLink"
+            widget: "string"
+            default: "/can-ho/"
+
+          - label: "Chữ nút liên hệ"
+            name: "secondaryButtonText"
+            widget: "string"
+            default: "Liên hệ tư vấn"
+
+          - label: "Đường dẫn nút liên hệ"
+            name: "secondaryButtonLink"
+            widget: "string"
+            default: "/lien-he/"
+
