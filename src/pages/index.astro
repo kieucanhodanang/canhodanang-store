@@ -2,6 +2,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import homepage from '../data/homepage.json';
+import { getCollection } from 'astro:content';
 
 const clamp = (value, min, max, fallback) => {
   const n = Number(value);
@@ -15,11 +16,26 @@ const imagePosition = ['top', 'center', 'bottom'].includes(homepage.bannerPositi
 const textAlign = ['left', 'center', 'right'].includes(homepage.bannerTextAlign) ? homepage.bannerTextAlign : 'left';
 const buttonColor = /^#[0-9a-fA-F]{6}$/.test(homepage.primaryButtonColor || '') ? homepage.primaryButtonColor : '#D4A85E';
 const bannerImage = typeof homepage.bannerImage === 'string' && homepage.bannerImage.startsWith('/uploads/') ? homepage.bannerImage : '';
-const heroBackground = bannerImage
-  ? `linear-gradient(rgba(8, 27, 47, ${overlay}), rgba(8, 27, 47, ${overlay})), url(${JSON.stringify(bannerImage)})`
-  : 'linear-gradient(125deg, #102c49, #19496a)';
 
-const khuVuc = [
+const rawSlides = Array.isArray(homepage.bannerSlides) ? homepage.bannerSlides : [];
+const slides = rawSlides.filter((s) => s && s.enabled !== false && typeof s.image === 'string' && s.image.startsWith('/uploads/')).map((s) => ({
+  image: s.image, mobileImage: s.mobileImage?.startsWith('/uploads/') ? s.mobileImage : '',
+  imageAlt: s.imageAlt || s.title || 'Bất động sản Đà Nẵng',
+  eyebrow: s.eyebrow || '', title: s.title || homepage.bannerTitle,
+  description: s.description || '', buttonText: s.buttonText || '',
+  buttonLink: s.buttonLink?.startsWith('/') || s.buttonLink?.startsWith('#') ? s.buttonLink : '#tim-kiem'
+}));
+if (!slides.length) slides.push({
+  image: bannerImage, mobileImage: '', imageAlt: 'Căn hộ và bất động sản tại Đà Nẵng',
+  eyebrow: homepage.bannerEyebrow || '', title: homepage.bannerTitle || 'Căn Hộ Đà Nẵng',
+  description: homepage.bannerDescription || '', buttonText: homepage.primaryButtonText || '',
+  buttonLink: homepage.primaryButtonLink || '/mua-ban/'
+});
+const slideSeconds = clamp(homepage.slideInterval, 3, 12, 5);
+const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft')
+  .sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
+const slideData = JSON.stringify(slides).replace(/</g, '\\u003c');
+const khuVuc = const khuVuc = [
   {
     title: 'Căn hộ Sơn Trà',
     place: 'Sơn Trà, Đà Nẵng',
@@ -62,214 +78,107 @@ const duAn = [
   }
 ];
 
-const seoTitle =
-  'Căn Hộ Đà Nẵng | Mua Bán, Cho Thuê & Dự Án Nổi Bật';
-
-const seoDescription =
-  'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, dự án căn hộ nổi bật, vị trí, giá bán và thông tin thị trường. Liên hệ tư vấn 0869 437 415.';
+const seoTitle = 'Căn Hộ Đà Nẵng | Mua Bán, Cho Thuê & Dự Án Nổi Bật';
+const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, dự án nổi bật và thông tin thị trường. Liên hệ tư vấn 0869 437 415.';
 ---
-
 <Base title={seoTitle} description={seoDescription}>
-
-  <!-- HERO: H1 DUY NHAT - DU LIEU TU DECAP CMS -->
-  <section
-    class="hero cms-hero"
-    style={`--cms-hero-height:${bannerHeight}px;--cms-title-size:${titleSize}px;--cms-content-width:${contentWidth}px;--cms-text-align:${textAlign};--cms-image-position:${imagePosition};--cms-button-color:${buttonColor};background-image:${heroBackground};`}
-  >
-    <div class="wrap cms-hero-content">
-      {homepage.bannerEyebrow && <span class="eyebrow">{homepage.bannerEyebrow}</span>}
-      <h1>{homepage.bannerTitle || 'Căn Hộ Đà Nẵng – Mua Bán, Cho Thuê & Dự Án Nổi Bật'}</h1>
-      {homepage.bannerDescription && <p>{homepage.bannerDescription}</p>}
-      <div class="heroactions cms-hero-actions">
-        {homepage.primaryButtonText && (
-          <a class="btn cms-primary-button" href={homepage.primaryButtonLink || '#can-ho-ban'}>
-            {homepage.primaryButtonText}
-          </a>
-        )}
-        {homepage.secondaryButtonText && (
-          <a class="outlinebtn" href={homepage.secondaryButtonLink || 'tel:0869437415'}>
-            {homepage.secondaryButtonText}
-          </a>
-        )}
-      </div>
+  <section class="hero cms-hero" data-interval={slideSeconds} aria-label="Giới thiệu bất động sản Đà Nẵng"
+    style={`--cms-hero-height:${bannerHeight}px;--cms-title-size:${titleSize}px;--cms-content-width:${contentWidth}px;--cms-text-align:${textAlign};--cms-image-position:${imagePosition};--cms-button-color:${buttonColor};--cms-overlay:${overlay};`}>
+    <div class="hero-slides" aria-hidden="true">
+      {slides.map((slide, i) => (
+        <picture class:list={['hero-slide', { active: i === 0 }]} data-slide={i}>
+          {slide.mobileImage && <source media="(max-width:767px)" srcset={slide.mobileImage} />}
+          {slide.image ? <img src={slide.image} alt="" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} /> : <span class="hero-fallback"></span>}
+        </picture>
+      ))}
     </div>
+    <div class="hero-overlay"></div>
+    <div class="wrap cms-hero-content">
+      <span class="eyebrow" id="slide-eyebrow">{slides[0].eyebrow}</span>
+      <h1 id="slide-title">{slides[0].title}</h1>
+      <p id="slide-description">{slides[0].description}</p>
+      <div class="heroactions cms-hero-actions">
+        <button class="btn cms-primary-button" type="button" id="open-property-search">⌕ Tìm bất động sản</button>
+        <a class="outlinebtn" id="slide-link" href={slides[0].buttonLink}>{slides[0].buttonText || 'Khám phá dự án'}</a>
+      </div>
+      {slides.length > 1 && <div class="hero-pagination" aria-label="Chọn ảnh banner">
+        {slides.map((_,i) => <button type="button" class:list={['hero-dot', { active:i===0 }]} data-slide-to={i} aria-label={`Xem slide ${i+1}`} aria-current={i===0 ? 'true' : undefined}></button>)}
+      </div>}
+    </div>
+    {slides.length > 1 && <div class="hero-arrows">
+      <button type="button" id="slide-prev" aria-label="Ảnh trước">‹</button>
+      <button type="button" id="slide-next" aria-label="Ảnh tiếp theo">›</button>
+    </div>}
   </section>
 
-  <!-- BO LOC TIM KIEM -->
-  <div class="wrap">
-    <div class="searchpanel" id="tim-kiem">
-      <div class="searchtitle">
-        <span class="search-kicker">
-          TÌM KIẾM CĂN HỘ ĐÀ NẴNG
-        </span>
-
-        <strong>
-          Tìm căn hộ theo nhu cầu của bạn
-        </strong>
+  <dialog class="property-dialog" id="property-dialog" aria-labelledby="search-dialog-title">
+    <div class="dialog-top"><div><span class="search-kicker">BỘ LỌC BẤT ĐỘNG SẢN</span><h2 id="search-dialog-title">Tìm bất động sản phù hợp</h2></div>
+      <button type="button" class="dialog-close" id="close-property-search" aria-label="Đóng tìm kiếm">×</button></div>
+    <form id="property-search" method="dialog">
+      <div class="search-grid">
+        <label>Giao dịch<select name="giao-dich" id="deal-type"><option value="ban">Mua bán</option><option value="cho-thue">Cho thuê</option><option value="cho-thue-ngay">Thuê theo ngày</option></select></label>
+        <label>Loại bất động sản<select name="loai"><option value="">Tất cả loại hình</option><option value="can-ho">Căn hộ</option><option value="biet-thu">Biệt thự</option><option value="shophouse">Shophouse</option><option value="nha-rieng">Nhà riêng</option><option value="dat-tho-cu">Đất thổ cư</option></select></label>
+        <label>Dự án<select name="du-an"><option value="">Tất cả dự án</option>{projects.map((item) => <option value={item.id}>{item.data.title}</option>)}</select></label>
+        <label>Khu vực<select name="khu-vuc"><option value="">Tất cả khu vực</option>{['Hải Châu','Sơn Trà','Ngũ Hành Sơn','Thanh Khê','Liên Chiểu','Cẩm Lệ','Hòa Vang'].map((name) => <option value={name}>{name}</option>)}</select></label>
+        <label>Phòng ngủ<select name="phong-ngu"><option value="">Tất cả</option><option value="studio">Studio</option>{[1,2,3,4].map(n => <option value={n}>{n === 4 ? '4+' : n} phòng ngủ</option>)}</select></label>
+        <label>Diện tích<select name="dien-tich"><option value="">Tất cả</option><option value="0-50">Dưới 50 m²</option><option value="50-80">50–80 m²</option><option value="80-120">80–120 m²</option><option value="120+">Trên 120 m²</option></select></label>
+        <label>Giá<select name="gia" id="price-select"><option value="">Tất cả mức giá</option></select></label>
+        <label>Hướng nhà<select name="huong"><option value="">Tất cả hướng</option>{['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc'].map(x => <option value={x}>{x}</option>)}</select></label>
       </div>
-
-      <form action="/tim-kiem/" method="GET" id="property-search">
-
-        <div class="deal-tabs" role="group"
-          aria-label="Hình thức giao dịch">
-
-          <label>
-            <input type="radio"
-              name="giao-dich"
-              value="mua" checked />
-            <span>⌂ Mua căn hộ</span>
-          </label>
-
-          <label>
-            <input type="radio"
-              name="giao-dich"
-              value="thue-dai-han" />
-            <span>Thuê dài hạn</span>
-          </label>
-
-          <label>
-            <input type="radio"
-              name="giao-dich"
-              value="thue-theo-ngay" />
-            <span>Thuê theo ngày</span>
-          </label>
-        </div>
-
-        <div class="property-fields">
-
-          <label class="keyword-field">
-            Dự án / Khu vực
-            <input
-              name="q"
-              placeholder="Tên dự án, khu vực Đà Nẵng..."
-            />
-          </label>
-
-          <label>
-            Phòng ngủ
-            <select name="phong-ngu">
-              <option value="">Tất cả</option>
-              <option value="studio">Studio</option>
-              <option value="1">1 phòng ngủ</option>
-              <option value="2">2 phòng ngủ</option>
-              <option value="3">3 phòng ngủ</option>
-              <option value="4">4+ phòng ngủ</option>
-            </select>
-          </label>
-
-          <label>
-            Diện tích
-            <select name="dien-tich">
-              <option value="">Tất cả</option>
-              <option value="0-40">Dưới 40 m²</option>
-              <option value="40-60">40–60 m²</option>
-              <option value="60-80">60–80 m²</option>
-              <option value="80-100">80–100 m²</option>
-              <option value="100+">Trên 100 m²</option>
-            </select>
-          </label>
-
-          <label>
-            <span id="price-label">Giá mua</span>
-            <select name="gia" id="price-select">
-              <option value="">Tất cả mức giá</option>
-              <option value="under2">Dưới 2 tỷ</option>
-              <option value="2-3">2–3 tỷ</option>
-              <option value="3-5">3–5 tỷ</option>
-              <option value="5-10">5–10 tỷ</option>
-              <option value="10+">Trên 10 tỷ</option>
-            </select>
-          </label>
-
-          <label>
-            Hướng căn hộ
-            <select name="huong">
-              <option value="">Tất cả</option>
-              {[
-                'Đông','Tây','Nam','Bắc',
-                'Đông Nam','Đông Bắc',
-                'Tây Nam','Tây Bắc'
-              ].map(x =>
-                <option value={x}>{x}</option>
-              )}
-            </select>
-          </label>
-
-          <button
-            class="btn property-submit"
-            type="button"
-            disabled
-            title="Chức năng tìm kiếm đang được xây dựng"
-          >
-            ⌕ Sắp mở tìm kiếm
-          </button>
-
-        </div>
-      </form>
-
-      <p class="searchnote">
-        Bộ lọc sẽ hoạt động sau khi kết nối
-        dữ liệu căn hộ và trang kết quả tìm kiếm.
-      </p>
-    </div>
-  </div>
-
+      <p class="searchnote">Bộ lọc đang được hoàn thiện. Anh/chị có thể xem danh sách bất động sản hoặc liên hệ tư vấn.</p>
+      <div class="dialog-actions"><a class="btn" href="/mua-ban/" id="browse-properties">Xem bất động sản</a><a class="outlinebtn" href="tel:0869437415">☎ 0869 437 415</a></div>
+    </form>
+  </dialog>
+  <script type="application/json" id="hero-slides-data" set:html={slideData} />
   <script is:inline>
-    const priceSets = {
-      mua: {
-        label: 'Giá mua',
-        items: [
-          ['', 'Tất cả mức giá'],
-          ['under2', 'Dưới 2 tỷ'],
-          ['2-3', '2–3 tỷ'],
-          ['3-5', '3–5 tỷ'],
-          ['5-10', '5–10 tỷ'],
-          ['10+', 'Trên 10 tỷ']
-        ]
-      },
-      'thue-dai-han': {
-        label: 'Giá thuê / tháng',
-        items: [
-          ['', 'Tất cả mức giá'],
-          ['under5', 'Dưới 5 triệu/tháng'],
-          ['5-10', '5–10 triệu/tháng'],
-          ['10-20', '10–20 triệu/tháng'],
-          ['20+', 'Trên 20 triệu/tháng']
-        ]
-      },
-      'thue-theo-ngay': {
-        label: 'Giá thuê / đêm',
-        items: [
-          ['', 'Tất cả mức giá'],
-          ['under500', 'Dưới 500 nghìn/đêm'],
-          ['500-1000', '500 nghìn–1 triệu/đêm'],
-          ['1-2', '1–2 triệu/đêm'],
-          ['2+', 'Trên 2 triệu/đêm']
-        ]
+    (() => {
+      const dataNode = document.getElementById('hero-slides-data');
+      const slides = dataNode ? JSON.parse(dataNode.textContent || '[]') : [];
+      const pictures = Array.from(document.querySelectorAll('.hero-slide'));
+      const dots = Array.from(document.querySelectorAll('.hero-dot'));
+      let current = 0;
+      const show = (index) => {
+        if (!slides.length) return;
+        current = (index + slides.length) % slides.length;
+        pictures.forEach((node,i) => node.classList.toggle('active',i===current));
+        dots.forEach((node,i) => { node.classList.toggle('active',i===current); if(i===current) node.setAttribute('aria-current','true'); else node.removeAttribute('aria-current'); });
+        const s = slides[current];
+        document.getElementById('slide-eyebrow').textContent = s.eyebrow || '';
+        document.getElementById('slide-title').textContent = s.title || '';
+        document.getElementById('slide-description').textContent = s.description || '';
+        const link = document.getElementById('slide-link');
+        link.textContent = s.buttonText || 'Khám phá dự án';
+        link.href = s.buttonLink || '/mua-ban/';
+      };
+      document.getElementById('slide-prev')?.addEventListener('click',()=>show(current-1));
+      document.getElementById('slide-next')?.addEventListener('click',()=>show(current+1));
+      dots.forEach((dot,i)=>dot.addEventListener('click',()=>show(i)));
+      const hero = document.querySelector('.cms-hero');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const seconds = Number(hero?.dataset.interval) || 5;
+      if (slides.length>1 && !reduceMotion) {
+        let timer = setInterval(()=>{ if(!document.hidden) show(current+1); }, seconds*1000);
+        hero?.addEventListener('mouseenter',()=>clearInterval(timer));
+        hero?.addEventListener('mouseleave',()=>{ clearInterval(timer); timer=setInterval(()=>{if(!document.hidden)show(current+1)},seconds*1000); });
       }
-    };
-
-    document
-      .querySelectorAll('input[name="giao-dich"]')
-      .forEach(radio => {
-        radio.addEventListener('change', () => {
-          if (!radio.checked) return;
-
-          const selected = priceSets[radio.value];
-          const label = document.getElementById('price-label');
-          const select = document.getElementById('price-select');
-
-          if (!selected || !label || !select) return;
-
-          label.textContent = selected.label;
-
-          select.replaceChildren(
-            ...selected.items.map(
-              ([value, text]) => new Option(text, value)
-            )
-          );
-        });
-      });
+      const dialog = document.getElementById('property-dialog');
+      document.getElementById('open-property-search')?.addEventListener('click',()=>dialog?.showModal());
+      document.getElementById('close-property-search')?.addEventListener('click',()=>dialog?.close());
+      dialog?.addEventListener('click',(event)=>{if(event.target===dialog)dialog.close();});
+      const prices = {
+        ban:[['','Tất cả mức giá'],['under2','Dưới 2 tỷ'],['2-5','2–5 tỷ'],['5-10','5–10 tỷ'],['10+','Trên 10 tỷ']],
+        'cho-thue':[['','Tất cả mức giá'],['under5','Dưới 5 triệu/tháng'],['5-15','5–15 triệu/tháng'],['15+','Trên 15 triệu/tháng']],
+        'cho-thue-ngay':[['','Tất cả mức giá'],['under500','Dưới 500 nghìn/đêm'],['500-1000','500 nghìn–1 triệu/đêm'],['1000+','Trên 1 triệu/đêm']]
+      };
+      const deal=document.getElementById('deal-type');
+      const price=document.getElementById('price-select');
+      const browse=document.getElementById('browse-properties');
+      const update=()=>{
+        price.replaceChildren(...prices[deal.value].map(([value,label])=>new Option(label,value)));
+        browse.href=deal.value==='ban'?'/mua-ban/':'/cho-thue/';
+      };
+      deal?.addEventListener('change',update); update();
+    })();
   </script>
 
   <!-- H2: CAN HO BAN -->
@@ -512,40 +421,49 @@ const seoDescription =
   </section>
 
   <style>
-    .cms-hero {
-      min-height: var(--cms-hero-height);
-      background-size: cover;
-      background-position: center var(--cms-image-position);
-      background-repeat: no-repeat;
-      display: flex;
-      align-items: center;
-      box-sizing: border-box;
+
+    .cms-hero { min-height:var(--cms-hero-height);position:relative;display:flex;align-items:center;isolation:isolate;overflow:hidden;box-sizing:border-box;background:#102c49; }
+    .hero-slides,.hero-overlay {position:absolute;inset:0;z-index:-1;}
+    .hero-slide {position:absolute;inset:0;opacity:0;transition:opacity .7s ease;}
+    .hero-slide.active {opacity:1;}
+    .hero-slide img,.hero-fallback {display:block;width:100%;height:100%;object-fit:cover;object-position:center var(--cms-image-position);}
+    .hero-fallback {background:linear-gradient(125deg,#102c49,#19496a);}
+    .hero-overlay {background:rgba(8,27,47,var(--cms-overlay));}
+    .cms-hero-content {width:100%;max-width:var(--cms-content-width);text-align:var(--cms-text-align);position:relative;z-index:1;padding-block:70px;}
+    .cms-hero h1 {font-size:var(--cms-title-size);line-height:1.16;overflow-wrap:break-word;}
+    .cms-hero[style*="--cms-text-align:center"] .cms-hero-actions {justify-content:center;}
+    .cms-hero[style*="--cms-text-align:right"] .cms-hero-actions {justify-content:flex-end;}
+    .cms-primary-button {background:var(--cms-button-color);border-color:var(--cms-button-color);cursor:pointer;}
+    .hero-pagination {display:flex;gap:9px;margin-top:30px;justify-content:flex-start;}
+    .hero-dot {width:12px;height:12px;border-radius:50%;border:1px solid white;background:transparent;cursor:pointer;padding:0;}
+    .hero-dot.active {background:white;}
+    .hero-arrows {position:absolute;inset-inline:16px;top:50%;display:flex;justify-content:space-between;pointer-events:none;transform:translateY(-50%);}
+    .hero-arrows button {pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1px solid #ffffff88;background:#10243a99;color:white;font-size:28px;cursor:pointer;}
+    .property-dialog {width:min(760px,calc(100vw - 24px));max-height:min(88dvh,850px);border:0;border-radius:16px;padding:24px;color:#142b43;box-shadow:0 20px 70px #0006;overflow:auto;}
+    .property-dialog::backdrop {background:#06182caa;}
+    .dialog-top {display:flex;justify-content:space-between;gap:15px;align-items:start;margin-bottom:20px;}
+    .dialog-top h2 {font-size:clamp(22px,4vw,30px);margin:6px 0 0;}
+    .dialog-close {font-size:28px;border:0;background:transparent;cursor:pointer;width:44px;height:44px;flex-shrink:0;}
+    .search-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+    .search-grid label {min-width:0;font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:8px;}
+    .search-grid select {width:100%;min-width:0;height:58px;border:1px solid #cbd5df;border-radius:9px;background:#fff;padding:0 12px;font:inherit;font-weight:400;color:#142b43;}
+    .dialog-actions {display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;}
+    .dialog-actions .outlinebtn {color:#173754;border-color:#173754;}
+    .property-dialog .searchnote {font-size:13px;margin-top:18px;color:#52657a;}
+    @media(max-width:767px){
+      .cms-hero {min-height:min(var(--cms-hero-height),650px);}
+      .cms-hero-content {text-align:left;padding-block:65px;}
+      .cms-hero h1 {font-size:clamp(30px,8vw,44px);}
+      .cms-hero-actions {justify-content:flex-start;}
+      .hero-arrows {inset-inline:5px;}
+      .hero-arrows button {width:34px;height:34px;}
+      .property-dialog {padding:18px 12px;}
+      .search-grid {gap:10px;}
+      .search-grid label {font-size:13px;}
+      .search-grid select {height:60px;padding-inline:7px;font-size:13px;}
+      .dialog-actions .btn {width:100%;text-align:center;}
     }
-    .cms-hero-content {
-      width: 100%;
-      max-width: var(--cms-content-width);
-      text-align: var(--cms-text-align);
-    }
-    .cms-hero h1 {
-      font-size: var(--cms-title-size);
-      line-height: 1.16;
-      overflow-wrap: break-word;
-    }
-    .cms-hero p { margin-inline: 0; }
-    .cms-hero[style*="--cms-text-align:center"] p,
-    .cms-hero[style*="--cms-text-align:center"] h1 { margin-inline: auto; }
-    .cms-hero[style*="--cms-text-align:right"] p,
-    .cms-hero[style*="--cms-text-align:right"] h1 { margin-left: auto; }
-    .cms-hero-actions { justify-content: flex-start; }
-    .cms-hero[style*="--cms-text-align:center"] .cms-hero-actions { justify-content: center; }
-    .cms-hero[style*="--cms-text-align:right"] .cms-hero-actions { justify-content: flex-end; }
-    .cms-primary-button { background-color: var(--cms-button-color); border-color: var(--cms-button-color); }
-    @media (max-width: 767px) {
-      .cms-hero { min-height: min(var(--cms-hero-height), 650px); padding-block: 64px; }
-      .cms-hero h1 { font-size: clamp(30px, 8vw, 44px); }
-      .cms-hero-content { text-align: left; }
-      .cms-hero-actions { justify-content: flex-start; }
-    }
+    @media(prefers-reduced-motion:reduce){.hero-slide{transition:none;}}
   </style>
 
 </Base>
