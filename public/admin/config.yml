@@ -272,54 +272,120 @@ collections:
       - { label: "Ảnh đại diện", name: "image", widget: "image", required: false }
       - { label: "Nội dung bài viết", name: "body", widget: "markdown" }
       
-  # 5. CAI DAT TRANG CHU
+  
+  # 5. CAI DAT TRANG CHU NANG CAO
   - name: "cai-dat-trang-chu"
     label: "Cài đặt trang chủ"
     files:
       - name: "trang-chu"
-        label: "Banner và nội dung trang chủ"
+        label: "Banner và giao diện trang chủ"
         file: "src/data/homepage.json"
-        create: true
         format: "json"
         fields:
+
+          # NOI DUNG BANNER
           - label: "Ảnh banner trang chủ"
             name: "bannerImage"
             widget: "image"
             required: false
-            hint: "Tải ảnh từ máy tính. Khuyến nghị ảnh ngang 1920 x 900 px, định dạng WebP hoặc JPG."
+            hint: "Ảnh ngang 1920x900px, JPG hoặc WebP"
 
-          - label: "Dòng chữ nhỏ phía trên banner"
+          - label: "Dòng chữ nhỏ trên banner"
             name: "bannerEyebrow"
             widget: "string"
-            default: "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG"
+            required: false
 
-          - label: "Tiêu đề chính banner"
+          - label: "Tiêu đề chính"
             name: "bannerTitle"
             widget: "string"
-            default: "Căn Hộ Đà Nẵng – Mua Bán, Cho Thuê & Dự Án Nổi Bật"
 
           - label: "Mô tả banner"
             name: "bannerDescription"
             widget: "text"
-            default: "Khám phá căn hộ Đà Nẵng, các dự án nổi bật và lựa chọn bất động sản phù hợp."
+            required: false
 
+          # NUT BAM
           - label: "Chữ nút chính"
             name: "primaryButtonText"
             widget: "string"
-            default: "Khám phá căn hộ"
+            required: false
 
           - label: "Đường dẫn nút chính"
             name: "primaryButtonLink"
             widget: "string"
-            default: "/can-ho/"
+            required: false
 
           - label: "Chữ nút liên hệ"
             name: "secondaryButtonText"
             widget: "string"
-            default: "Liên hệ tư vấn"
+            required: false
 
           - label: "Đường dẫn nút liên hệ"
             name: "secondaryButtonLink"
             widget: "string"
-            default: "/lien-he/"
+            required: false
 
+          # KICH THUOC
+          - label: "Chiều cao banner (px)"
+            name: "bannerHeight"
+            widget: "number"
+            value_type: "int"
+            min: 350
+            max: 850
+            step: 10
+            default: 610
+
+          - label: "Kích thước tiêu đề (px)"
+            name: "bannerTitleSize"
+            widget: "number"
+            value_type: "int"
+            min: 32
+            max: 80
+            step: 2
+            default: 56
+
+          - label: "Chiều rộng nội dung (px)"
+            name: "bannerContentWidth"
+            widget: "number"
+            value_type: "int"
+            min: 800
+            max: 1400
+            step: 50
+            default: 1200
+
+          # HINH ANH
+          - label: "Vị trí ảnh banner"
+            name: "bannerPosition"
+            widget: "select"
+            default: "center"
+            options:
+              - { label: "Phía trên", value: "top" }
+              - { label: "Chính giữa", value: "center" }
+              - { label: "Phía dưới", value: "bottom" }
+
+          - label: "Độ tối ảnh nền (%)"
+            name: "bannerOverlay"
+            widget: "number"
+            value_type: "int"
+            min: 0
+            max: 80
+            step: 5
+            default: 45
+
+          # MAU SAC
+          - label: "Màu nút chính"
+            name: "primaryButtonColor"
+            widget: "color"
+            default: "#D4A85E"
+            allowInput: true
+            enableAlpha: false
+
+          # CAN CHINH
+          - label: "Căn chỉnh nội dung"
+            name: "bannerTextAlign"
+            widget: "select"
+            default: "left"
+            options:
+              - { label: "Căn trái", value: "left" }
+              - { label: "Căn giữa", value: "center" }
+              - { label: "Căn phải", value: "right" }
