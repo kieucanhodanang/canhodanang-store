@@ -116,7 +116,14 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       <button type="button" class="dialog-close" id="close-property-search" aria-label="Đóng tìm kiếm">×</button></div>
     <form id="property-search" method="dialog">
       <div class="search-grid">
-        <label>Giao dịch<select name="giao-dich" id="deal-type"><option value="ban">Mua bán</option><option value="cho-thue">Cho thuê</option><option value="cho-thue-ngay">Thuê theo ngày</option></select></label>
+        <fieldset class="deal-tabs" aria-label="Chọn hình thức giao dịch">
+        <legend>Hình thức giao dịch</legend>
+        <div class="deal-tab-list">
+          <label class="deal-tab"><input type="radio" name="giao-dich" value="ban" checked /><span>Mua bán</span></label>
+          <label class="deal-tab"><input type="radio" name="giao-dich" value="cho-thue" /><span>Cho thuê</span></label>
+          <label class="deal-tab"><input type="radio" name="giao-dich" value="cho-thue-ngay" /><span>Thuê theo ngày</span></label>
+        </div>
+      </fieldset>
         <label>Loại bất động sản<select name="loai"><option value="">Tất cả loại hình</option><option value="can-ho">Căn hộ</option><option value="biet-thu">Biệt thự</option><option value="shophouse">Shophouse</option><option value="nha-rieng">Nhà riêng</option><option value="dat-tho-cu">Đất thổ cư</option></select></label>
         <label>Dự án<select name="du-an"><option value="">Tất cả dự án</option>{projects.map((item) => <option value={item.id}>{item.data.title}</option>)}</select></label>
         <label>Khu vực<select name="khu-vuc"><option value="">Tất cả khu vực</option>{['Hải Châu','Sơn Trà','Ngũ Hành Sơn','Thanh Khê','Liên Chiểu','Cẩm Lệ','Hòa Vang'].map((name) => <option value={name}>{name}</option>)}</select></label>
@@ -162,7 +169,18 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         hero?.addEventListener('mouseleave',()=>{ clearInterval(timer); timer=setInterval(()=>{if(!document.hidden)show(current+1)},seconds*1000); });
       }
       const dialog = document.getElementById('property-dialog');
-      document.getElementById('open-property-search')?.addEventListener('click',()=>dialog?.showModal());
+      let searchOpened = false;
+      document.getElementById('open-property-search')?.addEventListener('click',()=>{
+        searchOpened = true;
+        if (dialog && !dialog.open) dialog.showModal();
+      });
+      // Tự mở một lần sau 3 giây nếu khách chưa chủ động mở tìm kiếm.
+      window.setTimeout(()=>{
+        if (!searchOpened && dialog && !dialog.open) {
+          searchOpened = true;
+          dialog.showModal();
+        }
+      }, 3000);
       document.getElementById('close-property-search')?.addEventListener('click',()=>dialog?.close());
       dialog?.addEventListener('click',(event)=>{if(event.target===dialog)dialog.close();});
       const prices = {
@@ -170,14 +188,16 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         'cho-thue':[['','Tất cả mức giá'],['under5','Dưới 5 triệu/tháng'],['5-15','5–15 triệu/tháng'],['15+','Trên 15 triệu/tháng']],
         'cho-thue-ngay':[['','Tất cả mức giá'],['under500','Dưới 500 nghìn/đêm'],['500-1000','500 nghìn–1 triệu/đêm'],['1000+','Trên 1 triệu/đêm']]
       };
-      const deal=document.getElementById('deal-type');
+      const dealInputs = Array.from(document.querySelectorAll('input[name="giao-dich"]'));
       const price=document.getElementById('price-select');
       const browse=document.getElementById('browse-properties');
       const update=()=>{
-        price.replaceChildren(...prices[deal.value].map(([value,label])=>new Option(label,value)));
-        browse.href=deal.value==='ban'?'/mua-ban/':'/cho-thue/';
+        const selected = dealInputs.find((input)=>input.checked)?.value || 'ban';
+        price.replaceChildren(...prices[selected].map(([value,label])=>new Option(label,value)));
+        browse.href = selected === 'ban' ? '/mua-ban/' : selected === 'cho-thue' ? '/cho-thue/' : '/cho-thue-ngay/';
       };
-      deal?.addEventListener('change',update); update();
+      dealInputs.forEach((input)=>input.addEventListener('change',update));
+      update();
     })();
   </script>
 
@@ -444,6 +464,16 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .dialog-top {display:flex;justify-content:space-between;gap:15px;align-items:start;margin-bottom:20px;}
     .dialog-top h2 {font-size:clamp(22px,4vw,30px);margin:6px 0 0;}
     .dialog-close {font-size:28px;border:0;background:transparent;cursor:pointer;width:44px;height:44px;flex-shrink:0;}
+    .deal-tabs {border:0;margin:0 0 20px;padding:0;min-width:0;}
+    .deal-tabs legend {font-size:14px;font-weight:700;margin-bottom:10px;color:#142b43;}
+    .deal-tab-list {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;}
+    .deal-tab {position:relative;display:block;cursor:pointer;min-width:0;}
+    .deal-tab input {position:absolute;opacity:0;width:1px;height:1px;}
+    .deal-tab span {display:flex;align-items:center;justify-content:center;min-height:52px;padding:8px 5px;text-align:center;
+      border:2px solid #d9e0e8;border-radius:9px;background:#f5f7fa;color:#263d55;font-weight:700;font-size:15px;transition:background .15s,border-color .15s;}
+    .deal-tab input:checked + span {background:#a77a38;border-color:#a77a38;color:#fff;box-shadow:0 4px 12px #a77a3833;}
+    .deal-tab input:focus-visible + span {outline:3px solid #2b78c6;outline-offset:3px;}
+    .deal-tab:hover span {border-color:#a77a38;}
     .search-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
     .search-grid label {min-width:0;font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:8px;}
     .search-grid select {width:100%;min-width:0;height:58px;border:1px solid #cbd5df;border-radius:9px;background:#fff;padding:0 12px;font:inherit;font-weight:400;color:#142b43;}
@@ -458,7 +488,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       .hero-arrows {inset-inline:5px;}
       .hero-arrows button {width:34px;height:34px;}
       .property-dialog {padding:18px 12px;}
-      .search-grid {gap:10px;}
+      .deal-tab-list {gap:5px;}\n      .deal-tab span {min-height:48px;font-size:12px;padding:6px 3px;}\n      .search-grid {gap:10px;}
       .search-grid label {font-size:13px;}
       .search-grid select {height:60px;padding-inline:7px;font-size:13px;}
       .dialog-actions .btn {width:100%;text-align:center;}
