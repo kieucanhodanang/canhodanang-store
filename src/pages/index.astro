@@ -1,6 +1,23 @@
 
 ---
 import Base from '../layouts/Base.astro';
+import homepage from '../data/homepage.json';
+
+const clamp = (value, min, max, fallback) => {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
+};
+const bannerHeight = clamp(homepage.bannerHeight, 350, 850, 610);
+const titleSize = clamp(homepage.bannerTitleSize, 32, 80, 56);
+const contentWidth = clamp(homepage.bannerContentWidth, 800, 1400, 1200);
+const overlay = clamp(homepage.bannerOverlay, 0, 80, 45) / 100;
+const imagePosition = ['top', 'center', 'bottom'].includes(homepage.bannerPosition) ? homepage.bannerPosition : 'center';
+const textAlign = ['left', 'center', 'right'].includes(homepage.bannerTextAlign) ? homepage.bannerTextAlign : 'left';
+const buttonColor = /^#[0-9a-fA-F]{6}$/.test(homepage.primaryButtonColor || '') ? homepage.primaryButtonColor : '#D4A85E';
+const bannerImage = typeof homepage.bannerImage === 'string' && homepage.bannerImage.startsWith('/uploads/') ? homepage.bannerImage : '';
+const heroBackground = bannerImage
+  ? `linear-gradient(rgba(8, 27, 47, ${overlay}), rgba(8, 27, 47, ${overlay})), url(${JSON.stringify(bannerImage)})`
+  : 'linear-gradient(125deg, #102c49, #19496a)';
 
 const khuVuc = [
   {
@@ -54,36 +71,26 @@ const seoDescription =
 
 <Base title={seoTitle} description={seoDescription}>
 
-  <!-- HERO: H1 DUY NHAT -->
-  <section class="hero">
-    <div class="wrap">
-      <span class="eyebrow">
-        CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG
-      </span>
-
-      <h1>
-        Căn Hộ Đà Nẵng –
-        <span style="color:var(--gold)">
-          Mua Bán, Cho Thuê
-        </span>
-        & Dự Án Nổi Bật
-      </h1>
-
-      <p>
-        Khám phá thông tin căn hộ Đà Nẵng,
-        tìm hiểu các dự án nổi bật, so sánh
-        khu vực và lựa chọn bất động sản
-        phù hợp nhu cầu an cư hoặc đầu tư.
-      </p>
-
-      <div class="heroactions">
-        <a class="btn" href="#can-ho-ban">
-          Khám phá căn hộ ↗
-        </a>
-
-        <a class="outlinebtn" href="tel:0869437415">
-          Liên hệ tư vấn
-        </a>
+  <!-- HERO: H1 DUY NHAT - DU LIEU TU DECAP CMS -->
+  <section
+    class="hero cms-hero"
+    style={`--cms-hero-height:${bannerHeight}px;--cms-title-size:${titleSize}px;--cms-content-width:${contentWidth}px;--cms-text-align:${textAlign};--cms-image-position:${imagePosition};--cms-button-color:${buttonColor};background-image:${heroBackground};`}
+  >
+    <div class="wrap cms-hero-content">
+      {homepage.bannerEyebrow && <span class="eyebrow">{homepage.bannerEyebrow}</span>}
+      <h1>{homepage.bannerTitle || 'Căn Hộ Đà Nẵng – Mua Bán, Cho Thuê & Dự Án Nổi Bật'}</h1>
+      {homepage.bannerDescription && <p>{homepage.bannerDescription}</p>}
+      <div class="heroactions cms-hero-actions">
+        {homepage.primaryButtonText && (
+          <a class="btn cms-primary-button" href={homepage.primaryButtonLink || '#can-ho-ban'}>
+            {homepage.primaryButtonText}
+          </a>
+        )}
+        {homepage.secondaryButtonText && (
+          <a class="outlinebtn" href={homepage.secondaryButtonLink || 'tel:0869437415'}>
+            {homepage.secondaryButtonText}
+          </a>
+        )}
       </div>
     </div>
   </section>
@@ -503,5 +510,42 @@ const seoDescription =
       </a>
     </div>
   </section>
+
+  <style>
+    .cms-hero {
+      min-height: var(--cms-hero-height);
+      background-size: cover;
+      background-position: center var(--cms-image-position);
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    .cms-hero-content {
+      width: 100%;
+      max-width: var(--cms-content-width);
+      text-align: var(--cms-text-align);
+    }
+    .cms-hero h1 {
+      font-size: var(--cms-title-size);
+      line-height: 1.16;
+      overflow-wrap: break-word;
+    }
+    .cms-hero p { margin-inline: 0; }
+    .cms-hero[style*="--cms-text-align:center"] p,
+    .cms-hero[style*="--cms-text-align:center"] h1 { margin-inline: auto; }
+    .cms-hero[style*="--cms-text-align:right"] p,
+    .cms-hero[style*="--cms-text-align:right"] h1 { margin-left: auto; }
+    .cms-hero-actions { justify-content: flex-start; }
+    .cms-hero[style*="--cms-text-align:center"] .cms-hero-actions { justify-content: center; }
+    .cms-hero[style*="--cms-text-align:right"] .cms-hero-actions { justify-content: flex-end; }
+    .cms-primary-button { background-color: var(--cms-button-color); border-color: var(--cms-button-color); }
+    @media (max-width: 767px) {
+      .cms-hero { min-height: min(var(--cms-hero-height), 650px); padding-block: 64px; }
+      .cms-hero h1 { font-size: clamp(30px, 8vw, 44px); }
+      .cms-hero-content { text-align: left; }
+      .cms-hero-actions { justify-content: flex-start; }
+    }
+  </style>
 
 </Base>
