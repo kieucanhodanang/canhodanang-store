@@ -1,10 +1,10 @@
 
 backend:
-  base_url: https://canhodanang.store
-  auth_endpoint: auth
   name: github
   repo: kieucanhodanang/canhodanang-store
   branch: main
+  base_url: https://canhodanang.store
+  auth_endpoint: auth
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
@@ -15,15 +15,18 @@ slug:
   encoding: "ascii"
   clean_accents: true
 
-
 collections:
+
+  # 1. QUAN LY DU AN
   - name: "du-an"
     label: "Dự án bất động sản"
+    label_singular: "Dự án"
     folder: "src/content/du-an"
     create: true
     extension: "md"
     format: "frontmatter"
     slug: "{{slug}}"
+    identifier_field: "title"
     fields:
       - label: "Tên dự án"
         name: "title"
@@ -38,7 +41,7 @@ collections:
         widget: "string"
         required: false
 
-      - label: "Vị trí"
+      - label: "Vị trí dự án"
         name: "location"
         widget: "string"
 
@@ -46,7 +49,7 @@ collections:
         name: "image"
         widget: "image"
 
-      - label: "Loại hình bất động sản"
+      - label: "Loại hình trong dự án"
         name: "propertyTypes"
         widget: "select"
         multiple: true
@@ -57,20 +60,41 @@ collections:
           - { label: "Nhà phố", value: "nha-pho" }
           - { label: "Đất nền", value: "dat-nen" }
 
-      - label: "Nội dung dự án"
+      - label: "Giới thiệu dự án"
         name: "body"
         widget: "markdown"
 
+  # 2. SAN PHAM BAT DONG SAN
   - name: "san-pham"
-    label: "Sản phẩm bất động sản"
+    label: "Căn hộ và sản phẩm BĐS"
+    label_singular: "Sản phẩm"
     folder: "src/content/san-pham"
     create: true
     extension: "md"
     format: "frontmatter"
     slug: "{{slug}}"
+    identifier_field: "title"
     fields:
-      - { label: "Tiêu đề", name: "title", widget: "string" }
-      - { label: "Mô tả SEO", name: "description", widget: "text" }
+      - label: "Tiêu đề tin đăng"
+        name: "title"
+        widget: "string"
+
+      - label: "Mô tả SEO"
+        name: "description"
+        widget: "text"
+
+      - label: "Loại hình bất động sản"
+        name: "propertyType"
+        widget: "select"
+        default: "can-ho"
+        options:
+          - { label: "Căn hộ", value: "can-ho" }
+          - { label: "Biệt thự", value: "biet-thu" }
+          - { label: "Shophouse", value: "shophouse" }
+          - { label: "Nhà phố", value: "nha-pho" }
+          - { label: "Đất nền", value: "dat-nen" }
+          - { label: "Nhà riêng thổ cư", value: "nha-rieng" }
+          - { label: "Đất thổ cư", value: "dat-tho-cu" }
 
       - label: "Thuộc dự án"
         name: "project"
@@ -81,32 +105,148 @@ collections:
         display_fields: ["title"]
         required: false
 
-      - label: "Loại hình"
-        name: "propertyType"
-        widget: "select"
-        options:
-          - { label: "Căn hộ", value: "can-ho" }
-          - { label: "Biệt thự", value: "biet-thu" }
-          - { label: "Shophouse", value: "shophouse" }
-          - { label: "Nhà phố", value: "nha-pho" }
-          - { label: "Đất nền", value: "dat-nen" }
-
       - label: "Hình thức giao dịch"
         name: "transaction"
         widget: "select"
+        default: "ban"
         options:
           - { label: "Bán", value: "ban" }
           - { label: "Cho thuê", value: "cho-thue" }
 
-      - { label: "Giá", name: "price", widget: "string" }
-      - { label: "Diện tích", name: "area", widget: "string" }
-      - { label: "Số phòng ngủ", name: "bedrooms", widget: "number", required: false }
+      - label: "Giá bán hoặc cho thuê"
+        name: "price"
+        widget: "string"
+
+      - label: "Diện tích"
+        name: "area"
+        widget: "string"
+
+      - label: "Số phòng ngủ"
+        name: "bedrooms"
+        widget: "number"
+        required: false
+        value_type: "int"
+        min: 0
+
+      - label: "Quận / Khu vực"
+        name: "district"
+        widget: "select"
+        required: false
+        options:
+          - "Hải Châu"
+          - "Sơn Trà"
+          - "Ngũ Hành Sơn"
+          - "Thanh Khê"
+          - "Liên Chiểu"
+          - "Cẩm Lệ"
+          - "Hòa Vang"
+          - "Khu vực khác"
+
+      - label: "Phường / Xã"
+        name: "ward"
+        widget: "string"
+        required: false
+
+      - label: "Địa chỉ bất động sản"
+        name: "address"
+        widget: "string"
+
+      - label: "Thông tin pháp lý"
+        name: "legal"
+        widget: "select"
+        required: false
+        options:
+          - "Sổ hồng / Sổ đỏ"
+          - "Hợp đồng mua bán"
+          - "Đang hoàn thiện pháp lý"
+          - "Khác"
+
+      - label: "Diện tích đất"
+        name: "landArea"
+        widget: "string"
+        required: false
+
+      - label: "Mặt tiền"
+        name: "frontage"
+        widget: "string"
+        required: false
+
+      - label: "Hướng bất động sản"
+        name: "direction"
+        widget: "select"
+        required: false
+        options:
+          - "Đông"
+          - "Tây"
+          - "Nam"
+          - "Bắc"
+          - "Đông Bắc"
+          - "Đông Nam"
+          - "Tây Bắc"
+          - "Tây Nam"
+
+      - label: "Ảnh đại diện"
+        name: "image"
+        widget: "image"
+
+      - label: "Thư viện hình ảnh"
+        name: "gallery"
+        widget: "list"
+        required: false
+        field:
+          label: "Hình ảnh"
+          name: "image"
+          widget: "image"
+
+      - label: "Nội dung chi tiết"
+        name: "body"
+        widget: "markdown"
+
+  # 3. NHA DAT THO CU
+  - name: "tho-cu"
+    label: "Nhà đất thổ cư"
+    label_singular: "Nhà đất thổ cư"
+    folder: "src/content/tho-cu"
+    create: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    fields:
+      - { label: "Tiêu đề", name: "title", widget: "string" }
+      - { label: "Mô tả SEO", name: "description", widget: "text" }
+
+      - label: "Loại tài sản"
+        name: "propertyType"
+        widget: "select"
+        options:
+          - { label: "Nhà riêng", value: "nha-rieng" }
+          - { label: "Đất thổ cư", value: "dat-tho-cu" }
+
+      - label: "Quận / Khu vực"
+        name: "district"
+        widget: "select"
+        options:
+          - "Hải Châu"
+          - "Sơn Trà"
+          - "Ngũ Hành Sơn"
+          - "Thanh Khê"
+          - "Liên Chiểu"
+          - "Cẩm Lệ"
+          - "Hòa Vang"
+          - "Khu vực khác"
+
+      - { label: "Phường / Xã", name: "ward", widget: "string", required: false }
       - { label: "Địa chỉ", name: "address", widget: "string" }
+      - { label: "Giá bán", name: "price", widget: "string" }
+      - { label: "Diện tích đất", name: "area", widget: "string" }
+      - { label: "Pháp lý", name: "legal", widget: "string", required: false }
       - { label: "Ảnh đại diện", name: "image", widget: "image" }
       - { label: "Nội dung chi tiết", name: "body", widget: "markdown" }
 
+  # 4. TIN TUC VA SEO
   - name: "bai-viet"
     label: "Tin tức và bài viết SEO"
+    label_singular: "Bài viết"
     folder: "src/content/bai-viet"
     create: true
     extension: "md"
@@ -115,6 +255,19 @@ collections:
     fields:
       - { label: "Tiêu đề SEO", name: "title", widget: "string" }
       - { label: "Mô tả Google", name: "description", widget: "text" }
+
+      - label: "Danh mục bài viết"
+        name: "category"
+        widget: "select"
+        required: false
+        options:
+          - { label: "Tin thị trường", value: "thi-truong" }
+          - { label: "Thông tin dự án", value: "du-an" }
+          - { label: "Căn hộ Đà Nẵng", value: "can-ho" }
+          - { label: "Nhà đất thổ cư", value: "tho-cu" }
+          - { label: "Pháp lý BĐS", value: "phap-ly" }
+          - { label: "Kinh nghiệm mua bán", value: "kinh-nghiem" }
+
       - { label: "Ngày đăng", name: "date", widget: "datetime" }
       - { label: "Ảnh đại diện", name: "image", widget: "image", required: false }
       - { label: "Nội dung bài viết", name: "body", widget: "markdown" }
