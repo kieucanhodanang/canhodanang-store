@@ -1,25 +1,507 @@
+
 ---
 import Base from '../layouts/Base.astro';
-const items=[{title:'Vinhomes Hải Vân Bay',place:'Khu vực Tây Bắc Đà Nẵng',summary:'Tìm hiểu thông tin tổng quan, quy hoạch và các nội dung cập nhật về dự án.',href:'/du-an/vinhomes-hai-van-bay/',tag:'Dự án nổi bật',style:''},{title:'Căn hộ Ngũ Hành Sơn',place:'Ngũ Hành Sơn, Đà Nẵng',summary:'Khám phá khu vực, tiêu chí lựa chọn và thông tin căn hộ.',href:'/can-ho/ngu-hanh-son/',tag:'Theo khu vực',style:'two'},{title:'Căn hộ Sơn Trà',place:'Sơn Trà, Đà Nẵng',summary:'Tổng hợp thông tin căn hộ và những lưu ý khi tìm mua.',href:'/can-ho/son-tra/',tag:'Theo khu vực',style:'three'}];
+
+const khuVuc = [
+  {
+    title: 'Căn hộ Sơn Trà',
+    place: 'Sơn Trà, Đà Nẵng',
+    summary: 'Tìm hiểu căn hộ tại khu vực Sơn Trà, gần biển và các tiện ích đô thị.',
+    href: '/can-ho/son-tra/',
+    style: ''
+  },
+  {
+    title: 'Căn hộ Ngũ Hành Sơn',
+    place: 'Ngũ Hành Sơn, Đà Nẵng',
+    summary: 'Khám phá căn hộ tại Ngũ Hành Sơn, vị trí và những tiêu chí cần lưu ý.',
+    href: '/can-ho/ngu-hanh-son/',
+    style: 'two'
+  },
+  {
+    title: 'Căn hộ Hải Châu',
+    place: 'Hải Châu, Đà Nẵng',
+    summary: 'Tìm hiểu căn hộ tại khu vực trung tâm thành phố Đà Nẵng.',
+    href: '/can-ho/hai-chau/',
+    style: 'three'
+  }
+];
+
+const duAn = [
+  {
+    title: 'Capital Square Đà Nẵng',
+    place: 'Đà Nẵng',
+    summary: 'Tìm hiểu thông tin tổng quan, vị trí và sản phẩm căn hộ thuộc dự án.',
+    href: '/du-an/capital-square/',
+    tag: 'Dự án căn hộ',
+    style: 'two'
+  },
+  {
+    title: 'Vinhomes Hải Vân Bay',
+    place: 'Khu vực Tây Bắc Đà Nẵng',
+    summary: 'Khám phá thông tin quy hoạch, biệt thự, shophouse và các loại hình thuộc dự án.',
+    href: '/du-an/vinhomes-hai-van-bay/',
+    tag: 'Biệt thự & Shophouse',
+    style: ''
+  }
+];
+
+const seoTitle =
+  'Căn Hộ Đà Nẵng | Mua Bán, Cho Thuê & Dự Án Nổi Bật';
+
+const seoDescription =
+  'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, dự án căn hộ nổi bật, vị trí, giá bán và thông tin thị trường. Liên hệ tư vấn 0869 437 415.';
 ---
-<Base title="Căn Hộ Đà Nẵng | Dự án, căn hộ và thị trường bất động sản" description="Khám phá dự án bất động sản, căn hộ Đà Nẵng, Vinhomes Hải Vân Bay và thông tin thị trường. Liên hệ 0869 437 415.">
-<section class="hero"><div class="wrap"><span class="eyebrow">CĂN HỘ & DỰ ÁN TẠI ĐÀ NẴNG</span><h1>Tìm không gian sống <span style="color:var(--gold)">lý tưởng</span> tại Đà Nẵng</h1><p>Khám phá dự án, so sánh vị trí và lựa chọn căn hộ phù hợp nhu cầu an cư hoặc đầu tư.</p><div class="heroactions"><a class="btn" href="#tim-kiem">Khám phá ngay ↗</a><a class="outlinebtn" href="/lien-he/">Liên hệ tư vấn</a></div></div></section>
-<div class="wrap"><div class="searchpanel" id="tim-kiem"><div class="searchtitle"><span class="search-kicker">TÌM KIẾM BẤT ĐỘNG SẢN</span><strong>Chọn căn hộ theo nhu cầu của bạn</strong></div>
-<form action="/tim-kiem/" method="GET" id="property-search">
-<div class="deal-tabs" role="group" aria-label="Hình thức giao dịch"><label><input type="radio" name="giao-dich" value="mua" checked/><span>⌂ Mua căn hộ</span></label><label><input type="radio" name="giao-dich" value="thue-dai-han"/><span>Thuê dài hạn</span></label><label><input type="radio" name="giao-dich" value="thue-theo-ngay"/><span>Thuê theo ngày</span></label></div>
-<div class="property-fields"><label class="keyword-field">Dự án / Khu vực<input name="q" placeholder="Tên dự án, khu vực tại Đà Nẵng..."/></label>
-<label>Phòng ngủ<select name="phong-ngu"><option value="">Tất cả</option><option value="studio">Studio</option><option value="1">1 phòng ngủ</option><option value="2">2 phòng ngủ</option><option value="3">3 phòng ngủ</option><option value="4">4+ phòng ngủ</option></select></label>
-<label>Diện tích<select name="dien-tich"><option value="">Tất cả</option><option value="0-40">Dưới 40 m²</option><option value="40-60">40–60 m²</option><option value="60-80">60–80 m²</option><option value="80-100">80–100 m²</option><option value="100+">Trên 100 m²</option></select></label>
-<label><span id="price-label">Giá mua</span><select name="gia" id="price-select"><option value="">Tất cả mức giá</option><option value="under2">Dưới 2 tỷ</option><option value="2-3">2–3 tỷ</option><option value="3-5">3–5 tỷ</option><option value="5-10">5–10 tỷ</option><option value="10+">Trên 10 tỷ</option></select></label>
-<label>Hướng căn hộ<select name="huong"><option value="">Tất cả</option>{['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc'].map(x=><option value={x}>{x}</option>)}</select></label>
-<button class="btn property-submit" type="submit">⌕ Tìm căn hộ</button></div></form>
-<p class="searchnote">Bộ lọc đang ở giai đoạn giao diện; dữ liệu tin đăng sẽ được kết nối trong bước tiếp theo.</p></div></div>
-<script is:inline>
-const priceSets={mua:{label:'Giá mua',items:[['','Tất cả mức giá'],['under2','Dưới 2 tỷ'],['2-3','2–3 tỷ'],['3-5','3–5 tỷ'],['5-10','5–10 tỷ'],['10+','Trên 10 tỷ']]},'thue-dai-han':{label:'Giá thuê / tháng',items:[['','Tất cả mức giá'],['under5','Dưới 5 triệu/tháng'],['5-10','5–10 triệu/tháng'],['10-20','10–20 triệu/tháng'],['20+','Trên 20 triệu/tháng']]},'thue-theo-ngay':{label:'Giá thuê / đêm',items:[['','Tất cả mức giá'],['under500','Dưới 500 nghìn/đêm'],['500-1000','500 nghìn–1 triệu/đêm'],['1-2','1–2 triệu/đêm'],['2+','Trên 2 triệu/đêm']]}};
-document.querySelectorAll('input[name="giao-dich"]').forEach(r=>r.addEventListener('change',()=>{const p=priceSets[r.value];document.getElementById('price-label').textContent=p.label;document.getElementById('price-select').replaceChildren(...p.items.map(([v,t])=>new Option(t,v)));}));
-</script>
-<section class="section"><div class="wrap"><div class="sectionhead"><div><span class="eyebrow">Bộ sưu tập chọn lọc</span><h2>Khám phá dự án & khu vực</h2><p>Điểm khởi đầu để tìm hiểu thị trường bất động sản Đà Nẵng.</p></div><a class="textlink" href="/du-an/">Xem tất cả →</a></div><div class="cards">{items.map(item=><article class="card"><div class={`visual ${item.style}`}><span class="tag">{item.tag}</span></div><div class="cardbody"><span class="location">⌖ {item.place}</span><h3>{item.title}</h3><p>{item.summary}</p><a class="textlink" href={item.href}>Khám phá chi tiết →</a></div></article>)}</div></div></section>
-<section class="section light"><div class="wrap"><div class="sectionhead"><div><span class="eyebrow">Hỗ trợ tìm hiểu</span><h2>Thông tin rõ ràng, quyết định chủ động</h2><p>Tìm kiếm theo khu vực, tham khảo nội dung dự án và kết nối trực tiếp để được hỗ trợ.</p></div></div><div class="stats"><div class="stat"><strong>01</strong><span>Tìm khu vực quan tâm</span></div><div class="stat"><strong>02</strong><span>Đọc thông tin dự án</span></div><div class="stat"><strong>03</strong><span>Liên hệ để được tư vấn</span></div></div></div></section>
-<section class="section"><div class="wrap"><div class="sectionhead"><div><span class="eyebrow">Kiến thức thị trường</span><h2>Tin tức & cẩm nang</h2><p>Các nội dung hữu ích trước khi tìm hiểu và giao dịch bất động sản.</p></div><a class="textlink" href="/tin-tuc/">Xem bài viết →</a></div><div class="cards"><article class="card"><div class="cardbody"><span class="location">CẨM NANG</span><h3>Những điều cần kiểm tra khi tìm mua căn hộ</h3><p>Vị trí, pháp lý, tiến độ, chi phí và nhu cầu sử dụng thực tế.</p><a class="textlink" href="/tin-tuc/kinh-nghiem-mua-can-ho/">Đọc bài viết →</a></div></article></div></div></section>
-<section class="banner"><div class="wrap"><div><h2>Đang tìm hiểu căn hộ tại Đà Nẵng?</h2><p>Liên hệ trực tiếp để trao đổi về khu vực và nhu cầu của anh/chị.</p></div><a class="btn" href="tel:0869437415">☎ 0869 437 415</a></div></section>
+
+<Base title={seoTitle} description={seoDescription}>
+
+  <!-- HERO: H1 DUY NHAT -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">
+        CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG
+      </span>
+
+      <h1>
+        Căn Hộ Đà Nẵng –
+        <span style="color:var(--gold)">
+          Mua Bán, Cho Thuê
+        </span>
+        & Dự Án Nổi Bật
+      </h1>
+
+      <p>
+        Khám phá thông tin căn hộ Đà Nẵng,
+        tìm hiểu các dự án nổi bật, so sánh
+        khu vực và lựa chọn bất động sản
+        phù hợp nhu cầu an cư hoặc đầu tư.
+      </p>
+
+      <div class="heroactions">
+        <a class="btn" href="#can-ho-ban">
+          Khám phá căn hộ ↗
+        </a>
+
+        <a class="outlinebtn" href="tel:0869437415">
+          Liên hệ tư vấn
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- BO LOC TIM KIEM -->
+  <div class="wrap">
+    <div class="searchpanel" id="tim-kiem">
+      <div class="searchtitle">
+        <span class="search-kicker">
+          TÌM KIẾM CĂN HỘ ĐÀ NẴNG
+        </span>
+
+        <strong>
+          Tìm căn hộ theo nhu cầu của bạn
+        </strong>
+      </div>
+
+      <form action="/tim-kiem/" method="GET" id="property-search">
+
+        <div class="deal-tabs" role="group"
+          aria-label="Hình thức giao dịch">
+
+          <label>
+            <input type="radio"
+              name="giao-dich"
+              value="mua" checked />
+            <span>⌂ Mua căn hộ</span>
+          </label>
+
+          <label>
+            <input type="radio"
+              name="giao-dich"
+              value="thue-dai-han" />
+            <span>Thuê dài hạn</span>
+          </label>
+
+          <label>
+            <input type="radio"
+              name="giao-dich"
+              value="thue-theo-ngay" />
+            <span>Thuê theo ngày</span>
+          </label>
+        </div>
+
+        <div class="property-fields">
+
+          <label class="keyword-field">
+            Dự án / Khu vực
+            <input
+              name="q"
+              placeholder="Tên dự án, khu vực Đà Nẵng..."
+            />
+          </label>
+
+          <label>
+            Phòng ngủ
+            <select name="phong-ngu">
+              <option value="">Tất cả</option>
+              <option value="studio">Studio</option>
+              <option value="1">1 phòng ngủ</option>
+              <option value="2">2 phòng ngủ</option>
+              <option value="3">3 phòng ngủ</option>
+              <option value="4">4+ phòng ngủ</option>
+            </select>
+          </label>
+
+          <label>
+            Diện tích
+            <select name="dien-tich">
+              <option value="">Tất cả</option>
+              <option value="0-40">Dưới 40 m²</option>
+              <option value="40-60">40–60 m²</option>
+              <option value="60-80">60–80 m²</option>
+              <option value="80-100">80–100 m²</option>
+              <option value="100+">Trên 100 m²</option>
+            </select>
+          </label>
+
+          <label>
+            <span id="price-label">Giá mua</span>
+            <select name="gia" id="price-select">
+              <option value="">Tất cả mức giá</option>
+              <option value="under2">Dưới 2 tỷ</option>
+              <option value="2-3">2–3 tỷ</option>
+              <option value="3-5">3–5 tỷ</option>
+              <option value="5-10">5–10 tỷ</option>
+              <option value="10+">Trên 10 tỷ</option>
+            </select>
+          </label>
+
+          <label>
+            Hướng căn hộ
+            <select name="huong">
+              <option value="">Tất cả</option>
+              {[
+                'Đông','Tây','Nam','Bắc',
+                'Đông Nam','Đông Bắc',
+                'Tây Nam','Tây Bắc'
+              ].map(x =>
+                <option value={x}>{x}</option>
+              )}
+            </select>
+          </label>
+
+          <button
+            class="btn property-submit"
+            type="button"
+            disabled
+            title="Chức năng tìm kiếm đang được xây dựng"
+          >
+            ⌕ Sắp mở tìm kiếm
+          </button>
+
+        </div>
+      </form>
+
+      <p class="searchnote">
+        Bộ lọc sẽ hoạt động sau khi kết nối
+        dữ liệu căn hộ và trang kết quả tìm kiếm.
+      </p>
+    </div>
+  </div>
+
+  <script is:inline>
+    const priceSets = {
+      mua: {
+        label: 'Giá mua',
+        items: [
+          ['', 'Tất cả mức giá'],
+          ['under2', 'Dưới 2 tỷ'],
+          ['2-3', '2–3 tỷ'],
+          ['3-5', '3–5 tỷ'],
+          ['5-10', '5–10 tỷ'],
+          ['10+', 'Trên 10 tỷ']
+        ]
+      },
+      'thue-dai-han': {
+        label: 'Giá thuê / tháng',
+        items: [
+          ['', 'Tất cả mức giá'],
+          ['under5', 'Dưới 5 triệu/tháng'],
+          ['5-10', '5–10 triệu/tháng'],
+          ['10-20', '10–20 triệu/tháng'],
+          ['20+', 'Trên 20 triệu/tháng']
+        ]
+      },
+      'thue-theo-ngay': {
+        label: 'Giá thuê / đêm',
+        items: [
+          ['', 'Tất cả mức giá'],
+          ['under500', 'Dưới 500 nghìn/đêm'],
+          ['500-1000', '500 nghìn–1 triệu/đêm'],
+          ['1-2', '1–2 triệu/đêm'],
+          ['2+', 'Trên 2 triệu/đêm']
+        ]
+      }
+    };
+
+    document
+      .querySelectorAll('input[name="giao-dich"]')
+      .forEach(radio => {
+        radio.addEventListener('change', () => {
+          if (!radio.checked) return;
+
+          const selected = priceSets[radio.value];
+          const label = document.getElementById('price-label');
+          const select = document.getElementById('price-select');
+
+          if (!selected || !label || !select) return;
+
+          label.textContent = selected.label;
+
+          select.replaceChildren(
+            ...selected.items.map(
+              ([value, text]) => new Option(text, value)
+            )
+          );
+        });
+      });
+  </script>
+
+  <!-- H2: CAN HO BAN -->
+  <section class="section" id="can-ho-ban">
+    <div class="wrap">
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">MUA BÁN CĂN HỘ</span>
+          <h2>Căn Hộ Đà Nẵng Đang Bán</h2>
+          <p>
+            Tìm hiểu căn hộ theo vị trí,
+            diện tích, số phòng ngủ và ngân sách.
+            Danh sách sản phẩm sẽ được cập nhật
+            từ hệ thống quản trị.
+          </p>
+        </div>
+        <a class="textlink" href="/can-ho/">
+          Xem danh mục căn hộ →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- H2: CAN HO CHO THUE -->
+  <section class="section light" id="can-ho-thue">
+    <div class="wrap">
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">THỊ TRƯỜNG CHO THUÊ</span>
+          <h2>Căn Hộ Cho Thuê Tại Đà Nẵng</h2>
+          <p>
+            Tham khảo căn hộ cho thuê dài hạn
+            hoặc theo ngày tại Đà Nẵng.
+            Thông tin giá thuê và tình trạng căn hộ
+            sẽ được bổ sung khi có dữ liệu thực tế.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- H2: DU AN NOI BAT -->
+  <section class="section" id="du-an">
+    <div class="wrap">
+
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">
+            THÔNG TIN DỰ ÁN
+          </span>
+
+          <h2>Dự Án Bất Động Sản Đà Nẵng Nổi Bật</h2>
+
+          <p>
+            Tìm hiểu các dự án căn hộ và
+            những dự án bất động sản đáng quan tâm
+            tại Đà Nẵng.
+          </p>
+        </div>
+
+        <a class="textlink" href="/du-an/">
+          Xem tất cả dự án →
+        </a>
+      </div>
+
+      <div class="cards">
+        {duAn.map(item => (
+          <article class="card">
+            <div class={`visual ${item.style}`}>
+              <span class="tag">{item.tag}</span>
+            </div>
+
+            <div class="cardbody">
+              <span class="location">
+                ⌖ {item.place}
+              </span>
+
+              <h3>{item.title}</h3>
+
+              <p>{item.summary}</p>
+
+              <a class="textlink" href={item.href}>
+                Khám phá dự án →
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- H2: CAN HO THEO KHU VUC -->
+  <section class="section light" id="khu-vuc">
+    <div class="wrap">
+
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">
+            KHÁM PHÁ THEO KHU VỰC
+          </span>
+
+          <h2>Căn Hộ Đà Nẵng Theo Khu Vực</h2>
+
+          <p>
+            Tìm hiểu đặc điểm vị trí,
+            giao thông và tiện ích của các
+            khu vực căn hộ tại Đà Nẵng.
+          </p>
+        </div>
+      </div>
+
+      <div class="cards">
+        {khuVuc.map(item => (
+          <article class="card">
+            <div class={`visual ${item.style}`}>
+              <span class="tag">Theo khu vực</span>
+            </div>
+
+            <div class="cardbody">
+              <span class="location">
+                ⌖ {item.place}
+              </span>
+
+              <h3>{item.title}</h3>
+
+              <p>{item.summary}</p>
+
+              <a class="textlink" href={item.href}>
+                Tìm hiểu khu vực →
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- H2: BIET THU HAI VAN -->
+  <section class="section" id="biet-thu">
+    <div class="wrap">
+
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">
+            BẤT ĐỘNG SẢN CAO CẤP
+          </span>
+
+          <h2>
+            Biệt Thự & Shophouse Vinhomes Hải Vân Bay
+          </h2>
+
+          <p>
+            Khám phá thông tin về Vinhomes Hải Vân Bay,
+            các loại hình biệt thự, shophouse,
+            vị trí và quy hoạch dự án.
+          </p>
+        </div>
+
+        <a class="textlink"
+          href="/du-an/vinhomes-hai-van-bay/">
+          Tìm hiểu Hải Vân Bay →
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- H2: NHA DAT THO CU -->
+  <section class="section light" id="tho-cu">
+    <div class="wrap">
+
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">
+            DANH MỤC MỞ RỘNG
+          </span>
+
+          <h2>Nhà Đất Thổ Cư Đà Nẵng</h2>
+
+          <p>
+            Danh mục nhà riêng và đất thổ cư
+            tại Hải Châu, Sơn Trà, Ngũ Hành Sơn,
+            Thanh Khê, Liên Chiểu và các khu vực khác.
+            Nội dung sẽ được bổ sung trong thời gian tới.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- H2: TIN TUC SEO -->
+  <section class="section" id="tin-tuc">
+    <div class="wrap">
+
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">
+            KIẾN THỨC BẤT ĐỘNG SẢN
+          </span>
+
+          <h2>
+            Tin Tức Thị Trường Bất Động Sản Đà Nẵng
+          </h2>
+
+          <p>
+            Thông tin thị trường căn hộ,
+            cập nhật dự án, pháp lý
+            và kinh nghiệm mua bán bất động sản.
+          </p>
+        </div>
+
+        <a class="textlink" href="/tin-tuc/">
+          Xem tin tức →
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- H2: LIEN HE -->
+  <section class="banner">
+    <div class="wrap">
+      <div>
+        <h2>Liên Hệ Tư Vấn Căn Hộ Đà Nẵng</h2>
+
+        <p>
+          Trao đổi trực tiếp về nhu cầu
+          mua bán, cho thuê căn hộ
+          hoặc tìm hiểu dự án tại Đà Nẵng.
+        </p>
+      </div>
+
+      <a class="btn" href="tel:0869437415">
+        ☎ 0869 437 415
+      </a>
+    </div>
+  </section>
+
 </Base>
