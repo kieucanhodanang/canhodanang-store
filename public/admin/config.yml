@@ -1,391 +1,902 @@
-
+# Decap CMS | canhodanang.store | Bước 1
+# Lưu ý: cập nhật Astro ở các bước sau để bật slideshow, dropdown và dải logo.
 backend:
   name: github
   repo: kieucanhodanang/canhodanang-store
   branch: main
   base_url: https://canhodanang.store
   auth_endpoint: auth
-
-media_folder: "public/uploads"
-public_folder: "/uploads"
-
-locale: "vi"
-
+media_folder: public/uploads
+public_folder: /uploads
+locale: vi
 slug:
-  encoding: "ascii"
+  encoding: ascii
   clean_accents: true
-
 collections:
-
-  # 1. QUAN LY DU AN
-  - name: "du-an"
-    label: "Dự án bất động sản"
-    label_singular: "Dự án"
-    folder: "src/content/du-an"
-    create: true
-    extension: "md"
-    format: "frontmatter"
-    slug: "{{slug}}"
-    identifier_field: "title"
+- name: can-ho
+  label: Căn hộ
+  label_singular: Căn hộ
+  folder: src/content/can-ho
+  create: true
+  extension: md
+  format: frontmatter
+  slug: '{{slug}}'
+  identifier_field: title
+  fields:
+  - label: Tiêu đề bài đăng
+    name: title
+    widget: string
+  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
+    name: description
+    widget: text
+  - label: SEO Title riêng (để trống dùng tiêu đề)
+    name: seoTitle
+    widget: string
+    required: false
+  - label: Thuộc dự án
+    name: project
+    widget: relation
+    required: false
+    collection: du-an
+    search_fields:
+    - title
+    value_field: '{{slug}}'
+    display_fields:
+    - title
+  - label: Hình thức giao dịch
+    name: transaction
+    widget: select
+    options:
+    - label: Bán
+      value: ban
+    - label: Cho thuê dài hạn
+      value: cho-thue
+    - label: Cho thuê theo ngày
+      value: cho-thue-ngay
+    default: ban
+  - label: Tình trạng giao dịch
+    name: listingStatus
+    widget: select
+    options:
+    - label: Còn giao dịch
+      value: available
+    - label: Đã bán / Đã cho thuê
+      value: closed
+    - label: Tạm ngừng
+      value: paused
+    default: available
+  - label: Giá bán hoặc cho thuê
+    name: price
+    widget: string
+  - label: Diện tích (m²)
+    name: area
+    widget: string
+  - label: Số phòng ngủ
+    name: bedrooms
+    widget: number
+    required: false
+    value_type: int
+    min: 0
+  - label: Số phòng vệ sinh
+    name: bathrooms
+    widget: number
+    required: false
+    value_type: int
+    min: 0
+  - label: Quận / Khu vực
+    name: district
+    widget: select
+    options:
+    - label: Hải Châu
+      value: Hải Châu
+    - label: Sơn Trà
+      value: Sơn Trà
+    - label: Ngũ Hành Sơn
+      value: Ngũ Hành Sơn
+    - label: Thanh Khê
+      value: Thanh Khê
+    - label: Liên Chiểu
+      value: Liên Chiểu
+    - label: Cẩm Lệ
+      value: Cẩm Lệ
+    - label: Hòa Vang
+      value: Hòa Vang
+    - label: Khu vực khác
+      value: Khu vực khác
+    required: false
+  - label: Phường / Xã
+    name: ward
+    widget: string
+    required: false
+  - label: Địa chỉ bất động sản
+    name: address
+    widget: string
+  - label: Thông tin pháp lý
+    name: legal
+    widget: string
+    required: false
+  - label: Hướng căn hộ
+    name: direction
+    widget: select
+    required: false
+    options:
+    - Đông
+    - Tây
+    - Nam
+    - Bắc
+    - Đông Bắc
+    - Đông Nam
+    - Tây Bắc
+    - Tây Nam
+  - label: Thư viện hình ảnh
+    name: gallery
+    widget: list
+    required: false
+    field:
+      label: Hình ảnh
+      name: image
+      widget: image
+  - label: Ảnh chia sẻ mạng xã hội
+    name: ogImage
+    widget: image
+    required: false
+  - label: Ảnh đại diện
+    name: image
+    widget: image
+  - label: Alt Text ảnh đại diện
+    name: imageAlt
+    widget: string
+    required: false
+  - label: Ngày đăng
+    name: date
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Ngày cập nhật
+    name: updatedAt
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Trạng thái xuất bản
+    name: status
+    widget: select
+    options:
+    - label: Công khai
+      value: published
+    - label: Bản nháp / Ẩn
+      value: draft
+    default: published
+  - label: Hiển thị trên trang chủ
+    name: showOnHome
+    widget: boolean
+    default: true
+  - label: Ghim nổi bật trên trang chủ
+    name: featured
+    widget: boolean
+    default: false
+  - label: Thứ tự ưu tiên (số nhỏ lên trước)
+    name: featuredOrder
+    widget: number
+    required: false
+    value_type: int
+    min: 1
+  - label: Nội dung chi tiết
+    name: body
+    widget: markdown
+- name: du-an
+  label: Dự án bất động sản
+  label_singular: Dự án bất động sản
+  folder: src/content/du-an
+  create: true
+  extension: md
+  format: frontmatter
+  slug: '{{slug}}'
+  identifier_field: title
+  fields:
+  - label: Tiêu đề bài đăng
+    name: title
+    widget: string
+  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
+    name: description
+    widget: text
+  - label: SEO Title riêng (để trống dùng tiêu đề)
+    name: seoTitle
+    widget: string
+    required: false
+  - label: Chủ đầu tư
+    name: developer
+    widget: string
+    required: false
+  - label: Vị trí dự án
+    name: location
+    widget: string
+  - label: Loại hình trong dự án
+    name: propertyTypes
+    widget: select
+    required: false
+    multiple: true
+    options:
+    - label: Căn hộ
+      value: can-ho
+    - label: Biệt thự
+      value: biet-thu
+    - label: Shophouse
+      value: shophouse
+    - label: Nhà phố
+      value: nha-pho
+    - label: Đất nền
+      value: dat-nen
+  - label: Thư viện hình ảnh
+    name: gallery
+    widget: list
+    required: false
+    field:
+      label: Hình ảnh
+      name: image
+      widget: image
+  - label: Ảnh chia sẻ mạng xã hội
+    name: ogImage
+    widget: image
+    required: false
+  - label: Ảnh đại diện
+    name: image
+    widget: image
+  - label: Alt Text ảnh đại diện
+    name: imageAlt
+    widget: string
+    required: false
+  - label: Logo dự án (hiển thị trong dải logo Footer)
+    name: logo
+    widget: image
+    required: false
+    hint: Ưu tiên PNG/WebP nền trong suốt, ảnh ngang rõ nét.
+  - label: Alt Text logo dự án
+    name: logoAlt
+    widget: string
+    required: false
+  - label: Trạng thái phân phối
+    name: distributionStatus
+    widget: select
+    default: dang-phan-phoi
+    options:
+    - label: Đang phân phối
+      value: dang-phan-phoi
+    - label: Sắp mở bán
+      value: sap-mo-ban
+    - label: Ngừng phân phối
+      value: ngung-phan-phoi
+  - label: Hiển thị logo trong Footer
+    name: showLogoInFooter
+    widget: boolean
+    default: true
+  - label: Thứ tự logo Footer (số nhỏ ưu tiên trước)
+    name: logoOrder
+    widget: number
+    required: false
+    value_type: int
+    min: 1
+  - label: Hiển thị dự án trong menu dropdown
+    name: showInMenu
+    widget: boolean
+    default: true
+  - label: Ngày đăng
+    name: date
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Ngày cập nhật
+    name: updatedAt
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Trạng thái xuất bản
+    name: status
+    widget: select
+    options:
+    - label: Công khai
+      value: published
+    - label: Bản nháp / Ẩn
+      value: draft
+    default: published
+  - label: Hiển thị trên trang chủ
+    name: showOnHome
+    widget: boolean
+    default: true
+  - label: Ghim nổi bật trên trang chủ
+    name: featured
+    widget: boolean
+    default: false
+  - label: Thứ tự ưu tiên (số nhỏ lên trước)
+    name: featuredOrder
+    widget: number
+    required: false
+    value_type: int
+    min: 1
+  - label: Nội dung chi tiết
+    name: body
+    widget: markdown
+- name: biet-thu
+  label: Biệt thự & Shophouse
+  label_singular: Biệt thự & Shophouse
+  folder: src/content/biet-thu
+  create: true
+  extension: md
+  format: frontmatter
+  slug: '{{slug}}'
+  identifier_field: title
+  fields:
+  - label: Tiêu đề bài đăng
+    name: title
+    widget: string
+  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
+    name: description
+    widget: text
+  - label: SEO Title riêng (để trống dùng tiêu đề)
+    name: seoTitle
+    widget: string
+    required: false
+  - label: Loại hình
+    name: propertyType
+    widget: select
+    options:
+    - label: Biệt thự
+      value: biet-thu
+    - label: Shophouse
+      value: shophouse
+    default: biet-thu
+  - label: Thuộc dự án
+    name: project
+    widget: relation
+    required: false
+    collection: du-an
+    search_fields:
+    - title
+    value_field: '{{slug}}'
+    display_fields:
+    - title
+  - label: Hình thức giao dịch
+    name: transaction
+    widget: select
+    options:
+    - label: Bán
+      value: ban
+    - label: Cho thuê dài hạn
+      value: cho-thue
+    - label: Cho thuê theo ngày
+      value: cho-thue-ngay
+    default: ban
+  - label: Tình trạng giao dịch
+    name: listingStatus
+    widget: select
+    options:
+    - label: Còn giao dịch
+      value: available
+    - label: Đã bán / Đã cho thuê
+      value: closed
+    - label: Tạm ngừng
+      value: paused
+    default: available
+  - label: Quận / Khu vực
+    name: district
+    widget: select
+    required: false
+    options:
+    - Hải Châu
+    - Sơn Trà
+    - Ngũ Hành Sơn
+    - Thanh Khê
+    - Liên Chiểu
+    - Cẩm Lệ
+    - Hòa Vang
+    - Khu vực khác
+  - label: Phường / Xã
+    name: ward
+    widget: string
+    required: false
+  - label: Địa chỉ
+    name: address
+    widget: string
+    required: false
+  - label: Diện tích
+    name: area
+    widget: string
+    required: false
+  - label: Giá bán / cho thuê
+    name: price
+    widget: string
+    required: false
+  - label: Thông tin pháp lý
+    name: legal
+    widget: string
+    required: false
+  - label: Hướng
+    name: direction
+    widget: select
+    required: false
+    options:
+    - Đông
+    - Tây
+    - Nam
+    - Bắc
+    - Đông Bắc
+    - Đông Nam
+    - Tây Bắc
+    - Tây Nam
+  - label: Thư viện hình ảnh
+    name: gallery
+    widget: list
+    required: false
+    field:
+      label: Hình ảnh
+      name: image
+      widget: image
+  - label: Ảnh chia sẻ mạng xã hội
+    name: ogImage
+    widget: image
+    required: false
+  - label: Ảnh đại diện
+    name: image
+    widget: image
+  - label: Alt Text ảnh đại diện
+    name: imageAlt
+    widget: string
+    required: false
+  - label: Ngày đăng
+    name: date
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Ngày cập nhật
+    name: updatedAt
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Trạng thái xuất bản
+    name: status
+    widget: select
+    options:
+    - label: Công khai
+      value: published
+    - label: Bản nháp / Ẩn
+      value: draft
+    default: published
+  - label: Hiển thị trên trang chủ
+    name: showOnHome
+    widget: boolean
+    default: true
+  - label: Ghim nổi bật trên trang chủ
+    name: featured
+    widget: boolean
+    default: false
+  - label: Thứ tự ưu tiên (số nhỏ lên trước)
+    name: featuredOrder
+    widget: number
+    required: false
+    value_type: int
+    min: 1
+  - label: Nội dung chi tiết
+    name: body
+    widget: markdown
+- name: tho-cu
+  label: Nhà đất thổ cư
+  label_singular: Nhà đất thổ cư
+  folder: src/content/tho-cu
+  create: true
+  extension: md
+  format: frontmatter
+  slug: '{{slug}}'
+  identifier_field: title
+  fields:
+  - label: Tiêu đề bài đăng
+    name: title
+    widget: string
+  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
+    name: description
+    widget: text
+  - label: SEO Title riêng (để trống dùng tiêu đề)
+    name: seoTitle
+    widget: string
+    required: false
+  - label: Thuộc dự án (nếu có)
+    name: project
+    widget: relation
+    required: false
+    collection: du-an
+    search_fields:
+    - title
+    value_field: '{{slug}}'
+    display_fields:
+    - title
+  - label: Loại tài sản
+    name: propertyType
+    widget: select
+    options:
+    - label: Nhà riêng
+      value: nha-rieng
+    - label: Đất thổ cư
+      value: dat-tho-cu
+  - label: Hình thức giao dịch
+    name: transaction
+    widget: select
+    default: ban
+    options:
+    - label: Bán
+      value: ban
+    - label: Cho thuê
+      value: cho-thue
+  - label: Tình trạng giao dịch
+    name: listingStatus
+    widget: select
+    options:
+    - label: Còn giao dịch
+      value: available
+    - label: Đã bán / Đã cho thuê
+      value: closed
+    - label: Tạm ngừng
+      value: paused
+    default: available
+  - label: Quận / Khu vực
+    name: district
+    widget: select
+    options:
+    - label: Hải Châu
+      value: Hải Châu
+    - label: Sơn Trà
+      value: Sơn Trà
+    - label: Ngũ Hành Sơn
+      value: Ngũ Hành Sơn
+    - label: Thanh Khê
+      value: Thanh Khê
+    - label: Liên Chiểu
+      value: Liên Chiểu
+    - label: Cẩm Lệ
+      value: Cẩm Lệ
+    - label: Hòa Vang
+      value: Hòa Vang
+    - label: Khu vực khác
+      value: Khu vực khác
+  - label: Địa chỉ
+    name: address
+    widget: string
+  - label: Giá bán
+    name: price
+    widget: string
+  - label: Diện tích đất
+    name: area
+    widget: string
+  - label: Phường / Xã
+    name: ward
+    widget: string
+    required: false
+  - label: Mặt tiền (m)
+    name: frontage
+    widget: string
+    required: false
+  - label: Thông tin pháp lý
+    name: legal
+    widget: string
+    required: false
+  - label: Hướng
+    name: direction
+    widget: select
+    required: false
+    options:
+    - Đông
+    - Tây
+    - Nam
+    - Bắc
+    - Đông Bắc
+    - Đông Nam
+    - Tây Bắc
+    - Tây Nam
+  - label: Thư viện hình ảnh
+    name: gallery
+    widget: list
+    required: false
+    field:
+      label: Hình ảnh
+      name: image
+      widget: image
+  - label: Ảnh chia sẻ mạng xã hội
+    name: ogImage
+    widget: image
+    required: false
+  - label: Ảnh đại diện
+    name: image
+    widget: image
+  - label: Alt Text ảnh đại diện
+    name: imageAlt
+    widget: string
+    required: false
+  - label: Ngày đăng
+    name: date
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Ngày cập nhật
+    name: updatedAt
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Trạng thái xuất bản
+    name: status
+    widget: select
+    options:
+    - label: Công khai
+      value: published
+    - label: Bản nháp / Ẩn
+      value: draft
+    default: published
+  - label: Hiển thị trên trang chủ
+    name: showOnHome
+    widget: boolean
+    default: true
+  - label: Ghim nổi bật trên trang chủ
+    name: featured
+    widget: boolean
+    default: false
+  - label: Thứ tự ưu tiên (số nhỏ lên trước)
+    name: featuredOrder
+    widget: number
+    required: false
+    value_type: int
+    min: 1
+  - label: Nội dung chi tiết
+    name: body
+    widget: markdown
+- name: bai-viet
+  label: Tin tức và bài viết SEO
+  label_singular: Tin tức và bài viết SEO
+  folder: src/content/bai-viet
+  create: true
+  extension: md
+  format: frontmatter
+  slug: '{{slug}}'
+  identifier_field: title
+  fields:
+  - label: Tiêu đề bài đăng
+    name: title
+    widget: string
+  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
+    name: description
+    widget: text
+  - label: SEO Title riêng (để trống dùng tiêu đề)
+    name: seoTitle
+    widget: string
+    required: false
+  - label: Danh mục bài viết
+    name: category
+    widget: select
+    options:
+    - label: Tin thị trường
+      value: thi-truong
+    - label: Thông tin dự án
+      value: du-an
+    - label: Căn hộ Đà Nẵng
+      value: can-ho
+    - label: Nhà đất thổ cư
+      value: tho-cu
+    - label: Pháp lý BĐS
+      value: phap-ly
+    - label: Kinh nghiệm mua bán
+      value: kinh-nghiem
+    required: false
+  - label: Ảnh chia sẻ mạng xã hội
+    name: ogImage
+    widget: image
+    required: false
+  - label: Ảnh đại diện
+    name: image
+    widget: image
+    required: false
+  - label: Alt Text ảnh đại diện
+    name: imageAlt
+    widget: string
+    required: false
+  - label: Ngày đăng
+    name: date
+    widget: datetime
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Ngày cập nhật
+    name: updatedAt
+    widget: datetime
+    required: false
+    date_format: YYYY-MM-DD
+    time_format: HH:mm
+    format: YYYY-MM-DDTHH:mm:ss
+  - label: Trạng thái xuất bản
+    name: status
+    widget: select
+    options:
+    - label: Công khai
+      value: published
+    - label: Bản nháp / Ẩn
+      value: draft
+    default: published
+  - label: Hiển thị trên trang chủ
+    name: showOnHome
+    widget: boolean
+    default: true
+  - label: Ghim nổi bật trên trang chủ
+    name: featured
+    widget: boolean
+    default: false
+  - label: Thứ tự ưu tiên (số nhỏ lên trước)
+    name: featuredOrder
+    widget: number
+    required: false
+    value_type: int
+    min: 1
+  - label: Nội dung chi tiết
+    name: body
+    widget: markdown
+- name: cai-dat-trang-chu
+  label: Cài đặt trang chủ
+  files:
+  - name: trang-chu
+    label: Banner và giao diện trang chủ
+    file: src/data/homepage.json
+    format: json
     fields:
-      - label: "Tên dự án"
-        name: "title"
-        widget: "string"
-
-      - label: "Mô tả SEO"
-        name: "description"
-        widget: "text"
-
-      - label: "Chủ đầu tư"
-        name: "developer"
-        widget: "string"
+    - label: Danh sách slide banner trang chủ
+      name: bannerSlides
+      widget: list
+      required: false
+      hint: Có thể thêm nhiều slide. Khi chưa có slide, giao diện tiếp tục dùng banner cũ cho đến khi cập nhật
+        code Astro.
+      fields:
+      - label: Bật hiển thị
+        name: enabled
+        widget: boolean
+        default: true
+      - label: Ảnh desktop
+        name: image
+        widget: image
+      - label: Ảnh mobile (không bắt buộc)
+        name: mobileImage
+        widget: image
         required: false
-
-      - label: "Vị trí dự án"
-        name: "location"
-        widget: "string"
-
-      - label: "Ảnh đại diện"
-        name: "image"
-        widget: "image"
-
-      - label: "Loại hình trong dự án"
-        name: "propertyTypes"
-        widget: "select"
-        multiple: true
-        options:
-          - { label: "Căn hộ", value: "can-ho" }
-          - { label: "Biệt thự", value: "biet-thu" }
-          - { label: "Shophouse", value: "shophouse" }
-          - { label: "Nhà phố", value: "nha-pho" }
-          - { label: "Đất nền", value: "dat-nen" }
-
-      - label: "Giới thiệu dự án"
-        name: "body"
-        widget: "markdown"
-
-  # 2. SAN PHAM BAT DONG SAN
-  - name: "san-pham"
-    label: "Căn hộ và sản phẩm BĐS"
-    label_singular: "Sản phẩm"
-    folder: "src/content/san-pham"
-    create: true
-    extension: "md"
-    format: "frontmatter"
-    slug: "{{slug}}"
-    identifier_field: "title"
-    fields:
-      - label: "Tiêu đề tin đăng"
-        name: "title"
-        widget: "string"
-
-      - label: "Mô tả SEO"
-        name: "description"
-        widget: "text"
-
-      - label: "Loại hình bất động sản"
-        name: "propertyType"
-        widget: "select"
-        default: "can-ho"
-        options:
-          - { label: "Căn hộ", value: "can-ho" }
-          - { label: "Biệt thự", value: "biet-thu" }
-          - { label: "Shophouse", value: "shophouse" }
-          - { label: "Nhà phố", value: "nha-pho" }
-          - { label: "Đất nền", value: "dat-nen" }
-          - { label: "Nhà riêng thổ cư", value: "nha-rieng" }
-          - { label: "Đất thổ cư", value: "dat-tho-cu" }
-
-      - label: "Thuộc dự án"
-        name: "project"
-        widget: "relation"
-        collection: "du-an"
-        search_fields: ["title"]
-        value_field: "{{slug}}"
-        display_fields: ["title"]
+      - label: Alt Text hình ảnh
+        name: imageAlt
+        widget: string
+      - label: Dòng chữ nhỏ
+        name: eyebrow
+        widget: string
         required: false
-
-      - label: "Hình thức giao dịch"
-        name: "transaction"
-        widget: "select"
-        default: "ban"
-        options:
-          - { label: "Bán", value: "ban" }
-          - { label: "Cho thuê", value: "cho-thue" }
-
-      - label: "Giá bán hoặc cho thuê"
-        name: "price"
-        widget: "string"
-
-      - label: "Diện tích"
-        name: "area"
-        widget: "string"
-
-      - label: "Số phòng ngủ"
-        name: "bedrooms"
-        widget: "number"
+      - label: Tiêu đề slide
+        name: title
+        widget: string
+      - label: Mô tả
+        name: description
+        widget: text
         required: false
-        value_type: "int"
-        min: 0
-
-      - label: "Quận / Khu vực"
-        name: "district"
-        widget: "select"
+      - label: Chữ nút
+        name: buttonText
+        widget: string
         required: false
-        options:
-          - "Hải Châu"
-          - "Sơn Trà"
-          - "Ngũ Hành Sơn"
-          - "Thanh Khê"
-          - "Liên Chiểu"
-          - "Cẩm Lệ"
-          - "Hòa Vang"
-          - "Khu vực khác"
-
-      - label: "Phường / Xã"
-        name: "ward"
-        widget: "string"
+      - label: Liên kết nút
+        name: buttonLink
+        widget: string
         required: false
-
-      - label: "Địa chỉ bất động sản"
-        name: "address"
-        widget: "string"
-
-      - label: "Thông tin pháp lý"
-        name: "legal"
-        widget: "select"
-        required: false
-        options:
-          - "Sổ hồng / Sổ đỏ"
-          - "Hợp đồng mua bán"
-          - "Đang hoàn thiện pháp lý"
-          - "Khác"
-
-      - label: "Diện tích đất"
-        name: "landArea"
-        widget: "string"
-        required: false
-
-      - label: "Mặt tiền"
-        name: "frontage"
-        widget: "string"
-        required: false
-
-      - label: "Hướng bất động sản"
-        name: "direction"
-        widget: "select"
-        required: false
-        options:
-          - "Đông"
-          - "Tây"
-          - "Nam"
-          - "Bắc"
-          - "Đông Bắc"
-          - "Đông Nam"
-          - "Tây Bắc"
-          - "Tây Nam"
-
-      - label: "Ảnh đại diện"
-        name: "image"
-        widget: "image"
-
-      - label: "Thư viện hình ảnh"
-        name: "gallery"
-        widget: "list"
-        required: false
-        field:
-          label: "Hình ảnh"
-          name: "image"
-          widget: "image"
-
-      - label: "Nội dung chi tiết"
-        name: "body"
-        widget: "markdown"
-
-  # 3. NHA DAT THO CU
-  - name: "tho-cu"
-    label: "Nhà đất thổ cư"
-    label_singular: "Nhà đất thổ cư"
-    folder: "src/content/tho-cu"
-    create: true
-    extension: "md"
-    format: "frontmatter"
-    slug: "{{slug}}"
-    fields:
-      - { label: "Tiêu đề", name: "title", widget: "string" }
-      - { label: "Mô tả SEO", name: "description", widget: "text" }
-
-      - label: "Loại tài sản"
-        name: "propertyType"
-        widget: "select"
-        options:
-          - { label: "Nhà riêng", value: "nha-rieng" }
-          - { label: "Đất thổ cư", value: "dat-tho-cu" }
-
-      - label: "Quận / Khu vực"
-        name: "district"
-        widget: "select"
-        options:
-          - "Hải Châu"
-          - "Sơn Trà"
-          - "Ngũ Hành Sơn"
-          - "Thanh Khê"
-          - "Liên Chiểu"
-          - "Cẩm Lệ"
-          - "Hòa Vang"
-          - "Khu vực khác"
-
-      - { label: "Phường / Xã", name: "ward", widget: "string", required: false }
-      - { label: "Địa chỉ", name: "address", widget: "string" }
-      - { label: "Giá bán", name: "price", widget: "string" }
-      - { label: "Diện tích đất", name: "area", widget: "string" }
-      - { label: "Pháp lý", name: "legal", widget: "string", required: false }
-      - { label: "Ảnh đại diện", name: "image", widget: "image" }
-      - { label: "Nội dung chi tiết", name: "body", widget: "markdown" }
-
-  # 4. TIN TUC VA SEO
-  - name: "bai-viet"
-    label: "Tin tức và bài viết SEO"
-    label_singular: "Bài viết"
-    folder: "src/content/bai-viet"
-    create: true
-    extension: "md"
-    format: "frontmatter"
-    slug: "{{slug}}"
-    fields:
-      - { label: "Tiêu đề SEO", name: "title", widget: "string" }
-      - { label: "Mô tả Google", name: "description", widget: "text" }
-
-      - label: "Danh mục bài viết"
-        name: "category"
-        widget: "select"
-        required: false
-        options:
-          - { label: "Tin thị trường", value: "thi-truong" }
-          - { label: "Thông tin dự án", value: "du-an" }
-          - { label: "Căn hộ Đà Nẵng", value: "can-ho" }
-          - { label: "Nhà đất thổ cư", value: "tho-cu" }
-          - { label: "Pháp lý BĐS", value: "phap-ly" }
-          - { label: "Kinh nghiệm mua bán", value: "kinh-nghiem" }
-
-      - { label: "Ngày đăng", name: "date", widget: "datetime" }
-      - { label: "Ảnh đại diện", name: "image", widget: "image", required: false }
-      - { label: "Nội dung bài viết", name: "body", widget: "markdown" }
-      
-  
-  # 5. CAI DAT TRANG CHU NANG CAO
-  - name: "cai-dat-trang-chu"
-    label: "Cài đặt trang chủ"
-    files:
-      - name: "trang-chu"
-        label: "Banner và giao diện trang chủ"
-        file: "src/data/homepage.json"
-        format: "json"
-        fields:
-
-          # NOI DUNG BANNER
-          - label: "Ảnh banner trang chủ"
-            name: "bannerImage"
-            widget: "image"
-            required: false
-            hint: "Ảnh ngang 1920x900px, JPG hoặc WebP"
-
-          - label: "Dòng chữ nhỏ trên banner"
-            name: "bannerEyebrow"
-            widget: "string"
-            required: false
-
-          - label: "Tiêu đề chính"
-            name: "bannerTitle"
-            widget: "string"
-
-          - label: "Mô tả banner"
-            name: "bannerDescription"
-            widget: "text"
-            required: false
-
-          # NUT BAM
-          - label: "Chữ nút chính"
-            name: "primaryButtonText"
-            widget: "string"
-            required: false
-
-          - label: "Đường dẫn nút chính"
-            name: "primaryButtonLink"
-            widget: "string"
-            required: false
-
-          - label: "Chữ nút liên hệ"
-            name: "secondaryButtonText"
-            widget: "string"
-            required: false
-
-          - label: "Đường dẫn nút liên hệ"
-            name: "secondaryButtonLink"
-            widget: "string"
-            required: false
-
-          # KICH THUOC
-          - label: "Chiều cao banner (px)"
-            name: "bannerHeight"
-            widget: "number"
-            value_type: "int"
-            min: 350
-            max: 850
-            step: 10
-            default: 610
-
-          - label: "Kích thước tiêu đề (px)"
-            name: "bannerTitleSize"
-            widget: "number"
-            value_type: "int"
-            min: 32
-            max: 80
-            step: 2
-            default: 56
-
-          - label: "Chiều rộng nội dung (px)"
-            name: "bannerContentWidth"
-            widget: "number"
-            value_type: "int"
-            min: 800
-            max: 1400
-            step: 50
-            default: 1200
-
-          # HINH ANH
-          - label: "Vị trí ảnh banner"
-            name: "bannerPosition"
-            widget: "select"
-            default: "center"
-            options:
-              - { label: "Phía trên", value: "top" }
-              - { label: "Chính giữa", value: "center" }
-              - { label: "Phía dưới", value: "bottom" }
-
-          - label: "Độ tối ảnh nền (%)"
-            name: "bannerOverlay"
-            widget: "number"
-            value_type: "int"
-            min: 0
-            max: 80
-            step: 5
-            default: 45
-
-          # MAU SAC
-          - label: "Màu nút chính"
-            name: "primaryButtonColor"
-            widget: "color"
-            default: "#D4A85E"
-            allowInput: true
-            enableAlpha: false
-
-          # CAN CHINH
-          - label: "Căn chỉnh nội dung"
-            name: "bannerTextAlign"
-            widget: "select"
-            default: "left"
-            options:
-              - { label: "Căn trái", value: "left" }
-              - { label: "Căn giữa", value: "center" }
-              - { label: "Căn phải", value: "right" }
+    - label: Ảnh banner trang chủ
+      name: bannerImage
+      widget: image
+      required: false
+      hint: Ảnh ngang khoảng 1920x900px, JPG hoặc WebP
+    - label: Alt Text ảnh banner
+      name: bannerAlt
+      widget: string
+      required: false
+      hint: Mô tả đúng nội dung ảnh, không nhồi từ khóa
+    - label: Dòng chữ nhỏ trên banner
+      name: bannerEyebrow
+      widget: string
+      required: false
+    - label: Tiêu đề chính
+      name: bannerTitle
+      widget: string
+    - label: Mô tả banner
+      name: bannerDescription
+      widget: text
+      required: false
+    - label: Chữ nút chính
+      name: primaryButtonText
+      widget: string
+      required: false
+    - label: Đường dẫn nút chính
+      name: primaryButtonLink
+      widget: string
+      required: false
+    - label: Chữ nút liên hệ
+      name: secondaryButtonText
+      widget: string
+      required: false
+    - label: Đường dẫn nút liên hệ
+      name: secondaryButtonLink
+      widget: string
+      required: false
+    - label: Chiều cao banner (px)
+      name: bannerHeight
+      widget: number
+      value_type: int
+      min: 350
+      max: 850
+      step: 10
+      default: 610
+    - label: Kích thước tiêu đề (px)
+      name: bannerTitleSize
+      widget: number
+      value_type: int
+      min: 32
+      max: 80
+      step: 2
+      default: 56
+    - label: Chiều rộng nội dung (px)
+      name: bannerContentWidth
+      widget: number
+      value_type: int
+      min: 800
+      max: 1400
+      step: 50
+      default: 1200
+    - label: Vị trí ảnh banner
+      name: bannerPosition
+      widget: select
+      options:
+      - label: Phía trên
+        value: top
+      - label: Chính giữa
+        value: center
+      - label: Phía dưới
+        value: bottom
+      default: center
+    - label: Độ tối ảnh nền (%)
+      name: bannerOverlay
+      widget: number
+      value_type: int
+      min: 0
+      max: 80
+      step: 5
+      default: 45
+    - label: Màu nút chính
+      name: primaryButtonColor
+      widget: string
+      default: '#D4A85E'
+      hint: 'Nhập mã màu HEX, ví dụ #D4A85E'
+    - label: Căn chỉnh nội dung
+      name: bannerTextAlign
+      widget: select
+      options:
+      - label: Căn trái
+        value: left
+      - label: Căn giữa
+        value: center
+      - label: Căn phải
+        value: right
+      default: left
+    - label: Thời gian tự chuyển slide (giây)
+      name: slideInterval
+      widget: number
+      value_type: int
+      min: 3
+      max: 12
+      default: 5
+      required: false
