@@ -24,6 +24,8 @@ const {
   modifiedTime,
 } = Astro.props;
 
+// Đặt đường dẫn logo sau khi tải ảnh lên public/uploads, ví dụ: '/uploads/logo-kieu-nguyen.png'.
+const brandLogo = '';
 const siteUrl = 'https://canhodanang.store';
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
 const imageUrl = new URL(image, siteUrl).href;
@@ -108,37 +110,36 @@ const structuredData = {
   </head>
 
   <body>
-    <header class="header">
-      <div class="wrap headflex site-header-inner">
-        <a class="brand" href="/" aria-label="Căn Hộ Đà Nẵng - Trang chủ">CĂN HỘ ĐÀ NẴNG</a>
+    <header class="header site-gold-header">
+      <div class="wrap site-header-inner">
+        <a class="brand site-brand" href="/" aria-label="Căn Hộ Đà Nẵng - Trang chủ">
+          {brandLogo ? <img class="site-brand-logo" src={brandLogo} alt="Logo Căn Hộ Đà Nẵng" width="44" height="44" /> : <span class="site-brand-logo-placeholder" aria-hidden="true">⌂</span>}
+          <span>CĂN HỘ ĐÀ NẴNG</span>
+        </a>
         <button class="mobile-menu-toggle" type="button" aria-expanded="false"
-          aria-controls="site-main-nav" aria-label="Mở menu điều hướng">
-          <span aria-hidden="true">☰</span> Menu
+          aria-controls="site-main-nav" aria-label="Mở menu">
+          <span class="hamburger-lines" aria-hidden="true"><i></i><i></i><i></i></span>
         </button>
         <nav id="site-main-nav" class="site-main-nav" aria-label="Menu chính">
-          <a href="/">Trang chủ</a>
-          <a href="/mua-ban/">Mua bán</a>
-          <a href="/cho-thue/">Cho thuê</a>
-          <details class="site-dropdown">
-            <summary>Dự án <span aria-hidden="true">⌄</span></summary>
+          <a class="mobile-primary-link" href="/">Trang chủ</a>
+          <a class="mobile-primary-link" href="/mua-ban/">Mua bán</a>
+          <a class="mobile-primary-link" href="/cho-thue/">Cho thuê</a>
+          <details class="site-dropdown mobile-secondary-link">
+            <summary>Dự án <span class="nav-chevron" aria-hidden="true"></span></summary>
             <div class="site-dropdown-panel">
-              {menuProjects.map((project) => (
-                <a href={`${projectUrl(project.id)}#bat-dong-san`}>{project.data.title}</a>
-              ))}
+              {menuProjects.map((project) => <a href={`${projectUrl(project.id)}#bat-dong-san`}>{project.data.title}</a>)}
               <a class="all-projects" href="/du-an/">Xem tất cả dự án</a>
             </div>
           </details>
-          <details class="site-dropdown">
-            <summary>Giới thiệu dự án <span aria-hidden="true">⌄</span></summary>
+          <details class="site-dropdown mobile-secondary-link">
+            <summary>Giới thiệu dự án <span class="nav-chevron" aria-hidden="true"></span></summary>
             <div class="site-dropdown-panel">
-              {menuProjects.map((project) => (
-                <a href={projectUrl(project.id)}>{project.data.title}</a>
-              ))}
+              {menuProjects.map((project) => <a href={projectUrl(project.id)}>{project.data.title}</a>)}
               <a class="all-projects" href="/du-an/">Xem tất cả dự án</a>
             </div>
           </details>
-          <a href="/tin-tuc/">Tin tức</a>
-          <a href="/lien-he/">Liên hệ</a>
+          <a class="mobile-secondary-link" href="/tin-tuc/">Tin tức</a>
+          <a class="mobile-secondary-link" href="/lien-he/">Liên hệ</a>
         </nav>
       </div>
     </header>
@@ -198,7 +199,17 @@ const structuredData = {
         }
 
         const dropdowns = document.querySelectorAll('.site-dropdown');
+        const desktopHover = window.matchMedia('(min-width: 1151px) and (hover: hover) and (pointer: fine)');
         dropdowns.forEach((dropdown) => {
+          // Desktop: mở ngay khi rê chuột, đóng khi chuột rời menu và submenu.
+          dropdown.addEventListener('mouseenter', () => {
+            if (!desktopHover.matches) return;
+            dropdowns.forEach((other) => { if (other !== dropdown) other.open = false; });
+            dropdown.open = true;
+          });
+          dropdown.addEventListener('mouseleave', () => {
+            if (desktopHover.matches) dropdown.open = false;
+          });
           dropdown.addEventListener('toggle', () => {
             if (dropdown.open) dropdowns.forEach((other) => {
               if (other !== dropdown) other.open = false;
@@ -240,25 +251,38 @@ const structuredData = {
     </script>
 
     <style>
-      .site-header-inner { display:flex; align-items:center; justify-content:space-between; gap:18px; }
-      .site-main-nav { display:flex; align-items:center; gap:clamp(8px,1.1vw,20px); }
+      .site-gold-header { background:#a77a38; color:#fff; border-bottom:1px solid #8c642e; }
+      .site-header-inner { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:82px; }
+      .site-brand { display:inline-flex; align-items:center; gap:11px; color:#fff !important; text-decoration:none; font-size:clamp(16px,1.5vw,23px); font-weight:800; white-space:nowrap; }
+      .site-brand-logo, .site-brand-logo-placeholder { width:44px; height:44px; flex:0 0 44px; object-fit:contain; background:#fff; color:#a77a38; border-radius:8px; }
+      .site-brand-logo-placeholder { display:grid; place-items:center; font-size:27px; }
+      .site-main-nav { display:flex; align-items:center; gap:clamp(8px,1.2vw,21px); }
       .site-main-nav > a, .site-dropdown > summary {
-        font-size:13px; font-weight:600; text-decoration:none; white-space:nowrap; cursor:pointer;
+        font-size:clamp(14px,1.05vw,17px); font-weight:700; text-decoration:none; white-space:nowrap; cursor:pointer;
+        color:#fff !important;
       }
+      .site-main-nav > a:hover, .site-dropdown > summary:hover { color:#fff5d8 !important; }
       .site-dropdown { position:relative; }
       .site-dropdown > summary { list-style:none; display:flex; align-items:center; gap:5px; }
       .site-dropdown > summary::-webkit-details-marker { display:none; }
-      .site-dropdown[open] > summary span { transform:rotate(180deg); }
+      .nav-chevron {
+        width:7px; height:7px; display:inline-block; flex:0 0 7px;
+        border-right:1.7px solid currentColor; border-bottom:1.7px solid currentColor;
+        transform:translateY(-2px) rotate(45deg); transition:transform .18s ease;
+      }
+      .site-dropdown[open] > summary .nav-chevron { transform:translateY(2px) rotate(225deg); }
       .site-dropdown-panel {
-        position:absolute; z-index:50; top:calc(100% + 14px); left:0; min-width:235px;
+        position:absolute; z-index:50; top:100%; left:0; min-width:235px;
         max-width:min(340px,90vw); padding:9px; background:#fff; color:#172b40;
-        border:1px solid #dce2e9; border-radius:10px; box-shadow:0 14px 35px #0b203326;
+        border:1px solid #e6e9ed; border-top:3px solid #d4a85e; border-radius:0 0 9px 9px; box-shadow:0 14px 35px #0b203326;
         display:flex; flex-direction:column;
       }
-      .site-dropdown-panel a { padding:11px 12px; text-decoration:none; color:#172b40; border-radius:6px; font-size:13px; }
+      .site-dropdown-panel a { padding:13px 14px; text-decoration:none; color:#172b40 !important; border-radius:6px; font-size:14px; }
       .site-dropdown-panel a:hover, .site-dropdown-panel a:focus-visible { background:#f0f4f8; }
-      .site-dropdown-panel .all-projects { border-top:1px solid #e5eaf0; margin-top:4px; color:#956c27; }
+      .site-dropdown-panel .all-projects { border-top:1px solid #e5eaf0; margin-top:4px; color:#956c27 !important; }
       .mobile-menu-toggle { display:none; }
+      .hamburger-lines { display:flex; flex-direction:column; gap:5px; }
+      .hamburger-lines i { display:block; width:25px; height:3px; background:#fff; border-radius:3px; }
       .site-footer { background:#10243a; color:#e8eef5; padding:38px 0; }
       .footer-layout { display:grid; grid-template-columns:minmax(0,3fr) minmax(0,2fr); gap:36px; }
       .site-footer h2 { color:#d4a85e; font-size:15px; letter-spacing:.035em; margin:0 0 20px; }
@@ -281,18 +305,26 @@ const structuredData = {
       .footer-copyright { font-size:12px; color:#bac7d6; padding-top:12px; }
       .footer-mobile-owner { display:none; }
       .footer-empty { color:#bac7d6; font-size:13px; }
-      @media (max-width:1050px) {
-        .mobile-menu-toggle { display:inline-flex; align-items:center; gap:7px; min-height:44px;
-          border:1px solid #d8e1e9; border-radius:8px; background:transparent; padding:0 12px; cursor:pointer; }
-        .site-header-inner { flex-wrap:wrap; }
-        .site-main-nav { display:none; flex:0 0 100%; flex-direction:column; align-items:stretch; gap:0; padding:8px 0 14px; }
-        .site-main-nav.is-open { display:flex; }
-        .site-main-nav > a, .site-dropdown > summary { display:flex; align-items:center; min-height:48px; padding:0 12px; }
+      @media (max-width:1150px) {
+        .site-header-inner { flex-wrap:wrap; gap:0; padding-top:12px; padding-bottom:8px; }
+        .site-brand { flex:1; font-size:clamp(16px,4vw,22px); }
+        .mobile-menu-toggle { display:inline-flex; align-items:center; justify-content:center; min-width:48px; min-height:48px;
+          border:1px solid #e5c98c; border-radius:8px; background:#956b32; cursor:pointer; }
+        .site-main-nav { display:grid; flex:0 0 100%; width:100%; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; padding-top:10px; }
+        .site-main-nav > .mobile-primary-link { display:flex; align-items:center; justify-content:center; min-height:52px; font-size:15px; border-top:1px solid #c49a59; }
+        .site-main-nav > .mobile-secondary-link { display:none; }
+        .site-main-nav.is-open > .mobile-secondary-link { display:flex; }
+        .site-main-nav.is-open > details.mobile-secondary-link { display:block; }
+        .site-main-nav.is-open > .mobile-secondary-link { grid-column:1/-1; }
+        .site-main-nav > .mobile-secondary-link, .site-dropdown > summary { min-height:50px; padding:0 12px; align-items:center; }
+        .site-dropdown > summary { display:flex; }
         .site-dropdown-panel { position:static; max-width:none; box-shadow:none; min-width:0; margin:0 8px 8px; }
         .site-dropdown-panel a { min-height:44px; display:flex; align-items:center; }
       }
       @media (max-width:767px) {
         .footer-layout { grid-template-columns:minmax(0,1fr); gap:30px; }
+        .site-brand-logo, .site-brand-logo-placeholder { width:38px; height:38px; flex-basis:38px; }
+        .site-brand { font-size:17px; }
         .footer-logo-item { height:78px; padding:6px; }
         .footer-mobile-owner { display:block; color:#d4a85e; font-size:19px; font-weight:700; }
       }
