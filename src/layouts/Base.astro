@@ -38,7 +38,7 @@ const projects = (await getCollection('du-an'))
   .sort((a, b) => (a.data.featuredOrder ?? 999) - (b.data.featuredOrder ?? 999)
     || a.data.title.localeCompare(b.data.title, 'vi'));
 
-const menuProjects = projects.filter((item) => item.data.showInMenu !== false);
+const menuProjects = projects.filter((item) => item.data.showInMenu !== false && item.data.distributionStatus === 'dang-phan-phoi');
 const logoProjects = projects
   .filter((item) => item.data.distributionStatus === 'dang-phan-phoi'
     && item.data.showLogoInFooter !== false && Boolean(item.data.logo))
@@ -121,18 +121,16 @@ const structuredData = {
           <span class="hamburger-lines" aria-hidden="true"><i></i><i></i><i></i></span>
         </button>
         <nav id="site-main-nav" class="site-main-nav" aria-label="Menu chính">
-          <a class="mobile-primary-link" href="/mua-ban/">Mua bán</a>
-          <a class="mobile-primary-link" href="/cho-thue/">Cho thuê</a>
-          <details class="site-dropdown mobile-secondary-link">
-            <summary>Dự án <span class="nav-chevron" aria-hidden="true"></span></summary>
+          <details class="site-dropdown">
+            <summary>Dự án đang bán <span class="nav-chevron" aria-hidden="true"></span></summary>
             <div class="site-dropdown-panel">
               {menuProjects.map((project) => <a href={projectUrl(project.id)}>{project.data.title}</a>)}
               <a class="all-projects" href="/du-an/">Xem tất cả dự án</a>
             </div>
           </details>
-          <a class="mobile-secondary-link" href="/nha-dat-tho-cu/">Nhà đất</a>
-          <a class="mobile-secondary-link" href="/tin-tuc/">Tin tức</a>
-          <a class="mobile-secondary-link nav-contact" href="tel:0869437415"><span class="phone-icon" aria-hidden="true">☎</span> Liên hệ 0869 437 415</a>
+          <a href="/cho-thue/">Cho thuê</a>
+          <a href="/nha-dat-tho-cu/">Nhà đất</a>
+          <a class="nav-contact" href="tel:0869437415">Liên hệ 0869 437 415</a>
         </nav>
       </div>
     </header>
@@ -181,6 +179,23 @@ const structuredData = {
 
     <script is:inline>
       (() => {
+        // Desktop: chỉ thu chiều cao header khi cuộn, giữ nguyên toàn bộ menu.
+        const header = document.querySelector('.site-gold-header');
+        const desktopHeader = window.matchMedia('(min-width: 1151px)');
+        let scrollPending = false;
+        const updateHeader = () => {
+          if (header) header.classList.toggle('is-compact', desktopHeader.matches && window.scrollY > 80);
+          scrollPending = false;
+        };
+        window.addEventListener('scroll', () => {
+          if (!scrollPending) {
+            scrollPending = true;
+            window.requestAnimationFrame(updateHeader);
+          }
+        }, { passive: true });
+        desktopHeader.addEventListener('change', updateHeader);
+        updateHeader();
+
         const toggle = document.querySelector('.mobile-menu-toggle');
         const nav = document.getElementById('site-main-nav');
         if (toggle && nav) {
@@ -244,14 +259,14 @@ const structuredData = {
     </script>
 
     <style>
-      .site-gold-header { background:#a77a38; color:#fff; border-bottom:1px solid #8c642e; }
-      .site-header-inner { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:82px; }
-      .site-brand { display:inline-flex; align-items:center; gap:11px; color:#fff !important; text-decoration:none; font-size:clamp(16px,1.5vw,23px); font-weight:800; white-space:nowrap; }
-      .site-brand-logo, .site-brand-logo-placeholder { width:44px; height:44px; flex:0 0 44px; object-fit:contain; background:#fff; color:#a77a38; border-radius:8px; }
+      .site-gold-header { position:sticky; top:0; z-index:1000; width:100%; background:#a77a38; color:#fff; border-bottom:1px solid #8c642e; box-shadow:0 3px 12px #00000012; }
+      .site-header-inner { display:flex; align-items:center; justify-content:space-between; gap:14px; height:84px; min-height:0; flex-wrap:nowrap; padding-top:0; padding-bottom:0; transition:height .22s ease; }
+      .site-brand { display:inline-flex; align-items:center; gap:11px; color:#fff !important; text-decoration:none; font-size:clamp(16px,1.4vw,21px); font-weight:800; white-space:nowrap; flex:0 0 auto; }
+      .site-brand-logo, .site-brand-logo-placeholder { width:44px; height:44px; flex:0 0 44px; object-fit:contain; background:#fff; color:#a77a38; border-radius:8px; transition:width .22s ease,height .22s ease,flex-basis .22s ease; }
       .site-brand-logo-placeholder { display:grid; place-items:center; font-size:27px; }
-      .site-main-nav { display:flex; align-items:center; gap:clamp(8px,1.2vw,21px); }
+      .site-main-nav { display:flex; flex:0 0 auto; min-width:0; flex-wrap:nowrap; align-items:center; justify-content:flex-end; gap:clamp(10px,1.2vw,20px); }
       .site-main-nav > a, .site-dropdown > summary {
-        font-size:clamp(14px,1.05vw,17px); font-weight:700; text-decoration:none; white-space:nowrap; cursor:pointer;
+        font-size:16px; font-weight:700; text-decoration:none; white-space:nowrap; cursor:pointer;
         color:#fff !important;
       }
       .site-main-nav > a:hover, .site-dropdown > summary:hover { color:#fff5d8 !important; }
@@ -276,7 +291,15 @@ const structuredData = {
       .mobile-menu-toggle { display:none; }
       .nav-contact { background:#8e632b; border-radius:7px; padding:12px 13px; }
       .phone-icon { font-size:18px; margin-right:4px; }
+      /* Desktop: một hàng duy nhất, logo trái – menu phải, không xuống dòng. */
       @media (min-width:1151px) {
+        .site-gold-header .site-header-inner { display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important; align-items:center !important; justify-content:space-between !important; }
+        .site-gold-header .site-brand { flex:0 0 auto !important; width:auto !important; }
+        .site-gold-header .mobile-menu-toggle { display:none !important; }
+        .site-gold-header .site-main-nav { display:flex !important; flex:0 0 auto !important; flex-direction:row !important; flex-wrap:nowrap !important; align-items:center !important; width:auto !important; margin:0 !important; padding:0 !important; }
+        .site-gold-header .site-main-nav > a, .site-gold-header .site-dropdown { flex:0 0 auto; }
+        .site-gold-header .site-dropdown > summary { white-space:nowrap; }
+        .site-gold-header.is-compact .site-header-inner { height:58px; }
         .site-dropdown:hover .site-dropdown-panel { display:flex; }
       }
       .hamburger-lines { display:flex; flex-direction:column; gap:5px; }
@@ -303,26 +326,39 @@ const structuredData = {
       .footer-copyright { font-size:12px; color:#bac7d6; padding-top:12px; }
       .footer-mobile-owner { display:none; }
       .footer-empty { color:#bac7d6; font-size:13px; }
+      @media (prefers-reduced-motion:reduce) {
+        .site-header-inner,.site-brand-logo,.site-brand-logo-placeholder { transition:none; }
+      }
+      @media (min-width:1151px) and (max-width:1350px) {
+        .site-brand { font-size:17px; }
+        .site-main-nav { gap:10px; }
+        .site-main-nav > a, .site-dropdown > summary { font-size:14px; }
+        .nav-contact { padding:10px 9px; }
+      }
       @media (max-width:1150px) {
-        .site-header-inner { flex-wrap:wrap; gap:0; padding-top:12px; padding-bottom:8px; }
+        .site-header-inner { height:auto; min-height:72px; flex-wrap:wrap; gap:0; padding-top:12px; padding-bottom:8px; }
         .site-brand { flex:1; font-size:clamp(16px,4vw,22px); }
         .mobile-menu-toggle { display:inline-flex; align-items:center; justify-content:center; min-width:48px; min-height:48px;
           border:1px solid #e5c98c; border-radius:8px; background:#956b32; cursor:pointer; }
-        .site-main-nav { display:grid; flex:0 0 100%; width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0; padding-top:10px; }
-        .site-main-nav > .mobile-primary-link { display:flex; align-items:center; justify-content:center; min-height:52px; font-size:16px; border-top:1px solid #c49a59; }
-        .site-main-nav > .mobile-primary-link:first-child { border-right:1px solid #c49a59; }
-        .site-main-nav.is-open > .mobile-secondary-link { border-top:1px solid #c49a59; font-size:16px; }
-        .site-main-nav.is-open > .mobile-secondary-link > summary { width:100%; box-sizing:border-box; }
-        .site-main-nav.is-open > .mobile-secondary-link:not(details) { display:flex; }
-        .site-main-nav > .mobile-secondary-link { display:none; }
-        .site-main-nav.is-open > .mobile-secondary-link { display:flex; }
-        .site-main-nav.is-open > details.mobile-secondary-link { display:block; }
-        .site-main-nav.is-open > .mobile-secondary-link { grid-column:1/-1; }
-        .site-main-nav.is-open > .nav-contact { border-radius:0; background:transparent; }
-        .site-main-nav > .mobile-secondary-link, .site-dropdown > summary { min-height:50px; padding:0 12px; align-items:center; }
-        .site-dropdown > summary { display:flex; }
+        .site-main-nav { display:none; flex:0 0 100%; width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; padding:14px 0 8px; }
+        .site-main-nav.is-open { display:grid; }
+        .site-main-nav > a, .site-main-nav > details { min-width:0; width:100%; box-sizing:border-box; }
+        .site-main-nav > a, .site-main-nav > details > summary { display:flex; align-items:center; justify-content:center; text-align:center; min-height:58px; box-sizing:border-box; padding:10px 8px; font-size:16px; font-weight:700; line-height:1.35; border:1px solid #dfbd85; border-radius:8px; background:#986b31; }
+        .site-main-nav > details > summary { gap:8px; }
+        .site-main-nav > .nav-contact { background:#845823; border-radius:8px; }
+        .site-main-nav > details[open] { grid-column:1/-1; }
+        .site-main-nav > details[open] > summary { min-height:58px; }
+        .site-main-nav > details[open] > .site-dropdown-panel { margin:8px 0 0; }
         .site-dropdown-panel { position:static; max-width:none; box-shadow:none; min-width:0; margin:0 8px 8px; }
-        .site-dropdown-panel a { min-height:44px; display:flex; align-items:center; }
+        .site-dropdown-panel a { min-height:48px; display:flex; align-items:center; font-size:16px; }
+        .site-brand { min-width:0; }
+        .site-brand > span:last-child { white-space:normal; line-height:1.2; }
+        .mobile-menu-toggle { flex:0 0 48px; }
+      }
+      @media (max-width:380px) {
+        .site-main-nav { gap:7px; }
+        .site-main-nav > a, .site-main-nav > details > summary { font-size:15px; padding:8px 5px; }
+        .site-brand { font-size:15px; }
       }
       @media (max-width:767px) {
         .footer-layout { grid-template-columns:minmax(0,1fr); gap:30px; }
