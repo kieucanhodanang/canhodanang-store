@@ -6,7 +6,15 @@
   "bannerTitle": "Căn Hộ Đà Nẵng – Mua Bán, Cho Thuê & Dự Án Nổi Bật",
   "bannerTitleSize": 56,
   "primaryButtonLink": "/can-ho/",
-  "bannerSlides": [],
+  "bannerSlides": [
+    {
+      "enabled": true,
+      "image": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
+      "mobileImage": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
+      "imageAlt": "Căn hộ đà nẵng",
+      "title": "Căn hộ đà nẵng giá tốt 2026"
+    }
+  ],
   "bannerImage": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
   "primaryButtonColor": "#D4A85E",
   "bannerDescription": "Khám phá thông tin căn hộ Đà Nẵng, các dự án nổi bật và lựa chọn bất động sản phù hợp nhu cầu an cư hoặc đầu tư.",
