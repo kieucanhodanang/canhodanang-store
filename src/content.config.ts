@@ -1,52 +1,113 @@
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
-import { defineCollection, z } from "astro:content";
-import { glob } from "astro/loaders";
+// Cấu hình tương ứng với public/admin/config.yml.
+// Các trường không bắt buộc có thể để trống trong Decap CMS.
+const optionalText = z.string().nullish();
+const optionalNumber = z.coerce.number().nullish();
+const optionalDate = z.coerce.date().nullish();
+
+const seoFields = {
+  title: z.string(),
+  description: z.string(),
+  seoTitle: optionalText,
+  image: optionalText,
+  imageAlt: optionalText,
+  ogImage: optionalText,
+  date: optionalDate,
+  updatedAt: optionalDate,
+  status: z.enum(['published', 'draft']).default('published'),
+  showOnHome: z.boolean().default(false),
+  featured: z.boolean().default(false),
+  featuredOrder: optionalNumber,
+};
+
+const propertyFields = {
+  ...seoFields,
+  project: optionalText,
+  transaction: z.enum(['ban', 'cho-thue', 'cho-thue-ngay']).default('ban'),
+  listingStatus: z.enum(['available', 'closed', 'paused']).default('available'),
+  price: optionalText,
+  area: optionalText,
+  district: optionalText,
+  ward: optionalText,
+  address: optionalText,
+  legal: optionalText,
+  direction: optionalText,
+  gallery: z.array(z.string()).nullish(),
+};
 
 const canHo = defineCollection({
-  loader: glob({
-    pattern: "**/*.md",
-    base: "./src/content/can-ho"
-  }),
+  loader: glob({ pattern: '**/*.md', base: './src/content/can-ho' }),
   schema: z.object({
-    title: z.string(),
-    description: z.string(),
+    ...propertyFields,
     price: z.string(),
     area: z.string(),
-    bedrooms: z.number().optional(),
     address: z.string(),
-    image: z.string()
-  })
+    image: z.string(),
+    bedrooms: optionalNumber,
+    bathrooms: optionalNumber,
+  }),
 });
 
 const duAn = defineCollection({
-  loader: glob({
-    pattern: "**/*.md",
-    base: "./src/content/du-an"
-  }),
+  loader: glob({ pattern: '**/*.md', base: './src/content/du-an' }),
   schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    developer: z.string().optional(),
+    ...seoFields,
     location: z.string(),
-    image: z.string()
-  })
+    image: z.string(),
+    developer: optionalText,
+    propertyTypes: z.array(z.string()).nullish(),
+    gallery: z.array(z.string()).nullish(),
+    logo: optionalText,
+    logoAlt: optionalText,
+    distributionStatus: z.enum([
+      'dang-phan-phoi',
+      'sap-mo-ban',
+      'ngung-phan-phoi',
+    ]).default('dang-phan-phoi'),
+    showLogoInFooter: z.boolean().default(true),
+    logoOrder: optionalNumber,
+    showInMenu: z.boolean().default(true),
+  }),
+});
+
+const bietThu = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/biet-thu' }),
+  schema: z.object({
+    ...propertyFields,
+    image: z.string(),
+    propertyType: z.string(),
+  }),
+});
+
+const thoCu = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/tho-cu' }),
+  schema: z.object({
+    ...propertyFields,
+    image: z.string(),
+    propertyType: z.string(),
+    district: z.string(),
+    address: z.string(),
+    price: z.string(),
+    area: z.string(),
+    frontage: optionalText,
+  }),
 });
 
 const baiViet = defineCollection({
-  loader: glob({
-    pattern: "**/*.md",
-    base: "./src/content/bai-viet"
-  }),
+  loader: glob({ pattern: '**/*.md', base: './src/content/bai-viet' }),
   schema: z.object({
-    title: z.string(),
-    description: z.string(),
+    ...seoFields,
     date: z.coerce.date(),
-    image: z.string().optional()
-  })
+    category: optionalText,
+  }),
 });
 
 export const collections = {
-  "can-ho": canHo,
-  "du-an": duAn,
-  "bai-viet": baiViet
+  'can-ho': canHo,
+  'du-an': duAn,
+  'biet-thu': bietThu,
+  'tho-cu': thoCu,
+  'bai-viet': baiViet,
 };
