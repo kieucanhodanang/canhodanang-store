@@ -121,25 +121,18 @@ const structuredData = {
           <span class="hamburger-lines" aria-hidden="true"><i></i><i></i><i></i></span>
         </button>
         <nav id="site-main-nav" class="site-main-nav" aria-label="Menu chính">
-          <a class="mobile-primary-link" href="/">Trang chủ</a>
           <a class="mobile-primary-link" href="/mua-ban/">Mua bán</a>
           <a class="mobile-primary-link" href="/cho-thue/">Cho thuê</a>
           <details class="site-dropdown mobile-secondary-link">
             <summary>Dự án <span class="nav-chevron" aria-hidden="true"></span></summary>
             <div class="site-dropdown-panel">
-              {menuProjects.map((project) => <a href={`${projectUrl(project.id)}#bat-dong-san`}>{project.data.title}</a>)}
-              <a class="all-projects" href="/du-an/">Xem tất cả dự án</a>
-            </div>
-          </details>
-          <details class="site-dropdown mobile-secondary-link">
-            <summary>Giới thiệu dự án <span class="nav-chevron" aria-hidden="true"></span></summary>
-            <div class="site-dropdown-panel">
               {menuProjects.map((project) => <a href={projectUrl(project.id)}>{project.data.title}</a>)}
               <a class="all-projects" href="/du-an/">Xem tất cả dự án</a>
             </div>
           </details>
+          <a class="mobile-secondary-link" href="/nha-dat-tho-cu/">Nhà đất</a>
           <a class="mobile-secondary-link" href="/tin-tuc/">Tin tức</a>
-          <a class="mobile-secondary-link" href="/lien-he/">Liên hệ</a>
+          <a class="mobile-secondary-link nav-contact" href="tel:0869437415"><span class="phone-icon" aria-hidden="true">☎</span> Liên hệ 0869 437 415</a>
         </nav>
       </div>
     </header>
@@ -281,6 +274,11 @@ const structuredData = {
       .site-dropdown-panel a:hover, .site-dropdown-panel a:focus-visible { background:#f0f4f8; }
       .site-dropdown-panel .all-projects { border-top:1px solid #e5eaf0; margin-top:4px; color:#956c27 !important; }
       .mobile-menu-toggle { display:none; }
+      .nav-contact { background:#8e632b; border-radius:7px; padding:12px 13px; }
+      .phone-icon { font-size:18px; margin-right:4px; }
+      @media (min-width:1151px) {
+        .site-dropdown:hover .site-dropdown-panel { display:flex; }
+      }
       .hamburger-lines { display:flex; flex-direction:column; gap:5px; }
       .hamburger-lines i { display:block; width:25px; height:3px; background:#fff; border-radius:3px; }
       .site-footer { background:#10243a; color:#e8eef5; padding:38px 0; }
@@ -310,12 +308,17 @@ const structuredData = {
         .site-brand { flex:1; font-size:clamp(16px,4vw,22px); }
         .mobile-menu-toggle { display:inline-flex; align-items:center; justify-content:center; min-width:48px; min-height:48px;
           border:1px solid #e5c98c; border-radius:8px; background:#956b32; cursor:pointer; }
-        .site-main-nav { display:grid; flex:0 0 100%; width:100%; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; padding-top:10px; }
-        .site-main-nav > .mobile-primary-link { display:flex; align-items:center; justify-content:center; min-height:52px; font-size:15px; border-top:1px solid #c49a59; }
+        .site-main-nav { display:grid; flex:0 0 100%; width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0; padding-top:10px; }
+        .site-main-nav > .mobile-primary-link { display:flex; align-items:center; justify-content:center; min-height:52px; font-size:16px; border-top:1px solid #c49a59; }
+        .site-main-nav > .mobile-primary-link:first-child { border-right:1px solid #c49a59; }
+        .site-main-nav.is-open > .mobile-secondary-link { border-top:1px solid #c49a59; font-size:16px; }
+        .site-main-nav.is-open > .mobile-secondary-link > summary { width:100%; box-sizing:border-box; }
+        .site-main-nav.is-open > .mobile-secondary-link:not(details) { display:flex; }
         .site-main-nav > .mobile-secondary-link { display:none; }
         .site-main-nav.is-open > .mobile-secondary-link { display:flex; }
         .site-main-nav.is-open > details.mobile-secondary-link { display:block; }
         .site-main-nav.is-open > .mobile-secondary-link { grid-column:1/-1; }
+        .site-main-nav.is-open > .nav-contact { border-radius:0; background:transparent; }
         .site-main-nav > .mobile-secondary-link, .site-dropdown > summary { min-height:50px; padding:0 12px; align-items:center; }
         .site-dropdown > summary { display:flex; }
         .site-dropdown-panel { position:static; max-width:none; box-shadow:none; min-width:0; margin:0 8px 8px; }
