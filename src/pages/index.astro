@@ -443,13 +443,14 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
   <style>
 
     .cms-hero { min-height:var(--cms-hero-height);position:relative;display:flex;align-items:center;isolation:isolate;overflow:hidden;box-sizing:border-box;background:#102c49; }
-    .hero-slides,.hero-overlay {position:absolute;inset:0;z-index:-1;}
-    .hero-slide {position:absolute;inset:0;opacity:0;transition:opacity .7s ease;}
+    .hero-slides {position:absolute;inset:0;z-index:0;pointer-events:none;}
+    .hero-overlay {position:absolute;inset:0;z-index:1;pointer-events:none;}
+    .hero-slide {position:absolute;inset:0;display:block;width:100%;height:100%;opacity:0;transition:opacity .7s ease;}
     .hero-slide.active {opacity:1;}
     .hero-slide img,.hero-fallback {display:block;width:100%;height:100%;object-fit:cover;object-position:center var(--cms-image-position);}
     .hero-fallback {background:linear-gradient(125deg,#102c49,#19496a);}
     .hero-overlay {background:rgba(8,27,47,var(--cms-overlay));}
-    .cms-hero-content {width:100%;max-width:var(--cms-content-width);text-align:var(--cms-text-align);position:relative;z-index:1;padding-block:70px;}
+    .cms-hero-content {width:100%;max-width:var(--cms-content-width);text-align:var(--cms-text-align);position:relative;z-index:2;padding-block:70px;}
     .cms-hero h1 {font-size:var(--cms-title-size);line-height:1.16;overflow-wrap:break-word;}
     .cms-hero[style*="--cms-text-align:center"] .cms-hero-actions {justify-content:center;}
     .cms-hero[style*="--cms-text-align:right"] .cms-hero-actions {justify-content:flex-end;}
@@ -457,7 +458,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .hero-pagination {display:flex;gap:9px;margin-top:30px;justify-content:flex-start;}
     .hero-dot {width:12px;height:12px;border-radius:50%;border:1px solid white;background:transparent;cursor:pointer;padding:0;}
     .hero-dot.active {background:white;}
-    .hero-arrows {position:absolute;inset-inline:16px;top:50%;display:flex;justify-content:space-between;pointer-events:none;transform:translateY(-50%);}
+    .hero-arrows {position:absolute;z-index:3;inset-inline:16px;top:50%;display:flex;justify-content:space-between;pointer-events:none;transform:translateY(-50%);}
     .hero-arrows button {pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1px solid #ffffff88;background:#10243a99;color:white;font-size:28px;cursor:pointer;}
     .property-dialog {width:min(760px,calc(100vw - 24px));max-height:min(88dvh,850px);border:0;border-radius:16px;padding:24px;color:#142b43;box-shadow:0 20px 70px #0006;overflow:auto;}
     .property-dialog::backdrop {background:#06182caa;}
@@ -488,7 +489,9 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       .hero-arrows {inset-inline:5px;}
       .hero-arrows button {width:34px;height:34px;}
       .property-dialog {padding:18px 12px;}
-      .deal-tab-list {gap:5px;}\n      .deal-tab span {min-height:48px;font-size:12px;padding:6px 3px;}\n      .search-grid {gap:10px;}
+      .deal-tab-list {gap:5px;}
+      .deal-tab span {min-height:48px;font-size:12px;padding:6px 3px;}
+      .search-grid {gap:10px;}
       .search-grid label {font-size:13px;}
       .search-grid select {height:60px;padding-inline:7px;font-size:13px;}
       .dialog-actions .btn {width:100%;text-align:center;}
