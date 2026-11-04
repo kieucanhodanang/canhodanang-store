@@ -35,6 +35,27 @@ const slideSeconds = clamp(homepage.slideInterval, 3, 12, 5);
 const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft')
   .sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
 const slideData = JSON.stringify(slides).replace(/</g, '\\u003c');
+// Dữ liệu có thật từ collection dự án của Decap CMS. Không tạo tin đăng giả.
+const searchableProjects = projects.map((item) => {
+  const d = item.data;
+  const num = (v) => v === undefined || v === null || v === '' ? null : (Number.isFinite(Number(v)) ? Number(v) : null);
+  return {
+    title: d.title || item.id,
+    description: d.description || d.summary || '',
+    project: item.id,
+    projectName: d.title || item.id,
+    url: `/du-an/${item.slug || item.id}/`,
+    type: String(d.type || d.loai || 'can-ho').toLowerCase(),
+    transaction: String(d.transaction || d.giaoDich || 'ban').toLowerCase(),
+    price: num(d.priceBillion ?? d.giaTy),
+    rent: num(d.rentMillion ?? d.giaThueTrieu),
+    area: num(d.area ?? d.dienTich),
+    bedrooms: num(d.bedrooms ?? d.phongNgu),
+    direction: String(d.direction || d.huong || ''),
+    image: typeof d.image === 'string' && d.image.startsWith('/') ? d.image : ''
+  };
+});
+const searchData = JSON.stringify(searchableProjects).replace(/</g, '\\u003c');
 const khuVuc = [
   {
     title: 'Căn hộ Sơn Trà',
@@ -98,9 +119,17 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       <h1 id="slide-title">{slides[0].title}</h1>
       <p id="slide-description">{slides[0].description}</p>
       <div class="heroactions cms-hero-actions">
-        <button class="btn cms-primary-button" type="button" id="open-property-search">⌕ Tìm bất động sản</button>
+        <a class="btn cms-primary-button" href="#tim-kiem">⌕ Tìm bất động sản</a>
         <a class="outlinebtn" id="slide-link" href={slides[0].buttonLink}>{slides[0].buttonText || 'Khám phá dự án'}</a>
       </div>
+      <form class="hero-search" id="hero-property-search" role="search">
+        <div class="hero-search-tabs" role="group" aria-label="Loại tìm kiếm">
+          <label><input type="radio" name="search-type" value="can-ho" checked /><span>Căn hộ</span></label>
+          <label><input type="radio" name="search-type" value="cho-thue" /><span>Cho thuê</span></label>
+          <label><input type="radio" name="search-type" value="nha-dat" /><span>Nhà đất</span></label>
+        </div>
+        <div class="hero-search-input"><input id="hero-keyword" type="search" aria-label="Từ khóa tìm kiếm" placeholder="Tìm tên dự án, khu vực, căn hộ..." autocomplete="off" /><button type="submit">⌕ Tìm kiếm</button></div>
+      </form>
       {slides.length > 1 && <div class="hero-pagination" aria-label="Chọn ảnh banner">
         {slides.map((_,i) => <button type="button" class:list={['hero-dot', { active:i===0 }]} data-slide-to={i} aria-label={`Xem slide ${i+1}`} aria-current={i===0 ? 'true' : undefined}></button>)}
       </div>}
@@ -111,32 +140,28 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     </div>}
   </section>
 
-  <dialog class="property-dialog" id="property-dialog" aria-labelledby="search-dialog-title">
-    <div class="dialog-top"><div><span class="search-kicker">BỘ LỌC BẤT ĐỘNG SẢN</span><h2 id="search-dialog-title">Tìm bất động sản phù hợp</h2></div>
-      <button type="button" class="dialog-close" id="close-property-search" aria-label="Đóng tìm kiếm">×</button></div>
-    <form id="property-search" method="dialog">
-      <div class="search-grid">
-        <fieldset class="deal-tabs" aria-label="Chọn hình thức giao dịch">
-        <legend>Hình thức giao dịch</legend>
-        <div class="deal-tab-list">
-          <label class="deal-tab"><input type="radio" name="giao-dich" value="ban" checked /><span>Mua bán</span></label>
-          <label class="deal-tab"><input type="radio" name="giao-dich" value="cho-thue" /><span>Cho thuê</span></label>
-          <label class="deal-tab"><input type="radio" name="giao-dich" value="cho-thue-ngay" /><span>Thuê theo ngày</span></label>
+  <section class="results-section" id="tim-kiem" hidden aria-label="Kết quả tìm kiếm bất động sản">
+    <div class="wrap">
+      <div class="results-heading"><div><span class="eyebrow">TÌM KIẾM BẤT ĐỘNG SẢN</span><h2>Kết quả tìm kiếm</h2></div><span id="result-count" aria-live="polite"></span></div>
+      <div class="filter-panel">
+        <div class="filter-grid">
+          <label class="filter-field filter-keyword">Từ khóa<input id="filter-keyword" type="search" placeholder="Tên dự án, khu vực..." /></label>
+          <label class="filter-field">Dự án<select id="filter-project"><option value="">Tất cả dự án</option>{projects.map(item => <option value={item.id}>{item.data.title}</option>)}</select></label>
+          <label class="filter-field">Phòng ngủ<select id="filter-bedrooms"><option value="">Tất cả</option><option value="0">Studio</option><option value="1">1 phòng</option><option value="2">2 phòng</option><option value="3">3 phòng</option><option value="4">4+ phòng</option></select></label>
+          <label class="filter-field">Hướng<select id="filter-direction"><option value="">Tất cả hướng</option>{['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc'].map(v => <option value={v}>{v}</option>)}</select></label>
         </div>
-      </fieldset>
-        <label>Loại bất động sản<select name="loai"><option value="">Tất cả loại hình</option><option value="can-ho">Căn hộ</option><option value="biet-thu">Biệt thự</option><option value="shophouse">Shophouse</option><option value="nha-rieng">Nhà riêng</option><option value="dat-tho-cu">Đất thổ cư</option></select></label>
-        <label>Dự án<select name="du-an"><option value="">Tất cả dự án</option>{projects.map((item) => <option value={item.id}>{item.data.title}</option>)}</select></label>
-        <label>Khu vực<select name="khu-vuc"><option value="">Tất cả khu vực</option>{['Hải Châu','Sơn Trà','Ngũ Hành Sơn','Thanh Khê','Liên Chiểu','Cẩm Lệ','Hòa Vang'].map((name) => <option value={name}>{name}</option>)}</select></label>
-        <label>Phòng ngủ<select name="phong-ngu"><option value="">Tất cả</option><option value="studio">Studio</option>{[1,2,3,4].map(n => <option value={n}>{n === 4 ? '4+' : n} phòng ngủ</option>)}</select></label>
-        <label>Diện tích<select name="dien-tich"><option value="">Tất cả</option><option value="0-50">Dưới 50 m²</option><option value="50-80">50–80 m²</option><option value="80-120">80–120 m²</option><option value="120+">Trên 120 m²</option></select></label>
-        <label>Giá<select name="gia" id="price-select"><option value="">Tất cả mức giá</option></select></label>
-        <label>Hướng nhà<select name="huong"><option value="">Tất cả hướng</option>{['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc'].map(x => <option value={x}>{x}</option>)}</select></label>
+        <div class="range-grid">
+          <div class="range-field"><div class="range-header"><strong>Khoảng giá</strong><output id="price-output">0 – 20 tỷ</output></div><div class="dual-range" id="price-range"><div class="range-track"><div class="range-fill"></div></div><input id="price-min" aria-label="Giá từ" type="range" min="0" max="20" step="0.1" value="0" /><input id="price-max" aria-label="Giá đến" type="range" min="0" max="20" step="0.1" value="20" /></div><div class="range-limits"><span id="price-low-label">0 tỷ</span><span id="price-high-label">20 tỷ+</span></div></div>
+          <div class="range-field"><div class="range-header"><strong>Diện tích</strong><output id="area-output">25 – 125 m²</output></div><div class="dual-range" id="area-range"><div class="range-track"><div class="range-fill"></div></div><input id="area-min" aria-label="Diện tích từ" type="range" min="25" max="125" step="1" value="25" /><input id="area-max" aria-label="Diện tích đến" type="range" min="25" max="125" step="1" value="125" /></div><div class="range-limits"><span>25 m²</span><span>125 m²+</span></div></div>
+        </div>
+        <div class="filter-actions"><button id="clear-filters" type="button">Xóa bộ lọc</button><span id="search-type-label">Đang tìm: Căn hộ</span></div>
       </div>
-      <p class="searchnote">Bộ lọc đang được hoàn thiện. Anh/chị có thể xem danh sách bất động sản hoặc liên hệ tư vấn.</p>
-      <div class="dialog-actions"><a class="btn" href="/mua-ban/" id="browse-properties">Xem bất động sản</a><a class="outlinebtn" href="tel:0869437415">☎ 0869 437 415</a></div>
-    </form>
-  </dialog>
+      <div class="search-results-list" id="search-results-list" aria-live="polite"></div>
+      <p class="results-note">Dữ liệu tìm kiếm hiện lấy từ danh mục Dự án trong CMS. Tin căn hộ bán, cho thuê và nhà đất sẽ xuất hiện đầy đủ khi có collection tin đăng và các trường giá, diện tích, phòng ngủ, hướng tương ứng.</p>
+    </div>
+  </section>
   <script type="application/json" id="hero-slides-data" set:html={slideData} />
+  <script type="application/json" id="cms-search-data" set:html={searchData} />
   <script is:inline>
     (() => {
       const dataNode = document.getElementById('hero-slides-data');
@@ -168,36 +193,110 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         hero?.addEventListener('mouseenter',()=>clearInterval(timer));
         hero?.addEventListener('mouseleave',()=>{ clearInterval(timer); timer=setInterval(()=>{if(!document.hidden)show(current+1)},seconds*1000); });
       }
-      const dialog = document.getElementById('property-dialog');
-      let searchOpened = false;
-      document.getElementById('open-property-search')?.addEventListener('click',()=>{
-        searchOpened = true;
-        if (dialog && !dialog.open) dialog.showModal();
-      });
-      // Tự mở một lần sau 3 giây nếu khách chưa chủ động mở tìm kiếm.
-      window.setTimeout(()=>{
-        if (!searchOpened && dialog && !dialog.open) {
-          searchOpened = true;
-          dialog.showModal();
+      const searchDataNode = document.getElementById('cms-search-data');
+      const items = searchDataNode ? JSON.parse(searchDataNode.textContent || '[]') : [];
+      const section = document.getElementById('tim-kiem');
+      const form = document.getElementById('hero-property-search');
+      const keyword = document.getElementById('hero-keyword');
+      const filterKeyword = document.getElementById('filter-keyword');
+      const project = document.getElementById('filter-project');
+      const bedrooms = document.getElementById('filter-bedrooms');
+      const direction = document.getElementById('filter-direction');
+      const priceMin = document.getElementById('price-min');
+      const priceMax = document.getElementById('price-max');
+      const areaMin = document.getElementById('area-min');
+      const areaMax = document.getElementById('area-max');
+      const list = document.getElementById('search-results-list');
+      const count = document.getElementById('result-count');
+      let mode = 'can-ho';
+      let priceTouched = false;
+      let areaTouched = false;
+      const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase().trim();
+      const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const format = (n) => Number(n.toFixed(1)).toLocaleString('vi-VN');
+      const priceLimit = () => mode === 'cho-thue' ? 50 : 20;
+      const priceUnit = () => mode === 'cho-thue' ? 'triệu/tháng' : 'tỷ';
+      const updateRange = (minInput,maxInput,container,output,formatter) => {
+        let lo = Number(minInput.value), hi = Number(maxInput.value);
+        if (lo > hi) { if (document.activeElement === minInput) lo = hi; else hi = lo; }
+        minInput.value = String(lo); maxInput.value = String(hi);
+        const base = Number(minInput.min), span = Number(minInput.max)-base;
+        const fill = container.querySelector('.range-fill');
+        fill.style.left = ((lo-base)/span*100)+'%';
+        fill.style.width = ((hi-lo)/span*100)+'%';
+        output.textContent = formatter(lo,hi);
+        // Đầu kéo được focus luôn nằm trên để hai đầu không chặn nhau.
+        minInput.style.zIndex = document.activeElement === minInput ? '4' : '3';
+        maxInput.style.zIndex = document.activeElement === maxInput ? '4' : '3';
+      };
+      const syncRanges = () => {
+        updateRange(priceMin,priceMax,document.getElementById('price-range'),document.getElementById('price-output'),(a,b)=>`${format(a)} – ${format(b)} ${priceUnit()}`);
+        updateRange(areaMin,areaMax,document.getElementById('area-range'),document.getElementById('area-output'),(a,b)=>`${a} – ${b} m²`);
+      };
+      const setMode = (next) => {
+        mode = next;
+        const max = priceLimit();
+        priceMin.max = priceMax.max = String(max);
+        priceMin.step = priceMax.step = mode === 'cho-thue' ? '1' : '0.1';
+        priceMin.value = '0'; priceMax.value = String(max);
+        priceTouched = false;
+        document.getElementById('price-high-label').textContent = `${max} ${priceUnit()}+`;
+        document.getElementById('price-low-label').textContent = `0 ${priceUnit()}`;
+        document.getElementById('search-type-label').textContent = 'Đang tìm: ' + ({'can-ho':'Căn hộ','cho-thue':'Cho thuê','nha-dat':'Nhà đất'}[mode]);
+        syncRanges();
+      };
+      const render = () => {
+        const q = normalize(filterKeyword.value);
+        const minP = Number(priceMin.value), maxP = Number(priceMax.value);
+        const minA = Number(areaMin.value), maxA = Number(areaMax.value);
+        const matched = items.filter(item => {
+          if (mode === 'cho-thue' && !['cho-thue','thue','rent'].includes(item.transaction)) return false;
+          if (mode === 'nha-dat' && !['nha-dat','nha-rieng','dat-tho-cu','dat-nen','biet-thu','shophouse'].includes(item.type)) return false;
+          if (mode === 'can-ho' && !['can-ho','chung-cu','apartment'].includes(item.type)) return false;
+          if (q && !normalize([item.title,item.description,item.projectName].join(' ')).includes(q)) return false;
+          if (project.value && item.project !== project.value) return false;
+          if (bedrooms.value && (item.bedrooms === null || (bedrooms.value === '4' ? item.bedrooms < 4 : item.bedrooms !== Number(bedrooms.value)))) return false;
+          if (direction.value && normalize(item.direction) !== normalize(direction.value)) return false;
+          const p = mode === 'cho-thue' ? item.rent : item.price;
+          if (priceTouched && (p === null || p < minP || (maxP < priceLimit() && p > maxP))) return false;
+          if (areaTouched && (item.area === null || item.area < minA || (maxA < 125 && item.area > maxA))) return false;
+          return true;
+        });
+        count.textContent = `${matched.length} kết quả`;
+        list.replaceChildren();
+        if (!matched.length) {
+          const empty = document.createElement('div'); empty.className = 'results-empty';
+          empty.textContent = 'Chưa có dữ liệu phù hợp với bộ lọc này trong CMS. Anh/chị có thể thử bộ lọc khác hoặc liên hệ 0869 437 415 để được tư vấn.';
+          list.append(empty); return;
         }
-      }, 3000);
-      document.getElementById('close-property-search')?.addEventListener('click',()=>dialog?.close());
-      dialog?.addEventListener('click',(event)=>{if(event.target===dialog)dialog.close();});
-      const prices = {
-        ban:[['','Tất cả mức giá'],['under2','Dưới 2 tỷ'],['2-5','2–5 tỷ'],['5-10','5–10 tỷ'],['10+','Trên 10 tỷ']],
-        'cho-thue':[['','Tất cả mức giá'],['under5','Dưới 5 triệu/tháng'],['5-15','5–15 triệu/tháng'],['15+','Trên 15 triệu/tháng']],
-        'cho-thue-ngay':[['','Tất cả mức giá'],['under500','Dưới 500 nghìn/đêm'],['500-1000','500 nghìn–1 triệu/đêm'],['1000+','Trên 1 triệu/đêm']]
+        matched.forEach(item => {
+          const card = document.createElement('article'); card.className = 'result-card';
+          const details = [item.area !== null ? `${item.area} m²` : '', item.bedrooms !== null ? `${item.bedrooms} phòng ngủ` : '', item.direction ? `Hướng ${item.direction}` : ''].filter(Boolean).join(' · ');
+          const priceValue = mode === 'cho-thue' ? item.rent : item.price;
+          card.innerHTML = `<div><span class="result-tag">Dự án từ CMS</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.description)}</p><small>${escapeHTML(details || 'Thông tin chi tiết xem tại trang dự án')}</small></div><div class="result-card-side"><strong>${priceValue === null ? 'Liên hệ báo giá' : `${format(priceValue)} ${priceUnit()}`}</strong><a href="${escapeHTML(item.url)}">Xem dự án →</a></div>`;
+          list.append(card);
+        });
       };
-      const dealInputs = Array.from(document.querySelectorAll('input[name="giao-dich"]'));
-      const price=document.getElementById('price-select');
-      const browse=document.getElementById('browse-properties');
-      const update=()=>{
-        const selected = dealInputs.find((input)=>input.checked)?.value || 'ban';
-        price.replaceChildren(...prices[selected].map(([value,label])=>new Option(label,value)));
-        browse.href = selected === 'ban' ? '/mua-ban/' : selected === 'cho-thue' ? '/cho-thue/' : '/cho-thue-ngay/';
-      };
-      dealInputs.forEach((input)=>input.addEventListener('change',update));
-      update();
+      form?.addEventListener('submit',(event)=>{
+        event.preventDefault();
+        setMode(form.querySelector('input[name="search-type"]:checked')?.value || 'can-ho');
+        filterKeyword.value = keyword.value;
+        section.hidden = false;
+        render();
+        section.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+      });
+      form?.querySelectorAll('input[name="search-type"]').forEach(r=>r.addEventListener('change',()=>{
+        if (!section.hidden) { setMode(r.value); render(); }
+      }));
+      [filterKeyword,project,bedrooms,direction].forEach(el=>el?.addEventListener('input',render));
+      [priceMin,priceMax].forEach(el=>el?.addEventListener('input',()=>{priceTouched=true;syncRanges();render();}));
+      [areaMin,areaMax].forEach(el=>el?.addEventListener('input',()=>{areaTouched=true;syncRanges();render();}));
+      document.getElementById('clear-filters')?.addEventListener('click',()=>{
+        filterKeyword.value='';keyword.value='';project.value='';bedrooms.value='';direction.value='';
+        areaMin.value='25';areaMax.value='125';areaTouched=false;
+        setMode(mode);render();
+      });
+      setMode(mode);
     })();
   </script>
 
@@ -460,27 +559,44 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .hero-dot.active {background:white;}
     .hero-arrows {position:absolute;z-index:3;inset-inline:16px;top:50%;display:flex;justify-content:space-between;pointer-events:none;transform:translateY(-50%);}
     .hero-arrows button {pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1px solid #ffffff88;background:#10243a99;color:white;font-size:28px;cursor:pointer;}
-    .property-dialog {width:min(760px,calc(100vw - 24px));max-height:min(88dvh,850px);border:0;border-radius:16px;padding:24px;color:#142b43;box-shadow:0 20px 70px #0006;overflow:auto;}
-    .property-dialog::backdrop {background:#06182caa;}
-    .dialog-top {display:flex;justify-content:space-between;gap:15px;align-items:start;margin-bottom:20px;}
-    .dialog-top h2 {font-size:clamp(22px,4vw,30px);margin:6px 0 0;}
-    .dialog-close {font-size:28px;border:0;background:transparent;cursor:pointer;width:44px;height:44px;flex-shrink:0;}
-    .deal-tabs {border:0;margin:0 0 20px;padding:0;min-width:0;}
-    .deal-tabs legend {font-size:14px;font-weight:700;margin-bottom:10px;color:#142b43;}
-    .deal-tab-list {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;}
-    .deal-tab {position:relative;display:block;cursor:pointer;min-width:0;}
-    .deal-tab input {position:absolute;opacity:0;width:1px;height:1px;}
-    .deal-tab span {display:flex;align-items:center;justify-content:center;min-height:52px;padding:8px 5px;text-align:center;
-      border:2px solid #d9e0e8;border-radius:9px;background:#f5f7fa;color:#263d55;font-weight:700;font-size:15px;transition:background .15s,border-color .15s;}
-    .deal-tab input:checked + span {background:#a77a38;border-color:#a77a38;color:#fff;box-shadow:0 4px 12px #a77a3833;}
-    .deal-tab input:focus-visible + span {outline:3px solid #2b78c6;outline-offset:3px;}
-    .deal-tab:hover span {border-color:#a77a38;}
-    .search-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
-    .search-grid label {min-width:0;font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:8px;}
-    .search-grid select {width:100%;min-width:0;height:58px;border:1px solid #cbd5df;border-radius:9px;background:#fff;padding:0 12px;font:inherit;font-weight:400;color:#142b43;}
-    .dialog-actions {display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;}
-    .dialog-actions .outlinebtn {color:#173754;border-color:#173754;}
-    .property-dialog .searchnote {font-size:13px;margin-top:18px;color:#52657a;}
+    .hero-search {margin:25px auto 0;width:min(760px,100%);background:#fff;padding:12px;border-radius:16px;box-shadow:0 12px 35px #0004;text-align:left;color:#19334d;}
+    .hero-search-tabs {display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
+    .hero-search-tabs label {cursor:pointer;position:relative;}
+    .hero-search-tabs input {position:absolute;opacity:0;}
+    .hero-search-tabs span {display:block;border-radius:8px;padding:10px 18px;background:#edf2f6;font-weight:700;font-size:14px;}
+    .hero-search-tabs input:checked+span {background:#153d61;color:white;}
+    .hero-search-tabs input:focus-visible+span {outline:3px solid #dfac57;outline-offset:2px;}
+    .hero-search-input {display:flex;gap:9px;}
+    .hero-search-input input {min-width:0;flex:1;border:1px solid #c9d5e0;border-radius:9px;padding:14px;font:inherit;}
+    .hero-search-input button {border:0;background:#bd914a;color:#fff;border-radius:9px;padding:12px 23px;font:inherit;font-weight:700;cursor:pointer;}
+    .results-section {padding:48px 0;background:#f5f8fb;color:#19334d;scroll-margin-top:15px;}
+    .results-section[hidden] {display:none!important;}
+    .results-heading {display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px;}
+    .results-heading h2 {margin:6px 0 0;font-size:clamp(24px,3vw,34px);}
+    .filter-panel {background:#fff;border:1px solid #dce5ee;border-radius:16px;padding:20px;box-shadow:0 8px 30px #102b4510;}
+    .filter-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
+    .filter-field {display:flex;flex-direction:column;gap:7px;font-weight:700;font-size:13px;min-width:0;}
+    .filter-field input,.filter-field select {height:46px;width:100%;min-width:0;border:1px solid #cbd7e3;border-radius:9px;padding:0 11px;font:inherit;font-weight:400;color:#19334d;background:#fff;}
+    .range-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:35px;margin-top:24px;}
+    .range-header,.range-limits {display:flex;justify-content:space-between;gap:10px;align-items:center;}
+    .range-header {font-size:14px;}.range-header output {font-weight:700;color:#1b5c8d;}
+    .dual-range {position:relative;height:35px;margin:10px 10px 0;}
+    .range-track {position:absolute;left:0;right:0;top:14px;height:7px;background:#dce5ee;border-radius:20px;}
+    .range-fill {position:absolute;top:0;height:100%;background:#bd914a;border-radius:20px;}
+    .dual-range input[type=range] {position:absolute;top:4px;left:0;width:100%;height:28px;margin:0;appearance:none;-webkit-appearance:none;background:transparent;pointer-events:none;}
+    .dual-range input[type=range]::-webkit-slider-thumb {appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;border:3px solid #bd914a;background:white;box-shadow:0 1px 5px #0003;pointer-events:auto;cursor:grab;}
+    .dual-range input[type=range]::-moz-range-thumb {width:17px;height:17px;border-radius:50%;border:3px solid #bd914a;background:white;pointer-events:auto;cursor:grab;}
+    .dual-range input[type=range]:focus-visible {outline:0;}
+    .dual-range input[type=range]:focus-visible::-webkit-slider-thumb {outline:3px solid #237fc2;outline-offset:2px;}
+    .range-limits {font-size:12px;color:#64788c;}
+    .filter-actions {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;font-size:13px;color:#61768a;}
+    .filter-actions button {border:1px solid #cbd7e3;background:#fff;border-radius:8px;padding:9px 14px;cursor:pointer;color:#19334d;}
+    .search-results-list {display:grid;gap:14px;margin-top:22px;}
+    .result-card {display:flex;justify-content:space-between;gap:20px;background:white;border:1px solid #dce5ee;border-radius:13px;padding:20px;}
+    .result-card h3 {margin:8px 0;font-size:20px;}.result-card p {margin:0 0 10px;color:#536b81;}.result-card small {color:#667c91;}
+    .result-tag {font-size:12px;color:#986e2f;font-weight:700;}.result-card-side {min-width:155px;display:flex;flex-direction:column;align-items:flex-end;gap:15px;}
+    .result-card-side a {color:#165b91;font-weight:700;}.results-empty {padding:25px;background:#fff;border:1px dashed #cbd7e3;border-radius:12px;}
+    .results-note {font-size:12px;color:#687c8e;margin-top:15px;}
     @media(max-width:767px){
       .cms-hero {min-height:min(var(--cms-hero-height),650px);}
       .cms-hero-content {text-align:left;padding-block:65px;}
@@ -488,13 +604,15 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       .cms-hero-actions {justify-content:flex-start;}
       .hero-arrows {inset-inline:5px;}
       .hero-arrows button {width:34px;height:34px;}
-      .property-dialog {padding:18px 12px;}
-      .deal-tab-list {gap:5px;}
-      .deal-tab span {min-height:48px;font-size:12px;padding:6px 3px;}
-      .search-grid {gap:10px;}
-      .search-grid label {font-size:13px;}
-      .search-grid select {height:60px;padding-inline:7px;font-size:13px;}
-      .dialog-actions .btn {width:100%;text-align:center;}
+             .hero-search {margin-top:20px;padding:10px;}
+       .hero-search-tabs span {padding:9px 11px;font-size:12px;}
+       .hero-search-input button {padding:10px 12px;font-size:13px;}
+       .hero-search-input input {padding:11px;font-size:14px;}
+       .filter-grid,.range-grid {grid-template-columns:1fr;gap:14px;}
+       .filter-panel {padding:15px;}
+       .range-grid {gap:25px;}
+       .result-card {flex-direction:column;}
+       .result-card-side {align-items:flex-start;}
     }
     @media(prefers-reduced-motion:reduce){.hero-slide{transition:none;}}
   </style>
