@@ -142,6 +142,24 @@ collections:
     - Đông Nam
     - Tây Bắc
     - Tây Nam
+  - label: Hướng ban công
+    name: balconyDirection
+    widget: select
+    required: false
+    options:
+    - Đông
+    - Tây
+    - Nam
+    - Bắc
+    - Đông Bắc
+    - Đông Nam
+    - Tây Bắc
+    - Tây Nam
+  - label: Nội thất
+    name: interior
+    widget: string
+    required: false
+    hint: "Ví dụ: Đầy đủ nội thất, Nội thất cơ bản, Bàn giao thô."
   - label: Thư viện hình ảnh
     name: gallery
     widget: list
@@ -441,6 +459,23 @@ collections:
     min: 0
     required: false
     hint: "Nhập số, không kèm đơn vị. Bán: 3,5 tỷ = 3500. Thuê tháng: 15 triệu = 15. Thuê ngày: 800 nghìn/đêm = 0.8."
+  - label: Mặt tiền (m)
+    name: frontage
+    widget: string
+    required: false
+    hint: "Ví dụ: 5,5 m."
+  - label: Đường vào (m)
+    name: roadWidth
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: "Chiều rộng đường vào tính bằng mét, ví dụ 5.5."
+  - label: Nội thất
+    name: interior
+    widget: string
+    required: false
+    hint: "Ví dụ: Đầy đủ nội thất, Nội thất cơ bản, Bàn giao thô."
   - label: Thông tin pháp lý
     name: legal
     widget: string
@@ -454,6 +489,12 @@ collections:
     hint: "Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng."
   - label: Số phòng ngủ (nếu có)
     name: bedrooms
+    widget: number
+    value_type: int
+    min: 0
+    required: false
+  - label: Số phòng vệ sinh
+    name: bathrooms
     widget: number
     value_type: int
     min: 0
@@ -639,6 +680,18 @@ collections:
     name: frontage
     widget: string
     required: false
+  - label: Đường vào (m)
+    name: roadWidth
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: "Chiều rộng đường vào tính bằng mét, ví dụ 5.5."
+  - label: Nội thất
+    name: interior
+    widget: string
+    required: false
+    hint: "Ví dụ: Đầy đủ nội thất, Nội thất cơ bản, Bàn giao thô."
   - label: Thông tin pháp lý
     name: legal
     widget: string
@@ -652,6 +705,12 @@ collections:
     hint: "Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng."
   - label: Số phòng ngủ (nếu có)
     name: bedrooms
+    widget: number
+    value_type: int
+    min: 0
+    required: false
+  - label: Số phòng vệ sinh
+    name: bathrooms
     widget: number
     value_type: int
     min: 0
