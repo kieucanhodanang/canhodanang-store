@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const apartments = await getCollection('can-ho');
+  return apartments
+    .filter((entry) => entry.data.status !== 'draft')
+    .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const data = entry.data;
+const { Content } = await render(entry);
+const isAvailable = data.listingStatus === 'available';
+const isRent = data.transaction === 'cho-thue' || data.transaction === 'cho-thue-ngay';
+const statusLabel = isAvailable ? (isRent ? 'Đang cho thuê' : 'Đang bán') : data.listingStatus === 'paused' ? 'Tạm ngừng giao dịch' : (isRent ? 'Đã cho thuê' : 'Đã bán');
+const typeLabel = data.transaction === 'cho-thue-ngay' ? 'Cho thuê theo ngày' : isRent ? 'Cho thuê dài hạn' : 'Bán căn hộ';
+const projectNames = (await getCollection('du-an')).reduce((map, item) => {
+  map.set(item.id, item.data.title);
+  return map;
+}, new Map());
+const projectName = data.project ? projectNames.get(data.project) || data.project : '';
+const images = [data.image, ...(data.gallery || [])].filter((src, index, arr) => typeof src === 'string' && src.startsWith('/') && arr.indexOf(src) === index);
+const seoTitle = data.seoTitle || data.title;
+const seoDescription = data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`;
+---
+<Base title={seoTitle} description={seoDescription}>
+  <main class="property-page">
+    <div class="wrap property-wrap">
+      <nav class="breadcrumbs" aria-label="Đường dẫn"><a href="/">Trang chủ</a><span>/</span><a href="/can-ho/">Căn hộ</a><span>/</span><span aria-current="page">{data.title}</span></nav>
+      <header class="property-heading">
+        <div><span class="transaction-label">{typeLabel}</span><h1>{data.title}</h1><p class="property-address">{[data.address, data.ward, data.district].filter(Boolean).join(' · ')}</p></div>
+        <span class:list={['status', { inactive: !isAvailable }]}>{statusLabel}</span>
+      </header>
+      {images.length > 0 && <div class="gallery">
+        <img class="main-image" src={images[0]} alt={data.imageAlt || data.title} loading="eager" />
+        {images.length > 1 && <div class="gallery-more">{images.slice(1).map((src, index) => <img src={src} alt={`Hình ảnh ${index + 2} của ${data.title}`} loading="lazy" />)}</div>}
+      </div>}
+      <div class="property-columns">
+        <article class="property-main">
+          <section class="panel" aria-label="Thông tin căn hộ">
+            <h2>Thông tin căn hộ</h2>
+            <div class="facts">
+              <div><span>Giá {isRent ? 'cho thuê' : 'bán'}</span><strong>{data.price}</strong></div>
+              <div><span>Diện tích</span><strong>{data.area}</strong></div>
+              {data.bedrooms != null && <div><span>Phòng ngủ</span><strong>{data.bedrooms}</strong></div>}
+              {data.bathrooms != null && <div><span>Phòng vệ sinh</span><strong>{data.bathrooms}</strong></div>}
+              {data.direction && <div><span>Hướng</span><strong>{data.direction}</strong></div>}
+              {projectName && <div><span>Dự án</span><strong>{projectName}</strong></div>}
+              {data.legal && <div><span>Pháp lý</span><strong>{data.legal}</strong></div>}
+            </div>
+          </section>
+          <section class="panel article-body"><h2>Mô tả chi tiết</h2><Content /></section>
+        </article>
+        <aside class="property-sidebar">
+          <div class="panel contact-panel"><h2>Liên hệ tư vấn</h2><p>{isAvailable ? 'Nhận thông tin và đặt lịch xem căn hộ.' : 'Sản phẩm hiện không còn giao dịch. Liên hệ để được giới thiệu căn hộ tương tự.'}</p><a class="call-button" href="tel:0869437415">☎ Gọi 0869 437 415</a><a class="email-link" href={`mailto:batdongsandanang8888@gmail.com?subject=${encodeURIComponent(`Tư vấn: ${data.title}`)}`}>Gửi email tư vấn</a></div>
+        </aside>
+      </div>
+      <p class="back-link"><a href="/">← Về trang chủ</a></p>
+    </div>
+  </main>
+  <style>
+    .property-page{background:#f5f8fb;color:#19334d;padding:30px 0 65px}.property-wrap{max-width:1200px;margin:auto;padding:0 20px}.breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:25px}.breadcrumbs a,.back-link a{color:#1a5d8c}.property-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:24px}.property-heading h1{font-size:clamp(27px,3.5vw,42px);line-height:1.2;margin:9px 0}.transaction-label{color:#996e2d;font-weight:700;font-size:13px;text-transform:uppercase}.property-address{color:#62788b;margin:0}.status{background:#e5f5ec;color:#14663a;border-radius:30px;padding:8px 14px;font-size:13px;font-weight:700;white-space:nowrap}.status.inactive{background:#f2e9e6;color:#8c3d32}.gallery{margin-bottom:25px}.main-image{display:block;width:100%;max-height:540px;object-fit:cover;border-radius:16px;background:#e4e9ee}.gallery-more{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}.gallery-more img{width:100%;height:150px;object-fit:cover;border-radius:10px;background:#e4e9ee}.property-columns{display:grid;grid-template-columns:minmax(0,2fr) minmax(250px,1fr);align-items:start;gap:24px}.property-main{display:grid;gap:24px}.panel{background:white;border:1px solid #dce5ee;border-radius:15px;padding:25px;min-width:0}.panel h2{font-size:23px;margin:0 0 20px}.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.facts>div{display:flex;flex-direction:column;gap:5px;padding-bottom:13px;border-bottom:1px solid #e6edf3}.facts span{color:#68798a;font-size:13px}.facts strong{overflow-wrap:anywhere}.article-body{line-height:1.8;overflow-wrap:anywhere}.article-body :global(img){max-width:100%;height:auto;border-radius:10px}.article-body :global(a){color:#17659a}.contact-panel{position:sticky;top:20px}.contact-panel p{color:#62788b;line-height:1.6}.call-button{display:block;text-align:center;background:#bd914a;color:white;padding:14px;border-radius:9px;font-weight:700;text-decoration:none}.email-link{display:block;text-align:center;margin-top:15px;color:#165b91}.back-link{margin-top:28px}@media(max-width:767px){.property-heading{flex-direction:column;gap:12px}.property-columns{grid-template-columns:1fr}.panel{padding:18px}.gallery-more{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery-more img{height:115px}.facts{gap:13px}}
+  </style>
+</Base>
