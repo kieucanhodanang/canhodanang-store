@@ -1,3 +1,4 @@
+
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
@@ -27,13 +28,16 @@ const propertyFields = {
   project: optionalText,
   transaction: z.enum(['ban', 'cho-thue', 'cho-thue-ngay']).default('ban'),
   listingStatus: z.enum(['available', 'closed', 'paused']).default('available'),
-  // Trường hiển thị tự do giữ tương thích với các bài đăng cũ.
+
+  // Giá và diện tích dạng văn bản.
   price: optionalText,
   area: optionalText,
-  // Trường số dùng để lọc theo thanh trượt.
+
+  // Giá trị số dùng để lọc.
   // priceValue: triệu đồng; areaValue: mét vuông.
   priceValue: optionalNumber,
   areaValue: optionalNumber,
+
   bedrooms: optionalNumber,
   district: optionalText,
   ward: optionalText,
@@ -52,6 +56,10 @@ const canHo = defineCollection({
     address: z.string(),
     image: z.string(),
     bathrooms: optionalNumber,
+
+    // Thông số căn hộ bổ sung.
+    balconyDirection: optionalText,
+    interior: optionalText,
   }),
 });
 
@@ -84,6 +92,12 @@ const bietThu = defineCollection({
     image: z.string(),
     propertyType: z.string(),
     floors: optionalNumber,
+
+    // Thông số biệt thự / shophouse bổ sung.
+    frontage: optionalText,
+    roadWidth: optionalText,
+    interior: optionalText,
+    bathrooms: optionalNumber,
   }),
 });
 
@@ -99,6 +113,11 @@ const thoCu = defineCollection({
     area: z.string(),
     frontage: optionalText,
     floors: optionalNumber,
+
+    // Thông số nhà đất bổ sung.
+    roadWidth: optionalText,
+    interior: optionalText,
+    bathrooms: optionalNumber,
   }),
 });
 
