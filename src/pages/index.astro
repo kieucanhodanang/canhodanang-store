@@ -35,27 +35,48 @@ const slideSeconds = clamp(homepage.slideInterval, 3, 12, 5);
 const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft')
   .sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
 const slideData = JSON.stringify(slides).replace(/</g, '\\u003c');
-// Dữ liệu có thật từ collection dự án của Decap CMS. Không tạo tin đăng giả.
-const searchableProjects = projects.map((item) => {
-  const d = item.data;
-  const num = (v) => v === undefined || v === null || v === '' ? null : (Number.isFinite(Number(v)) ? Number(v) : null);
-  return {
-    title: d.title || item.id,
-    description: d.description || d.summary || '',
-    project: item.id,
-    projectName: d.title || item.id,
-    url: `/du-an/${item.slug || item.id}/`,
-    type: String(d.type || d.loai || 'can-ho').toLowerCase(),
-    transaction: String(d.transaction || d.giaoDich || 'ban').toLowerCase(),
-    price: num(d.priceBillion ?? d.giaTy),
-    rent: num(d.rentMillion ?? d.giaThueTrieu),
-    area: num(d.area ?? d.dienTich),
-    bedrooms: num(d.bedrooms ?? d.phongNgu),
-    direction: String(d.direction || d.huong || ''),
-    image: typeof d.image === 'string' && d.image.startsWith('/') ? d.image : ''
-  };
-});
-const searchData = JSON.stringify(searchableProjects).replace(/</g, '\\u003c');
+// Dữ liệu tin đăng thật từ Decap CMS, được Astro dựng sẵn khi build.
+// Chỉ công khai các sản phẩm còn giao dịch; không đưa bài dự án vào danh sách hàng bán.
+const projectNames = new Map(projects.map((item) => [item.id, item.data.title]));
+const listingCollections = await Promise.all([
+  getCollection('can-ho'), getCollection('biet-thu'), getCollection('tho-cu'),
+]);
+const listingTypes = ['can-ho', 'biet-thu', 'tho-cu'];
+const searchableListings = listingCollections.flatMap((entries, index) =>
+  entries.filter((item) => item.data.status === 'published' && item.data.listingStatus === 'available')
+    .map((item) => {
+      const d = item.data;
+      const numeric = (value) => value === undefined || value === null || value === ''
+        ? null : (Number.isFinite(Number(value)) ? Number(value) : null);
+      const project = d.project || '';
+      const type = listingTypes[index];
+      const transaction = d.transaction || 'ban';
+      const priceMillion = numeric(d.priceValue);
+      return {
+        title: d.title || item.id,
+        description: d.description || '',
+        project,
+        projectName: projectNames.get(project) || '',
+        district: d.district || '',
+        ward: d.ward || '',
+        address: d.address || '',
+        url: `/${type}/${item.id}/`,
+        type,
+        propertyType: d.propertyType || type,
+        transaction,
+        // Giá chuẩn hóa trong CMS là triệu đồng; bộ lọc bán dùng tỷ, thuê dùng triệu.
+        price: transaction === 'ban' && priceMillion !== null ? priceMillion / 1000 : null,
+        rent: transaction !== 'ban' ? priceMillion : null,
+        priceText: d.price || '',
+        area: numeric(d.areaValue),
+        areaText: d.area || '',
+        bedrooms: numeric(d.bedrooms),
+        direction: d.direction || '',
+        image: typeof d.image === 'string' && d.image.startsWith('/') ? d.image : '',
+      };
+    })
+);
+const searchData = JSON.stringify(searchableListings).replace(/</g, '\\u003c');
 const khuVuc = [
   {
     title: 'Căn hộ Sơn Trà',
@@ -153,7 +174,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         <div class="filter-actions"><button id="clear-filters" type="button">Xóa bộ lọc</button><span id="search-type-label">Đang tìm: Căn hộ</span></div>
       </div>
       <div class="search-results-list" id="search-results-list" aria-live="polite"></div>
-      <p class="results-note">Dữ liệu tìm kiếm hiện lấy từ danh mục Dự án trong CMS. Tin căn hộ bán, cho thuê và nhà đất sẽ xuất hiện đầy đủ khi có collection tin đăng và các trường giá, diện tích, phòng ngủ, hướng tương ứng.</p>
+      <p class="results-note">Kết quả được cập nhật từ các tin đăng công khai và còn giao dịch trong CMS sau mỗi lần xuất bản website. Giá và diện tích cần được nhập ở trường số để lọc bằng thanh trượt.</p>
     </div>
   </section>
   <script type="application/json" id="hero-slides-data" set:html={slideData} />
@@ -243,10 +264,10 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         const minP = Number(priceMin.value), maxP = Number(priceMax.value);
         const minA = Number(areaMin.value), maxA = Number(areaMax.value);
         const matched = items.filter(item => {
-          if (mode === 'cho-thue' && !['cho-thue','thue','rent'].includes(item.transaction)) return false;
-          if (mode === 'nha-dat' && !['nha-dat','nha-rieng','dat-tho-cu','dat-nen','biet-thu','shophouse'].includes(item.type)) return false;
-          if (mode === 'can-ho' && !['can-ho','chung-cu','apartment'].includes(item.type)) return false;
-          if (q && !normalize([item.title,item.description,item.projectName].join(' ')).includes(q)) return false;
+          if (mode === 'cho-thue' && !['cho-thue','cho-thue-ngay'].includes(item.transaction)) return false;
+          if (mode === 'nha-dat' && (item.type === 'can-ho' || item.transaction !== 'ban')) return false;
+          if (mode === 'can-ho' && (item.type !== 'can-ho' || item.transaction !== 'ban')) return false;
+          if (q && !normalize([item.title,item.description,item.projectName,item.district,item.ward,item.address].join(' ')).includes(q)) return false;
           if (project.value && item.project !== project.value) return false;
           if (bedrooms.value && (item.bedrooms === null || (bedrooms.value === '4' ? item.bedrooms < 4 : item.bedrooms !== Number(bedrooms.value)))) return false;
           if (direction.value && normalize(item.direction) !== normalize(direction.value)) return false;
@@ -264,9 +285,12 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         }
         matched.forEach(item => {
           const card = document.createElement('article'); card.className = 'result-card';
-          const details = [item.area !== null ? `${item.area} m²` : '', item.bedrooms !== null ? `${item.bedrooms} phòng ngủ` : '', item.direction ? `Hướng ${item.direction}` : ''].filter(Boolean).join(' · ');
+          const details = [item.area !== null ? `${format(item.area)} m²` : item.areaText, item.bedrooms !== null ? `${item.bedrooms} phòng ngủ` : '', item.direction ? `Hướng ${item.direction}` : ''].filter(Boolean).join(' · ');
           const priceValue = mode === 'cho-thue' ? item.rent : item.price;
-          card.innerHTML = `<div><span class="result-tag">Dự án từ CMS</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.description)}</p><small>${escapeHTML(details || 'Thông tin chi tiết xem tại trang dự án')}</small></div><div class="result-card-side"><strong>${priceValue === null ? 'Liên hệ báo giá' : `${format(priceValue)} ${priceUnit()}`}</strong><a href="${escapeHTML(item.url)}">Xem dự án →</a></div>`;
+          const shownPrice = priceValue === null ? (item.priceText || 'Liên hệ báo giá') : `${format(priceValue)} ${priceUnit()}`;
+          const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : item.type === 'biet-thu' ? 'Biệt thự / Shophouse' : 'Nhà đất';
+          const image = item.image ? `<img class="result-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy" />` : '';
+          card.innerHTML = `${image}<div class="result-card-main"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.description)}</p><small>${escapeHTML(details || item.address || 'Xem thông tin chi tiết')}</small></div><div class="result-card-side"><strong>${escapeHTML(shownPrice)}</strong><a href="${escapeHTML(item.url)}">Xem chi tiết →</a></div>`;
           list.append(card);
         });
       };
@@ -586,7 +610,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .filter-actions button {border:1px solid #cbd7e3;background:#fff;border-radius:8px;padding:9px 14px;cursor:pointer;color:#19334d;}
     .search-results-list {display:grid;gap:14px;margin-top:22px;}
     .result-card {display:flex;justify-content:space-between;gap:20px;background:white;border:1px solid #dce5ee;border-radius:13px;padding:20px;}
-    .result-card h3 {margin:8px 0;font-size:20px;}.result-card p {margin:0 0 10px;color:#536b81;}.result-card small {color:#667c91;}
+    .result-card-main {flex:1;min-width:0;} .result-image {width:170px;height:125px;object-fit:cover;border-radius:9px;flex-shrink:0;} .result-card h3 {margin:8px 0;font-size:20px;}.result-card p {margin:0 0 10px;color:#536b81;}.result-card small {color:#667c91;}
     .result-tag {font-size:12px;color:#986e2f;font-weight:700;}.result-card-side {min-width:155px;display:flex;flex-direction:column;align-items:flex-end;gap:15px;}
     .result-card-side a {color:#165b91;font-weight:700;}.results-empty {padding:25px;background:#fff;border:1px dashed #cbd7e3;border-radius:12px;}
     .results-note {font-size:12px;color:#687c8e;margin-top:15px;}
@@ -604,7 +628,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
        .filter-grid,.range-grid {grid-template-columns:1fr;gap:14px;}
        .filter-panel {padding:15px;}
        .range-grid {gap:25px;}
-       .result-card {flex-direction:column;}
+       .result-card {flex-direction:column;} .result-image {width:100%;height:180px;}
        .result-card-side {align-items:flex-start;}
     }
     @media(prefers-reduced-motion:reduce){.hero-slide{transition:none;}}
