@@ -68,9 +68,23 @@ collections:
   - label: Giá bán hoặc cho thuê
     name: price
     widget: string
+  - label: Giá để lọc (triệu đồng)
+    name: priceValue
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: "Nhập số, không kèm đơn vị. Bán: 3,5 tỷ = 3500. Thuê tháng: 15 triệu = 15. Thuê ngày: 800 nghìn/đêm = 0.8."
   - label: Diện tích (m²)
     name: area
     widget: string
+  - label: Diện tích để lọc (m²)
+    name: areaValue
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: "Nhập số, ví dụ 75.5. Thanh trượt trang chủ hiển thị khoảng 25–125 m²."
   - label: Số phòng ngủ
     name: bedrooms
     widget: number
@@ -409,13 +423,33 @@ collections:
     name: area
     widget: string
     required: false
+  - label: Diện tích để lọc (m²)
+    name: areaValue
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: "Nhập số, ví dụ 75.5. Thanh trượt trang chủ hiển thị khoảng 25–125 m²."
   - label: Giá bán / cho thuê
     name: price
     widget: string
     required: false
+  - label: Giá để lọc (triệu đồng)
+    name: priceValue
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: "Nhập số, không kèm đơn vị. Bán: 3,5 tỷ = 3500. Thuê tháng: 15 triệu = 15. Thuê ngày: 800 nghìn/đêm = 0.8."
   - label: Thông tin pháp lý
     name: legal
     widget: string
+    required: false
+  - label: Số phòng ngủ (nếu có)
+    name: bedrooms
+    widget: number
+    value_type: int
+    min: 0
     required: false
   - label: Hướng
     name: direction
@@ -573,9 +607,23 @@ collections:
   - label: Giá bán
     name: price
     widget: string
+  - label: Giá để lọc (triệu đồng)
+    name: priceValue
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: "Nhập số, không kèm đơn vị. Bán: 3,5 tỷ = 3500. Thuê tháng: 15 triệu = 15. Thuê ngày: 800 nghìn/đêm = 0.8."
   - label: Diện tích đất
     name: area
     widget: string
+  - label: Diện tích để lọc (m²)
+    name: areaValue
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: "Nhập số, ví dụ 75.5. Thanh trượt trang chủ hiển thị khoảng 25–125 m²."
   - label: Phường / Xã
     name: ward
     widget: string
@@ -587,6 +635,12 @@ collections:
   - label: Thông tin pháp lý
     name: legal
     widget: string
+    required: false
+  - label: Số phòng ngủ (nếu có)
+    name: bedrooms
+    widget: number
+    value_type: int
+    min: 0
     required: false
   - label: Hướng
     name: direction
