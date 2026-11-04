@@ -21,6 +21,7 @@ interface Property {
   roadWidth?: string | null;
   balconyDirection?: string | null;
   furniture?: string | null;
+  interior?: string | null;
   address?: string | null;
   district?: string | null;
   ward?: string | null;
@@ -48,9 +49,19 @@ const pricePerSqm = isSale && typeof property.priceValue === 'number' && propert
   ? new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 2 }).format(property.priceValue / property.areaValue)
   : null;
 const areaLabel = kind === 'can-ho' ? 'Diện tích' : 'Diện tích đất';
+// Bổ sung m² cho diện tích dạng số hoặc chuỗi chưa có đơn vị.
+const formatArea = (value: string | number | null | undefined): string | null => {
+  if (value === null || value === undefined || String(value).trim() === '') return null;
+  const text = String(value).trim();
+  if (/^(?:\d+(?:[.,]\d+)?)(?:\s*(?:m²|m2|㎡))?$/i.test(text)) {
+    return `${text.replace(/\s*(?:m²|m2|㎡)$/i, '')} m²`;
+  }
+  return text;
+};
+const formattedArea = formatArea(property.area) ?? formatArea(property.areaValue);
 const specs = [
   { label: isSale ? 'Giá bán' : 'Giá thuê', value: property.price || 'Liên hệ', price: true },
-  { label: areaLabel, value: property.area || (property.areaValue ? `${property.areaValue} m²` : 'Đang cập nhật') },
+  { label: areaLabel, value: formattedArea ?? 'Đang cập nhật' },
   kind === 'can-ho'
     ? { label: 'Phòng ngủ', value: typeof property.bedrooms === 'number' ? `${property.bedrooms} PN` : 'Đang cập nhật' }
     : { label: 'Số tầng', value: typeof property.floors === 'number' ? `${property.floors} tầng` : 'Đang cập nhật' },
@@ -58,7 +69,7 @@ const specs = [
 // Chỉ hiển thị thông số thực sự có dữ liệu trong CMS.
 const details = [
   { icon: 'tag', label: isSale ? 'Giá bán' : 'Giá thuê', value: property.price },
-  { icon: 'area', label: areaLabel, value: property.area || (property.areaValue ? `${property.areaValue} m²` : null) },
+  { icon: 'area', label: areaLabel, value: formattedArea },
   { icon: 'bed', label: 'Số phòng ngủ', value: property.bedrooms != null ? `${property.bedrooms} phòng` : null },
   { icon: 'bath', label: 'Số phòng tắm, vệ sinh', value: property.bathrooms != null ? `${property.bathrooms} phòng` : null },
   { icon: 'floors', label: 'Số tầng', value: kind !== 'can-ho' && property.floors != null ? `${property.floors} tầng` : null },
@@ -67,7 +78,7 @@ const details = [
   { icon: 'frontage', label: 'Mặt tiền', value: kind !== 'can-ho' ? property.frontage : null },
   { icon: 'road', label: 'Đường vào', value: kind !== 'can-ho' ? property.roadWidth : null },
   { icon: 'legal', label: 'Pháp lý', value: property.legal },
-  { icon: 'furniture', label: 'Nội thất', value: property.furniture },
+  { icon: 'furniture', label: 'Nội thất', value: property.interior ?? property.furniture },
   { icon: 'home', label: 'Loại hình', value: property.propertyType },
   { icon: 'location', label: 'Địa chỉ', value: property.address },
   { icon: 'location', label: 'Phường / xã', value: property.ward },
