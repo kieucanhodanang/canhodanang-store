@@ -83,6 +83,7 @@ const bietThu = defineCollection({
     ...propertyFields,
     image: z.string(),
     propertyType: z.string(),
+    floors: optionalNumber,
   }),
 });
 
@@ -97,6 +98,7 @@ const thoCu = defineCollection({
     price: z.string(),
     area: z.string(),
     frontage: optionalText,
+    floors: optionalNumber,
   }),
 });
 
