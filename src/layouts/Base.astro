@@ -27,9 +27,15 @@ const {
 // Đặt đường dẫn logo sau khi tải ảnh lên public/uploads, ví dụ: '/uploads/logo-kieu-nguyen.png'.
 const brandLogo = '';
 const siteUrl = 'https://canhodanang.store';
-const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
+// Thống nhất canonical theo dạng URL có dấu / cuối (trừ đường dẫn tệp).
+const pathname = Astro.url.pathname;
+const canonicalPath = pathname === '/' || pathname.endsWith('/') || /\/[^/]+\.[a-z0-9]+$/i.test(pathname)
+  ? pathname
+  : `${pathname}/`;
+const canonicalUrl = new URL(canonicalPath, siteUrl).href;
 const imageUrl = new URL(image, siteUrl).href;
 const websiteId = `${siteUrl}/#website`;
+const organizationId = `${siteUrl}/#organization`;
 const pageId = `${canonicalUrl}#webpage`;
 
 // Dữ liệu menu và logo lấy trực tiếp từ Decap CMS khi Cloudflare build.
@@ -50,11 +56,26 @@ const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
     {
+      '@type': 'Organization',
+      '@id': organizationId,
+      name: 'Căn Hộ Đà Nẵng',
+      url: `${siteUrl}/`,
+      email: 'batdongsandanang8888@gmail.com',
+      telephone: '+84869437415',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '+84869437415',
+        contactType: 'customer service',
+        availableLanguage: 'Vietnamese',
+      },
+    },
+    {
       '@type': 'WebSite',
       '@id': websiteId,
       url: `${siteUrl}/`,
       name: 'Căn Hộ Đà Nẵng',
       inLanguage: 'vi-VN',
+      publisher: { '@id': organizationId },
     },
     {
       '@type': 'WebPage',
@@ -64,6 +85,8 @@ const structuredData = {
       description,
       inLanguage: 'vi-VN',
       isPartOf: { '@id': websiteId },
+      publisher: { '@id': organizationId },
+      ...(publishedTime ? { datePublished: publishedTime } : {}),
       ...(image ? { primaryImageOfPage: { '@type': 'ImageObject', url: imageUrl } } : {}),
       ...(modifiedTime ? { dateModified: modifiedTime } : {}),
     },
@@ -89,6 +112,7 @@ const structuredData = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:secure_url" content={imageUrl} />
     <meta property="og:image:alt" content={imageAlt} />
     {type === 'article' && publishedTime && <meta property="article:published_time" content={publishedTime} />}
     {type === 'article' && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
