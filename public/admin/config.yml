@@ -445,6 +445,13 @@ collections:
     name: legal
     widget: string
     required: false
+  - label: Số tầng
+    name: floors
+    widget: number
+    value_type: int
+    min: 1
+    required: false
+    hint: "Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng."
   - label: Số phòng ngủ (nếu có)
     name: bedrooms
     widget: number
@@ -636,6 +643,13 @@ collections:
     name: legal
     widget: string
     required: false
+  - label: Số tầng
+    name: floors
+    widget: number
+    value_type: int
+    min: 1
+    required: false
+    hint: "Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng."
   - label: Số phòng ngủ (nếu có)
     name: bedrooms
     widget: number
