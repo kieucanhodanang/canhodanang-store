@@ -27,8 +27,14 @@ const propertyFields = {
   project: optionalText,
   transaction: z.enum(['ban', 'cho-thue', 'cho-thue-ngay']).default('ban'),
   listingStatus: z.enum(['available', 'closed', 'paused']).default('available'),
+  // Trường hiển thị tự do giữ tương thích với các bài đăng cũ.
   price: optionalText,
   area: optionalText,
+  // Trường số dùng để lọc theo thanh trượt.
+  // priceValue: triệu đồng; areaValue: mét vuông.
+  priceValue: optionalNumber,
+  areaValue: optionalNumber,
+  bedrooms: optionalNumber,
   district: optionalText,
   ward: optionalText,
   address: optionalText,
@@ -45,7 +51,6 @@ const canHo = defineCollection({
     area: z.string(),
     address: z.string(),
     image: z.string(),
-    bedrooms: optionalNumber,
     bathrooms: optionalNumber,
   }),
 });
