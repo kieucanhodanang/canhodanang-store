@@ -13,6 +13,13 @@
       "mobileImage": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
       "imageAlt": "Căn hộ đà nẵng",
       "title": "Căn hộ đà nẵng giá tốt 2026"
+    },
+    {
+      "enabled": true,
+      "image": "/uploads/can-ho-cao-cap-view-bien-da-nang.webp",
+      "mobileImage": "/uploads/can-ho-cao-cap-view-bien-da-nang.webp",
+      "imageAlt": "Căn hộ Đà Nẵng view biển cao cấp",
+      "title": "Căn hộ cao cấp Đà Nẵng"
     }
   ],
   "bannerImage": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
