@@ -1,0 +1,6 @@
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://canhodanang.store/sitemap-index.xml
