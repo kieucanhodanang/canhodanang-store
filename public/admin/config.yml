@@ -226,12 +226,20 @@ collections:
   create: true
   extension: md
   format: frontmatter
-  slug: '{{slug}}'
+  slug: '{{fields.slug}}'
   identifier_field: title
   fields:
   - label: Tiêu đề bài đăng
     name: title
     widget: string
+  - label: Slug dự án (đường dẫn URL)
+    name: slug
+    widget: string
+    required: true
+    pattern:
+    - '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+    - 'Chỉ dùng chữ thường không dấu, số và dấu gạch ngang. Ví dụ: capital-square'
+    hint: 'Ví dụ: capital-square. Không nhập /du-an/ hoặc .md. Sau khi xuất bản không nên đổi slug vì sẽ đổi URL.'
   - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
     name: description
     widget: text
