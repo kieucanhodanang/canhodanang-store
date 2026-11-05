@@ -19,7 +19,8 @@ const forRent = apartments.filter((item) => item.data.transaction !== 'ban');
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const toAbsolute = (value: string) => new URL(value, siteUrl).href;
-const images = [...new Set([data.image, ...(data.gallery ?? [])].filter((value): value is string => typeof value === 'string' && value.trim().length > 0))].map(toAbsolute);
+const images = [...new Set([data.image, ...(data.gallery ?? [])]
+  .filter((value): value is string => typeof value === 'string' && value.trim().length > 0))].map(toAbsolute);
 const description = data.description || `Thông tin dự án ${data.title} tại ${data.location}. Liên hệ 0869 437 415 để được tư vấn.`;
 const schema = {
   '@context': 'https://schema.org',
@@ -54,40 +55,122 @@ const schema = {
         <a href="/du-an/">Dự án</a><span aria-hidden="true">/</span>
         <span aria-current="page">{data.title}</span>
       </nav>
+
       <header class="heading">
         <span class="eyebrow">THÔNG TIN DỰ ÁN</span>
         <h1>{data.title}</h1>
-        <p class="location">{data.location}</p>
-        {data.developer && <p>Chủ đầu tư: <strong>{data.developer}</strong></p>}
+        {data.location && <p class="location">📍 {data.location}</p>}
+        <p class="intro">{description}</p>
+        {data.developer && <p class="developer">Chủ đầu tư: <strong>{data.developer}</strong></p>}
       </header>
+
       {data.image && <img class="cover" src={data.image} alt={data.imageAlt || data.title} loading="eager" />}
       {data.gallery && data.gallery.length > 0 && (
         <section class="gallery" aria-label="Hình ảnh dự án">
-          {data.gallery.filter(Boolean).map((image, index) => <img src={image} alt={`${data.title} - hình ${index + 1}`} loading="lazy" />)}
+          {data.gallery.filter(Boolean).map((image, index) => (
+            <img src={image} alt={`${data.title} - hình ${index + 1}`} loading="lazy" />
+          ))}
         </section>
       )}
-      <section class="description">
-        <h2>Tổng quan dự án {data.title}</h2>
-        <Content />
+
+      <section class="description" aria-label="Giới thiệu và thông tin chi tiết dự án">
+        <div class="article-content">
+          <Content />
+        </div>
       </section>
+
       <section class="listings">
         <h2>Căn hộ đang bán tại {data.title}</h2>
-        {forSale.length > 0 ? <div class="cards">{forSale.map((item) => <a class="card" href={`/can-ho/${item.id}/`}>
-          {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
-          <div class="card-body"><h3>{item.data.title}</h3><p>{item.data.area} m² · {item.data.price}</p></div>
-        </a>)}</div> : <p>Hiện chưa có căn hộ bán được đăng trong dự án này.</p>}
+        {forSale.length > 0 ? (
+          <div class="cards">
+            {forSale.map((item) => (
+              <a class="card" href={`/can-ho/${item.id}/`}>
+                {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
+                <div class="card-body">
+                  <h3>{item.data.title}</h3>
+                  <p>{item.data.area} m² · {item.data.price}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : <p class="empty">Hiện chưa có căn hộ bán được đăng trong dự án này.</p>}
       </section>
+
       <section class="listings">
         <h2>Căn hộ cho thuê tại {data.title}</h2>
-        {forRent.length > 0 ? <div class="cards">{forRent.map((item) => <a class="card" href={`/can-ho/${item.id}/`}>
-          {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
-          <div class="card-body"><h3>{item.data.title}</h3><p>{item.data.area} m² · {item.data.price}</p></div>
-        </a>)}</div> : <p>Hiện chưa có căn hộ cho thuê được đăng trong dự án này.</p>}
+        {forRent.length > 0 ? (
+          <div class="cards">
+            {forRent.map((item) => (
+              <a class="card" href={`/can-ho/${item.id}/`}>
+                {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
+                <div class="card-body">
+                  <h3>{item.data.title}</h3>
+                  <p>{item.data.area} m² · {item.data.price}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : <p class="empty">Hiện chưa có căn hộ cho thuê được đăng trong dự án này.</p>}
       </section>
-      <div class="contact"><a href="tel:0869437415">Gọi tư vấn: 0869 437 415</a><a href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Liên hệ Zalo</a></div>
+
+      <div class="contact">
+        <a href="tel:0869437415">Gọi tư vấn: 0869 437 415</a>
+        <a href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Liên hệ Zalo</a>
+      </div>
     </div>
   </main>
   <style>
-    .project-page{background:#f5f8fb;color:#19334d;padding:30px 0 65px}.wrap{max-width:1160px;margin:0 auto;padding:0 20px}.breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:20px}.breadcrumbs a{color:#1a5d8c}.heading{margin-bottom:22px}.eyebrow{font-size:13px;font-weight:700;color:#996e2d}.heading h1{font-size:clamp(27px,4vw,40px);margin:8px 0 12px;line-height:1.25}.location{color:#62788b}.cover{width:100%;max-height:540px;object-fit:cover;border-radius:14px}.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.gallery img{width:100%;height:210px;object-fit:cover;border-radius:10px}.description,.listings{background:white;border-radius:14px;padding:24px;margin-top:24px;overflow-wrap:anywhere}.description h2,.listings h2{font-size:23px;margin:0 0 18px}.description :global(img){max-width:100%;height:auto}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{display:block;text-decoration:none;color:inherit;border:1px solid #e0e7ed;border-radius:12px;overflow:hidden}.card img{width:100%;height:180px;object-fit:cover}.card-body{padding:14px}.card h3{font-size:17px;margin:0 0 8px}.card p{color:#62788b;margin:0}.contact{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.contact a{background:#1a5d8c;color:white;padding:12px 18px;border-radius:9px;text-decoration:none;font-weight:700}.contact a+a{background:#167b55}@media(max-width:767px){.wrap{padding:0 14px}.gallery,.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery img{height:130px}.card img{height:135px}.description,.listings{padding:17px}.description h2,.listings h2{font-size:20px}}@media(max-width:440px){.cards{grid-template-columns:1fr}}
+    .project-page{background:#f5f8fb;color:#19334d;padding:28px 0 64px}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+    .breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:28px}
+    .breadcrumbs a{color:#1a5d8c;text-decoration:none}
+    .breadcrumbs a:hover{text-decoration:underline}
+    .heading{max-width:900px;margin:0 0 26px}
+    .eyebrow{display:inline-block;font-size:12px;font-weight:750;letter-spacing:.1em;color:#956a2c}
+    .heading h1{font-size:clamp(29px,3.5vw,42px);line-height:1.22;letter-spacing:-.025em;margin:10px 0 14px;font-weight:750}
+    .location{color:#60758a;font-size:15px;margin:0 0 16px;line-height:1.6}
+    .intro{font-size:clamp(16px,1.65vw,18px);line-height:1.8;color:#40556b;margin:0 0 14px;max-width:850px}
+    .developer{font-size:14px;color:#586e82;margin:0}
+    .developer strong{color:#213e58}
+    .cover{display:block;width:100%;max-height:510px;aspect-ratio:16/8.5;object-fit:cover;border-radius:14px}
+    .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+    .gallery img{display:block;width:100%;height:190px;object-fit:cover;border-radius:10px}
+    .description,.listings{background:#fff;border:1px solid #e8eef3;border-radius:14px;padding:clamp(20px,3vw,34px);margin-top:24px;overflow-wrap:anywhere}
+    .article-content{font-size:16px;line-height:1.85;color:#354a5d}
+    /* Markdown cũ có thể bắt đầu bằng H1 trùng tên dự án: ẩn H1 đầu tiên ở đầu bài.
+       Những H1 khác được trình bày như tiêu đề mục; nên chỉnh chúng thành H2 trong CMS sau. */
+    .article-content :global(> h1:first-child){display:none}
+    .article-content :global(h1),.article-content :global(h2){font-size:clamp(21px,2.2vw,25px);font-weight:750;line-height:1.4;color:#19334d;margin:30px 0 13px;letter-spacing:-.012em}
+    .article-content :global(h3){font-size:19px;font-weight:700;line-height:1.5;color:#234561;margin:24px 0 10px}
+    .article-content :global(h4){font-size:17px;font-weight:700;margin:20px 0 8px}
+    .article-content :global(p){margin:0 0 16px}
+    .article-content :global(ul),.article-content :global(ol){margin:0 0 18px;padding-left:24px}
+    .article-content :global(li){margin:5px 0}
+    .article-content :global(a){color:#17679a;text-underline-offset:3px}
+    .article-content :global(img){display:block;max-width:100%;height:auto;border-radius:10px;margin:18px auto}
+    .article-content :global(blockquote){border-left:3px solid #c9a26a;padding:10px 18px;margin:20px 0;background:#f8fafc}
+    .article-content :global(table){display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:20px 0}
+    .article-content :global(th),.article-content :global(td){border:1px solid #e2e8ef;padding:10px 12px;text-align:left}
+    .article-content :global(th){background:#f4f7fa}
+    .listings h2{font-size:clamp(20px,2.1vw,24px);line-height:1.4;margin:0 0 20px;color:#19334d}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .card{display:block;text-decoration:none;color:inherit;border:1px solid #e0e7ed;border-radius:12px;overflow:hidden;transition:box-shadow .2s,transform .2s}
+    .card:hover{box-shadow:0 8px 22px rgba(18,49,73,.1);transform:translateY(-2px)}
+    .card img{display:block;width:100%;height:180px;object-fit:cover}
+    .card-body{padding:15px}
+    .card h3{font-size:16px;line-height:1.5;margin:0 0 9px;font-weight:700}
+    .card p{font-size:14px;color:#62788b;margin:0;line-height:1.6}
+    .empty{font-size:15px;line-height:1.7;color:#718296;margin:0}
+    .contact{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+    .contact a{background:#1a5d8c;color:white;padding:13px 20px;border-radius:9px;text-decoration:none;font-size:15px;font-weight:700}
+    .contact a+a{background:#167b55}
+    @media(max-width:767px){
+      .project-page{padding:20px 0 48px}.wrap{padding:0 15px}.breadcrumbs{margin-bottom:22px}
+      .heading h1{font-size:29px}.intro{font-size:16px;line-height:1.75}
+      .cover{aspect-ratio:16/10;max-height:340px}.gallery,.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .gallery img{height:130px}.card img{height:135px}
+      .description,.listings{padding:20px;margin-top:18px}.article-content{font-size:15.5px;line-height:1.8}
+    }
+    @media(max-width:440px){.cards{grid-template-columns:1fr}.card img{height:195px}.contact a{flex:1;text-align:center}}
   </style>
 </Base>
