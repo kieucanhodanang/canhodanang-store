@@ -1,6 +1,7 @@
 ---
 title: Bán căn hộ 2PN tại Đà Nẵng
 description: Căn hộ Sun FourS Tower. Hướng đông mát mẻ phù hợp an cư hoặc cho thuê
+project: capital-square
 transaction: ban
 listingStatus: available
 price: 3,5 tỷ
@@ -13,6 +14,7 @@ district: Sơn Trà
 address: FourS Tower, Phước Lan, Nam Hòa Xuân, Đà Nẵng
 legal: Chính Chủ
 direction: Đông
+balconyDirection: Đông
 image: /uploads/can-ho-da-nang-cap-nhat-moi-nhat.png
 date: 2026-11-04T16:17:00
 updatedAt: 2026-11-04T16:17:00
