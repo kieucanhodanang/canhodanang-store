@@ -1,5 +1,6 @@
 ---
 title: Capital Square Đà Nẵng
+slug: capital-square
 description: Capital Square Đà Nẵng là tổ hợp căn hộ cao cấp và thương mại dịch
   vụ tọa lạc tại khu vực ven sông Hàn, trên các trục đường Trần Hưng Đạo, Nguyễn
   Công Trứ và Ngô Quyền. Dự án sở hữu vị trí kết nối thuận tiện đến trung tâm
