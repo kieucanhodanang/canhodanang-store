@@ -1,0 +1,113 @@
+---
+import Base from '../../layouts/Base.astro';
+import PropertyDetail from '../../components/PropertyDetail.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const properties = await getCollection('tho-cu');
+  return properties
+    .filter((entry) => entry.data.status !== 'draft')
+    .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const data = entry.data;
+const { Content } = await render(entry);
+const siteUrl = 'https://canhodanang.store';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const absoluteImage = (path: string) => new URL(path, siteUrl).href;
+const seoTitle = data.seoTitle || data.title;
+const seoDescription = data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`;
+const locationLine = [data.address, data.ward, data.district].filter(Boolean).join(' · ');
+const isRent = data.transaction === 'cho-thue' || data.transaction === 'cho-thue-ngay';
+const isAvailable = data.listingStatus === 'available';
+const statusLabel = isAvailable ? (isRent ? 'Đang cho thuê' : 'Đang bán') : data.listingStatus === 'paused' ? 'Tạm ngừng giao dịch' : (isRent ? 'Đã cho thuê' : 'Đã bán');
+const typeLabel = isRent ? 'Cho thuê nhà đất' : 'Bán nhà đất';
+
+// Dữ liệu có cấu trúc: không suy đoán nhà hay đất nếu loại hình chưa rõ.
+const propertyType = (data.propertyType || '').toLowerCase();
+const isLand = /đất|dat nen|đất nền|lô đất/.test(propertyType);
+const isHouse = /nhà|nha pho|nhà phố/.test(propertyType);
+const schemaType = isLand ? 'Landform' : isHouse ? 'House' : 'Place';
+const area = data.areaValue != null && Number(data.areaValue) > 0 ? Number(data.areaValue) : null;
+const price = data.priceValue != null && Number(data.priceValue) > 0 ? Number(data.priceValue) * 1_000_000 : null;
+const propertySchema = {
+  '@context': 'https://schema.org',
+  '@type': schemaType,
+  '@id': `${pageUrl}#property`,
+  name: data.title,
+  description: seoDescription,
+  url: pageUrl,
+  ...(data.image ? { image: [data.image, ...(data.gallery ?? [])].filter(Boolean).map(absoluteImage) } : {}),
+  ...(data.address || data.ward || data.district ? {
+    address: {
+      '@type': 'PostalAddress',
+      ...(data.address ? { streetAddress: data.address } : {}),
+      ...(data.ward ? { addressLocality: data.ward } : {}),
+      ...(data.district ? { addressRegion: data.district } : {}),
+      addressCountry: 'VN',
+    },
+  } : {}),
+  ...(area ? { additionalProperty: [{ '@type': 'PropertyValue', name: 'Diện tích đất', value: area, unitCode: 'MTK' }] } : {}),
+  ...(isHouse && data.bedrooms != null ? { numberOfBedrooms: data.bedrooms } : {}),
+  ...(isHouse && data.bathrooms != null ? { numberOfBathroomsTotal: data.bathrooms } : {}),
+  ...(price && !isRent ? {
+    offers: {
+      '@type': 'Offer',
+      price,
+      priceCurrency: 'VND',
+      availability: isAvailable ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
+      url: pageUrl,
+    },
+  } : {}),
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Nhà đất thổ cư', item: `${siteUrl}/nha-dat-tho-cu/` },
+    { '@type': 'ListItem', position: 3, name: data.title, item: pageUrl },
+  ],
+};
+const jsonLd = JSON.stringify([propertySchema, breadcrumbSchema]).replace(/</g, '\\u003c');
+---
+<Base title={seoTitle} description={seoDescription} image={data.ogImage || data.image || undefined} imageAlt={data.imageAlt || data.title} type="article">
+  <script type="application/ld+json" set:html={jsonLd} />
+  <div class="property-page">
+    <div class="property-wrap">
+      <nav class="breadcrumbs" aria-label="Đường dẫn">
+        <a href="/">Trang chủ</a>
+        <span aria-hidden="true">/</span>
+        <a href="/nha-dat-tho-cu/">Nhà đất thổ cư</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{data.title}</span>
+      </nav>
+      <div class="property-intro">
+        <div class="intro-text">
+          <span class="transaction-label">{typeLabel}</span>
+          {locationLine && <p class="property-address">{locationLine}</p>}
+        </div>
+        <span class:list={['status', { inactive: !isAvailable }]}>{statusLabel}</span>
+      </div>
+      <PropertyDetail property={data} kind="tho-cu" phone="0869437415" zalo="0869437415">
+        <Content />
+      </PropertyDetail>
+      <p class="back-link"><a href="/nha-dat-tho-cu/">← Xem các nhà đất khác</a></p>
+    </div>
+  </div>
+  <style>
+    .property-page{background:#f5f8fb;color:#19334d;padding:30px 0 65px}
+    .property-wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+    .breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:20px;overflow-wrap:anywhere}
+    .breadcrumbs a,.back-link a{color:#1a5d8c}
+    .property-intro{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:18px}
+    .intro-text{min-width:0}
+    .transaction-label{color:#996e2d;font-weight:700;font-size:13px;text-transform:uppercase}
+    .property-address{color:#62788b;margin:7px 0 0;line-height:1.5}
+    .status{background:#e5f5ec;color:#14663a;border-radius:30px;padding:8px 14px;font-size:13px;font-weight:700;white-space:nowrap}
+    .status.inactive{background:#f2e9e6;color:#8c3d32}
+    .back-link{margin-top:28px}
+    @media(max-width:767px){.property-wrap{padding:0 14px}.property-intro{flex-direction:column;gap:10px}}
+  </style>
+</Base>
