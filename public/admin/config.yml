@@ -891,6 +891,57 @@ collections:
     file: src/data/homepage.json
     format: json
     fields:
+    - label: Banner quảng cáo cố định hai bên (desktop)
+      name: floatingBanners
+      widget: object
+      required: false
+      collapsed: false
+      hint: Banner xuất hiện khi cuộn qua đầu trang và mờ dần gần cuối trang.
+      fields:
+      - label: Banner bên trái
+        name: left
+        widget: object
+        required: false
+        fields:
+        - label: Bật banner trái
+          name: enabled
+          widget: boolean
+          default: false
+        - label: Ảnh banner trái (JPG, PNG, WebP hoặc GIF)
+          name: image
+          widget: image
+          required: false
+        - label: Liên kết khi nhấn
+          name: link
+          widget: string
+          required: false
+          hint: 'Ví dụ: /du-an/capital-square/ hoặc https://example.com'
+        - label: Mô tả ảnh
+          name: alt
+          widget: string
+          required: false
+      - label: Banner bên phải
+        name: right
+        widget: object
+        required: false
+        fields:
+        - label: Bật banner phải
+          name: enabled
+          widget: boolean
+          default: false
+        - label: Ảnh banner phải (JPG, PNG, WebP hoặc GIF)
+          name: image
+          widget: image
+          required: false
+        - label: Liên kết khi nhấn
+          name: link
+          widget: string
+          required: false
+          hint: 'Ví dụ: /can-ho/ hoặc https://example.com'
+        - label: Mô tả ảnh
+          name: alt
+          widget: string
+          required: false
     - label: Danh sách slide banner trang chủ
       name: bannerSlides
       widget: list
