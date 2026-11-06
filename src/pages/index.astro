@@ -101,24 +101,33 @@ const khuVuc = [
   }
 ];
 
-const duAn = [
-  {
-    title: 'Capital Square Đà Nẵng',
-    place: 'Đà Nẵng',
-    summary: 'Tìm hiểu thông tin tổng quan, vị trí và sản phẩm căn hộ thuộc dự án.',
-    href: '/du-an/capital-square/',
-    tag: 'Dự án căn hộ',
-    style: 'two'
-  },
-  {
-    title: 'Vinhomes Hải Vân Bay',
-    place: 'Khu vực Tây Bắc Đà Nẵng',
-    summary: 'Khám phá thông tin quy hoạch, biệt thự, shophouse và các loại hình thuộc dự án.',
-    href: '/du-an/vinhomes-hai-van-bay/',
-    tag: 'Biệt thự & Shophouse',
-    style: ''
-  }
-];
+// Chọn tối đa 3 dự án công khai, được bật hiển thị trang chủ.
+// Dự án được ghim nổi bật ưu tiên trước; featuredOrder nhỏ lên trước.
+const duAn = projects
+  .filter((item) => item.data.showOnHome !== false)
+  .sort((a, b) => {
+    const pinned = Number(Boolean(b.data.featured)) - Number(Boolean(a.data.featured));
+    if (pinned) return pinned;
+    const orderA = Number(a.data.featuredOrder) || 999999;
+    const orderB = Number(b.data.featuredOrder) || 999999;
+    return orderA - orderB || a.data.title.localeCompare(b.data.title, 'vi');
+  })
+  .slice(0, 3)
+  .map((item) => {
+    const d = item.data;
+    const rawImage = [d.image, d.coverImage, d.thumbnail]
+      .find((value) => typeof value === 'string' && (value.startsWith('/') || value.startsWith('https://')));
+    const summary = typeof d.summary === 'string' ? d.summary : typeof d.description === 'string' ? d.description : '';
+    return {
+      title: d.title,
+      place: d.location || 'Đà Nẵng',
+      summary: summary.replace(/<[^>]*>/g, '').slice(0, 180),
+      href: `/du-an/${item.id}/`,
+      tag: 'Dự án bất động sản',
+      image: rawImage || '',
+      imageAlt: d.imageAlt || `Hình ảnh dự án ${d.title}`,
+    };
+  });
 
 const seoTitle = 'Căn Hộ Đà Nẵng | Mua Bán, Cho Thuê & Dự Án Nổi Bật';
 const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, dự án nổi bật và thông tin thị trường. Liên hệ tư vấn 0869 437 415.';
@@ -383,7 +392,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       <div class="cards">
         {duAn.map(item => (
           <article class="card">
-            <div class={`visual ${item.style}`}>
+            <div class="visual home-project-visual">
+              {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
               <span class="tag">{item.tag}</span>
             </div>
 
@@ -558,6 +568,9 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
 
   <style>
 
+    .home-project-visual {position:relative;overflow:hidden;background:#dbe6ee;min-height:220px;}
+    .home-project-visual img {display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:cover;}
+    .home-project-visual .tag {position:relative;z-index:1;}
     .cms-hero { min-height:var(--cms-hero-height);position:relative;display:flex;align-items:center;isolation:isolate;overflow:hidden;box-sizing:border-box;background:#102c49; }
     .hero-slides {position:absolute;inset:0;z-index:0;pointer-events:none;}
     .hero-overlay {position:absolute;inset:0;z-index:1;pointer-events:none;}
