@@ -235,6 +235,7 @@ const structuredData = {
         const ads = [...document.querySelectorAll('[data-floating-ad]')];
         if (!ads.length) return;
         const desktop = window.matchMedia('(min-width: 1700px)');
+        const main = document.getElementById('main-content');
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
         const hero = document.querySelector('.cms-hero, .hero');
         const footer = document.querySelector('.banner') || document.querySelector('.site-footer');
@@ -248,7 +249,17 @@ const structuredData = {
           const footerTop = footer ? footer.getBoundingClientRect().top : Infinity;
           // Mờ dần trong 220px trước vùng cuối trang; ẩn trước khi chạm footer.
           const fadeOut = Math.max(0, Math.min(1, (footerTop - viewport * 0.76) / 220));
-          const opacity = desktop.matches && passedTop ? fadeOut : 0;
+          // Đo khoảng trống THỰC TẾ từ mép cửa sổ đến vùng nội dung.
+          // Không dựa riêng vào độ phân giải màn hình vật lý (zoom có thể thay đổi viewport).
+          const wraps = main ? [...main.querySelectorAll('.wrap')] : [];
+          const contentLeft = wraps.length ? Math.min(...wraps.map(el => el.getBoundingClientRect().left).filter(x => x >= 0)) : (window.innerWidth - 1240) / 2;
+          const contentRight = wraps.length ? Math.max(...wraps.map(el => el.getBoundingClientRect().right).filter(x => x <= window.innerWidth)) : (window.innerWidth + 1240) / 2;
+          const minGap = 16;
+          const adWidth = 210;
+          const roomLeft = contentLeft >= adWidth + minGap + 12;
+          const roomRight = window.innerWidth - contentRight >= adWidth + minGap + 12;
+          const enoughRoom = roomLeft && roomRight;
+          const opacity = desktop.matches && enoughRoom && passedTop ? fadeOut : 0;
           ads.forEach((ad) => {
             const value = closed.has(ad) ? 0 : opacity;
             ad.style.opacity = String(value);
@@ -410,8 +421,8 @@ const structuredData = {
         transition:opacity .45s ease, transform .45s ease;
         filter:drop-shadow(0 5px 16px #0a253330);
       }
-      .floating-ad--left { left:max(10px, calc((100vw - 1240px) / 2 - 230px)); }
-      .floating-ad--right { right:max(10px, calc((100vw - 1240px) / 2 - 230px)); }
+      .floating-ad--left { left:12px; }
+      .floating-ad--right { right:12px; }
       .floating-ad a { display:block; width:100%; height:100%; border-radius:9px; overflow:hidden; }
       .floating-ad img { display:block; width:100%; height:100%; object-fit:cover; }
       .floating-ad-close {
