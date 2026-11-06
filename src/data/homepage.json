@@ -1,6 +1,20 @@
 {
   "secondaryButtonLink": "/lien-he/",
   "primaryButtonText": "Khám phá căn hộ",
+  "floatingBanners": {
+    "left": {
+      "enabled": true,
+      "image": "/uploads/can-ho-capital-square.jpg",
+      "link": "https://canhodanang.store/du-an/capital-square/",
+      "alt": "Banner quảng cáo bên trái"
+    },
+    "right": {
+      "enabled": true,
+      "image": "/uploads/can-ho-capital-square.jpg",
+      "link": "https://canhodanang.store/du-an/capital-square/",
+      "alt": "Banner quảng cáo bên phải"
+    }
+  },
   "bannerOverlay": 45,
   "bannerTextAlign": "left",
   "bannerTitle": "Căn Hộ Đà Nẵng – Mua Bán, Cho Thuê & Dự Án Nổi Bật",
@@ -30,19 +44,5 @@
   "bannerPosition": "center",
   "slideInterval": 5,
   "bannerContentWidth": 1200,
-  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG",
-  "floatingBanners": {
-    "left": {
-      "enabled": false,
-      "image": "",
-      "link": "",
-      "alt": "Banner quảng cáo bên trái"
-    },
-    "right": {
-      "enabled": false,
-      "image": "",
-      "link": "",
-      "alt": "Banner quảng cáo bên phải"
-    }
-  }
+  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG"
 }
