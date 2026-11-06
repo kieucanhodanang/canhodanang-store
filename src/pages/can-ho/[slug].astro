@@ -2,17 +2,41 @@
 import Base from '../../layouts/Base.astro';
 import PropertyDetail from '../../components/PropertyDetail.astro';
 import { getCollection, render } from 'astro:content';
+import { sortFeaturedFirst } from '../../utils/listingSort';
+
+const regions = [
+  { slug: 'son-tra', name: 'Sơn Trà' },
+  { slug: 'ngu-hanh-son', name: 'Ngũ Hành Sơn' },
+  { slug: 'hai-chau', name: 'Hải Châu' },
+];
 
 export async function getStaticPaths() {
   const apartments = await getCollection('can-ho');
-  return apartments
-    .filter((entry) => entry.data.status !== 'draft')
+  const reserved = new Set(regions.map((region) => region.slug));
+  const collision = apartments.find((entry) => reserved.has(entry.id));
+  if (collision) throw new Error(`Slug căn hộ ${collision.id} trùng URL khu vực. Hãy đổi slug bài đăng trước khi build.`);
+  const detailPaths = apartments
+    .filter((entry) => entry.data.status !== 'draft' && !reserved.has(entry.id))
     .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  const regionPaths = regions.map((region) => ({
+    params: { slug: region.slug }, props: { region },
+  }));
+  return [...detailPaths, ...regionPaths];
 }
 
-const { entry } = Astro.props;
-const data = entry.data;
-const { Content } = await render(entry);
+const { entry, region } = Astro.props;
+const data = entry?.data ?? ({} as NonNullable<typeof entry>['data']);
+const { Content } = entry ? await render(entry) : { Content: null };
+const regionApartments = region
+  ? sortFeaturedFirst((await getCollection('can-ho')).filter((item) =>
+      item.data.status !== 'draft' &&
+      item.data.listingStatus === 'available' &&
+      (item.data.district || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()
+        === region.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()
+    ))
+  : [];
+const regionSeoTitle = region ? `Căn Hộ ${region.name} Đà Nẵng | Mua Bán & Cho Thuê` : '';
+const regionSeoDescription = region ? `Danh sách căn hộ tại ${region.name}, Đà Nẵng đang bán và cho thuê. Cập nhật từ hệ thống bất động sản. Liên hệ 0869 437 415.` : '';
 
 const isAvailable = data.listingStatus === 'available';
 const isRent = data.transaction === 'cho-thue' || data.transaction === 'cho-thue-ngay';
@@ -31,8 +55,8 @@ const projectNames = (await getCollection('du-an')).reduce((map, item) => {
 }, new Map<string, string>());
 const projectName = data.project ? projectNames.get(data.project) || data.project : '';
 
-const seoTitle = data.seoTitle || data.title;
-const seoDescription = data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`;
+const seoTitle = region ? regionSeoTitle : (data.seoTitle || data.title);
+const seoDescription = region ? regionSeoDescription : (data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`);
 const locationLine = [data.address, data.ward, data.district].filter(Boolean).join(' · ');
 
 // Schema.org: chỉ sử dụng dữ liệu thực tế từ CMS.
@@ -91,13 +115,65 @@ const breadcrumbSchema = {
     { '@type': 'ListItem', position: 3, name: data.title, item: pageUrl },
   ],
 };
+const regionBreadcrumb = region ? {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Căn hộ', item: `${siteUrl}/can-ho/` },
+    { '@type': 'ListItem', position: 3, name: `Căn hộ ${region.name}`, item: pageUrl },
+  ],
+} : undefined;
 const schema = {
   '@context': 'https://schema.org',
-  '@graph': [apartmentSchema, ...(offerSchema ? [offerSchema] : []), breadcrumbSchema],
+  '@graph': region ? [regionBreadcrumb] : [apartmentSchema, ...(offerSchema ? [offerSchema] : []), breadcrumbSchema],
 };
 ---
-<Base title={seoTitle} description={seoDescription} image={data.image || undefined} imageAlt={data.imageAlt || data.title}>
+<Base title={seoTitle} description={seoDescription} image={region ? undefined : (data.image || undefined)} imageAlt={data.imageAlt || data.title}>
   <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
+  {region ? (
+    <section class="region-page">
+      <div class="property-wrap">
+        <nav class="breadcrumbs" aria-label="Đường dẫn">
+          <a href="/">Trang chủ</a><span>/</span><a href="/can-ho/">Căn hộ</a><span>/</span><span aria-current="page">{region.name}</span>
+        </nav>
+        <h1>Căn Hộ {region.name} Đà Nẵng</h1>
+        <p class="region-lead">Khám phá căn hộ đang bán và cho thuê tại khu vực {region.name}, Đà Nẵng. Danh sách cập nhật từ hệ thống quản trị.</p>
+        <p class="region-count">{regionApartments.length} căn hộ đang giao dịch</p>
+        {regionApartments.length ? (
+          <>
+            <div class="region-grid">
+              {regionApartments.map((item, index) => (
+                <article class="region-card" data-region-card data-page={Math.floor(index / 12) + 1} hidden={index >= 12}>
+                  <a class="region-image" href={`/can-ho/${encodeURIComponent(item.id)}/`}>
+                    {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
+                    {item.data.featured && <span class="region-pin">Nổi bật</span>}
+                  </a>
+                  <div class="region-info">
+                    <p class="region-type">{item.data.transaction === 'ban' ? 'Căn hộ đang bán' : 'Căn hộ cho thuê'}</p>
+                    <h2><a href={`/can-ho/${encodeURIComponent(item.id)}/`}>{item.data.title}</a></h2>
+                    <p class="region-location">{[item.data.address, item.data.ward, item.data.district].filter(Boolean).join(' · ')}</p>
+                    <p class="region-price">{item.data.price || 'Liên hệ'}</p>
+                    <p class="region-meta">{[item.data.area, item.data.bedrooms != null ? `${item.data.bedrooms} phòng ngủ` : ''].filter(Boolean).join(' · ')}</p>
+                    <a class="region-detail" href={`/can-ho/${encodeURIComponent(item.id)}/`}>Xem chi tiết →</a>
+                  </div>
+                </article>
+              ))}
+            </div>
+            {regionApartments.length > 12 && (
+              <nav class="region-pagination" aria-label="Phân trang căn hộ">
+                <button type="button" id="region-prev" disabled>← Trước</button>
+                <span id="region-page-label">Trang 1 / {Math.ceil(regionApartments.length / 12)}</span>
+                <button type="button" id="region-next">Tiếp →</button>
+              </nav>
+            )}
+          </>
+        ) : (
+          <div class="region-empty">Hiện chưa có căn hộ còn giao dịch tại {region.name}. Vui lòng <a href="tel:0869437415">liên hệ 0869 437 415</a> để được tư vấn.</div>
+        )}
+        <p class="back-link"><a href="/can-ho/">← Xem tất cả căn hộ Đà Nẵng</a></p>
+      </div>
+    </section>
+  ) : (
   <main class="property-page">
     <div class="property-wrap">
       <nav class="breadcrumbs" aria-label="Đường dẫn">
@@ -124,8 +200,52 @@ const schema = {
       <p class="back-link"><a href="/can-ho/">← Xem các căn hộ khác</a></p>
     </div>
   </main>
+  )}
+  <script is:inline>
+    (() => {
+      const cards = [...document.querySelectorAll('[data-region-card]')];
+      if (!cards.length) return;
+      const total = Math.ceil(cards.length / 12);
+      let page = 1;
+      const prev = document.getElementById('region-prev');
+      const next = document.getElementById('region-next');
+      const label = document.getElementById('region-page-label');
+      const show = () => {
+        cards.forEach((card) => { card.hidden = Number(card.dataset.page) !== page; });
+        if (prev) prev.disabled = page === 1;
+        if (next) next.disabled = page === total;
+        if (label) label.textContent = `Trang ${page} / ${total}`;
+      };
+      prev?.addEventListener('click', () => { if (page > 1) { page--; show(); } });
+      next?.addEventListener('click', () => { if (page < total) { page++; show(); } });
+      show();
+    })();
+  </script>
 
   <style>
+    .region-page { background:#f5f8fb; color:#19334d; padding:30px 0 65px; }
+    .region-page h1 { font-size:clamp(27px,4vw,38px); margin:16px 0 12px; }
+    .region-lead { color:#587187; line-height:1.7; }
+    .region-count { font-weight:700; margin:20px 0; }
+    .region-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+    .region-card { overflow:hidden; background:#fff; border:1px solid #e1e8ee; border-radius:12px; }
+    .region-card[hidden] { display:none!important; }
+    .region-image { display:block; position:relative; aspect-ratio:16/10; background:#e6edf4; }
+    .region-image img { width:100%; height:100%; object-fit:cover; display:block; }
+    .region-pin { position:absolute; top:10px; left:10px; background:#173f60; color:#fff; border-radius:5px; padding:5px 9px; font-size:12px; }
+    .region-info { padding:17px; }
+    .region-type { font-size:12px; color:#986e2f; font-weight:700; }
+    .region-info h2 { font-size:19px; line-height:1.45; margin:9px 0; }
+    .region-info h2 a { color:#19334d; text-decoration:none; }
+    .region-location,.region-meta { color:#65798b; font-size:13px; }
+    .region-price { color:#c42626; font-size:20px; font-weight:800; }
+    .region-detail { color:#1a5d8c; font-weight:700; }
+    .region-pagination { display:flex; justify-content:center; align-items:center; gap:16px; margin-top:30px; }
+    .region-pagination button { padding:10px 16px; border:1px solid #cbd7e3; background:#fff; border-radius:8px; cursor:pointer; }
+    .region-pagination button:disabled { opacity:.45; cursor:default; }
+    .region-empty { padding:28px; background:#fff; border-radius:12px; }
+    @media(max-width:900px) { .region-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:600px) { .region-grid { grid-template-columns:1fr; } }
     .property-page { background:#f5f8fb; color:#19334d; padding:30px 0 65px; }
     .property-wrap { max-width:1160px; margin:0 auto; padding:0 20px; }
     .breadcrumbs { display:flex; flex-wrap:wrap; gap:9px; font-size:13px; color:#68798a; margin-bottom:20px; overflow-wrap:anywhere; }
