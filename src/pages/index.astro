@@ -406,7 +406,16 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : item.type === 'biet-thu' ? 'Biệt thự / Shophouse' : 'Nhà đất';
            const image = item.image ? `<img class="result-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy" />` : `<span class="result-image result-image-empty" aria-hidden="true">⌂</span>`;
            const place = [item.district, item.ward].filter(Boolean).join(' · ') || item.address || 'Đà Nẵng';
-           card.innerHTML = `<a class="result-photo" href="${escapeHTML(item.url)}" aria-label="Xem ${escapeHTML(item.title)}">${image}</a><div class="result-card-main"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span><h3><a href="${escapeHTML(item.url)}">${escapeHTML(item.title)}</a></h3><span class="result-place">⌖ ${escapeHTML(place)}</span><div class="result-meta">${escapeHTML(details || 'Xem thông tin chi tiết')}</div><div class="result-card-bottom"><strong class="result-price">${escapeHTML(shownPrice)}</strong><a class="result-detail-link" href="${escapeHTML(item.url)}">Xem chi tiết →</a></div></div>`;
+           // Ngày đăng thực tế từ CMS, không dùng ngày hiện tại khi thiếu dữ liệu.
+           const publishedDate = Number(item.publishedAt) > 0 && Number.isFinite(Number(item.publishedAt))
+             ? new Date(Number(item.publishedAt)) : null;
+           const publishedLabel = publishedDate && !Number.isNaN(publishedDate.getTime())
+             ? new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' }).format(publishedDate)
+             : '';
+           const dateBadge = publishedLabel
+             ? `<time class="result-posted-date" datetime="${publishedDate.toISOString().slice(0, 10)}">Đăng: ${escapeHTML(publishedLabel)}</time>`
+             : '';
+           card.innerHTML = `<a class="result-photo" href="${escapeHTML(item.url)}" aria-label="Xem ${escapeHTML(item.title)}">${image}</a><div class="result-card-main"><div class="result-card-top"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span>${dateBadge}</div><h3><a href="${escapeHTML(item.url)}">${escapeHTML(item.title)}</a></h3><span class="result-place">⌖ ${escapeHTML(place)}</span><div class="result-meta">${escapeHTML(details || 'Xem thông tin chi tiết')}</div><div class="result-card-bottom"><strong class="result-price">${escapeHTML(shownPrice)}</strong><a class="result-detail-link" href="${escapeHTML(item.url)}">Xem chi tiết →</a></div></div>`;
            list.append(card);
          });
          if (totalPages > 1) {
@@ -831,7 +840,9 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
      .search-results-list :global(.result-image) {display:block;width:100%;height:100%;object-fit:cover;}
      .search-results-list :global(.result-image-empty) {display:flex;align-items:center;justify-content:center;font-size:40px;color:#8da2b3;}
      .search-results-list :global(.result-card-main) {min-width:0;flex:1;display:flex;flex-direction:column;gap:6px;padding:2px 3px 2px 0;}
-     .search-results-list :global(.result-tag) {font-size:11px;color:#986e2f;font-weight:700;}
+      .search-results-list :global(.result-card-top) {display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0;}
+      .search-results-list :global(.result-posted-date) {font-size:11px;line-height:1.4;color:#718395;white-space:nowrap;text-align:right;flex-shrink:0;}
+      .search-results-list :global(.result-tag) {font-size:11px;color:#986e2f;font-weight:700;}
      .search-results-list :global(.result-card h3) {font-size:16px;line-height:1.4;margin:0;font-weight:700;}
      .search-results-list :global(.result-card h3 a) {color:#19334d;text-decoration:none;}
      .search-results-list :global(.result-card h3 a:hover) {color:#1b5c8d;}
