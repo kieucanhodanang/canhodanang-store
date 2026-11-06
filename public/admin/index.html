@@ -1,12 +1,34 @@
-
 <!doctype html>
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quản trị | Căn Hộ Đà Nẵng</title>
+  <style>
+    .pin-management-link {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 10000;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border-radius: 999px;
+      background: #153d61;
+      color: #fff;
+      font: 600 14px/1.3 system-ui, -apple-system, "Segoe UI", sans-serif;
+      text-decoration: none;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, .22);
+    }
+    .pin-management-link:hover, .pin-management-link:focus-visible { background: #0e2d49; }
+    @media (max-width: 480px) {
+      .pin-management-link { right: 12px; bottom: 12px; padding: 10px 13px; font-size: 12px; }
+    }
+  </style>
 </head>
 <body>
+  <a class="pin-management-link" href="/admin/quan-ly-ghim.html" title="Xem các nội dung đang ghim trên trang chủ">📌 Quản lý ghim trang chủ</a>
   <script src="https://unpkg.com/decap-cms@3/dist/decap-cms.js"></script>
 </body>
 </html>
