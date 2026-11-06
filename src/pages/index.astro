@@ -193,15 +193,15 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <label><input type="radio" name="search-type" value="cho-thue" /><span>Cho thuê</span></label>
           <label><input type="radio" name="search-type" value="nha-dat-tho-cu" /><span>Nhà đất</span></label>
         </div>
-        <div class="hero-search-input"><input id="hero-keyword" type="search" aria-label="Từ khóa tìm kiếm" placeholder="Tìm tên dự án, khu vực, căn hộ..." autocomplete="off" /><button type="submit">⌕ Tìm kiếm</button></div>
+        <div class="hero-search-input"><input id="hero-keyword" type="search" aria-label="Từ khóa tìm kiếm" placeholder="Tìm tên dự án, khu vực, căn hộ..." autocomplete="off" /><button type="submit">Tìm kiếm</button></div>
       </form>
       {slides.length > 1 && <div class="hero-pagination" aria-label="Chọn ảnh banner">
         {slides.map((_,i) => <button type="button" class:list={['hero-dot', { active:i===0 }]} data-slide-to={i} aria-label={`Xem slide ${i+1}`} aria-current={i===0 ? 'true' : undefined}></button>)}
       </div>}
     </div>
     {slides.length > 1 && <div class="hero-arrows">
-      <button type="button" id="slide-prev" aria-label="Ảnh trước">‹</button>
-      <button type="button" id="slide-next" aria-label="Ảnh tiếp theo">›</button>
+      <button type="button" id="slide-prev" aria-label="Ảnh trước"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
+      <button type="button" id="slide-next" aria-label="Ảnh tiếp theo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
     </div>}
   </section>
 
@@ -759,7 +759,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .home-project-visual {position:relative;overflow:hidden;background:#dbe6ee;min-height:220px;}
     .home-project-visual img {display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:cover;}
     .home-project-visual .tag {position:relative;z-index:1;}
-    .cms-hero { min-height:var(--cms-hero-height);position:relative;display:flex;align-items:center;isolation:isolate;overflow:hidden;box-sizing:border-box;background:#102c49; }
+    .cms-hero { height:var(--cms-hero-height);min-height:0;position:relative;display:flex;align-items:center;isolation:isolate;overflow:hidden;box-sizing:border-box;background:#102c49; }
     .hero-slides {position:absolute;inset:0;z-index:0;pointer-events:none;}
     .hero-overlay {position:absolute;inset:0;z-index:1;pointer-events:none;}
     .hero-slide {position:absolute;inset:0;display:block;width:100%;height:100%;opacity:0;transition:opacity .7s ease;}
@@ -776,7 +776,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .hero-dot {width:12px;height:12px;border-radius:50%;border:1px solid white;background:transparent;cursor:pointer;padding:0;}
     .hero-dot.active {background:white;}
     .hero-arrows {position:absolute;z-index:3;inset-inline:16px;top:50%;display:flex;justify-content:space-between;pointer-events:none;transform:translateY(-50%);}
-    .hero-arrows button {pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1px solid #ffffff88;background:#10243a99;color:white;font-size:28px;cursor:pointer;}
+    .hero-arrows button {pointer-events:auto;display:flex;align-items:center;justify-content:center;flex:0 0 40px;width:40px;height:40px;padding:0;line-height:1;border-radius:50%;border:1px solid #ffffff88;background:#10243a99;color:white;cursor:pointer;}
+    .hero-arrows button svg {display:block;flex-shrink:0;}
     .hero-search {margin:25px auto 0;width:min(760px,100%);background:#fff;padding:12px;border-radius:16px;box-shadow:0 12px 35px #0004;text-align:left;color:#19334d;}
     .hero-search-tabs {display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
     .hero-search-tabs label {cursor:pointer;position:relative;}
@@ -858,12 +859,14 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       .search-results-list :global(.result-photo) {flex-basis:135px;width:135px;}
     }
     @media(max-width:767px){
-      .cms-hero {min-height:min(var(--cms-hero-height),650px);}
-      .cms-hero-content {text-align:left;padding-block:65px;}
+      .cms-hero {height:clamp(520px,var(--cms-hero-height),650px);min-height:0;}
+      .cms-hero-content {text-align:left;padding-block:40px 100px;}
       .cms-hero h1 {font-size:clamp(30px,8vw,44px);text-align:center;}
       .cms-hero-actions {justify-content:flex-start;}
-      .hero-arrows {inset-inline:5px;}
-      .hero-arrows button {width:34px;height:34px;}
+      .hero-arrows {inset-inline:16px;top:auto;bottom:20px;transform:none;align-items:center;}
+      .hero-arrows button {flex-basis:38px;width:38px;height:38px;}
+      .hero-arrows button svg {width:20px;height:20px;}
+      .hero-pagination {justify-content:center;margin-top:22px;}
              .hero-search {margin-top:20px;padding:10px;}
        .hero-search-tabs span {padding:9px 11px;font-size:12px;}
        .hero-search-input button {padding:10px 12px;font-size:13px;}
@@ -880,6 +883,13 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
        .search-results-list :global(.result-card h3) {font-size:14px;}
        .search-results-list :global(.result-price) {font-size:15px;}
        .search-results-list :global(.result-detail-link) {font-size:11px;}
+    }
+
+    /* H2 desktop: do not break the main section titles into two lines. */
+    @media(min-width:1100px){
+      #biet-thu .sectionhead, #tin-tuc .sectionhead {flex-wrap:wrap;display:flex;}
+      #biet-thu .sectionhead > div, #tin-tuc .sectionhead > div {min-width:0;flex:1 1 100%;}
+      #biet-thu .sectionhead h2, #tin-tuc .sectionhead h2 {white-space:nowrap;font-size:clamp(25px,2.5vw,34px);}
     }
     @media(prefers-reduced-motion:reduce){.hero-slide{transition:none;}}
   </style>
