@@ -4,13 +4,13 @@ import PropertyDetail from '../../components/PropertyDetail.astro';
 import { getCollection, render } from 'astro:content';
 import { sortFeaturedFirst } from '../../utils/listingSort';
 
-const regions = [
-  { slug: 'son-tra', name: 'Sơn Trà' },
-  { slug: 'ngu-hanh-son', name: 'Ngũ Hành Sơn' },
-  { slug: 'hai-chau', name: 'Hải Châu' },
-];
-
 export async function getStaticPaths() {
+  // Astro chạy getStaticPaths trong scope riêng: khai báo danh sách khu vực ngay trong hàm.
+  const regions = [
+    { slug: 'son-tra', name: 'Sơn Trà' },
+    { slug: 'ngu-hanh-son', name: 'Ngũ Hành Sơn' },
+    { slug: 'hai-chau', name: 'Hải Châu' },
+  ];
   const apartments = await getCollection('can-ho');
   const reserved = new Set(regions.map((region) => region.slug));
   const collision = apartments.find((entry) => reserved.has(entry.id));
