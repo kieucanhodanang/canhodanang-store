@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quản lý ghim trang chủ | Căn Hộ Đà Nẵng</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#18334d;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:30px 18px 70px}header{background:#123756;color:white;padding:20px 0}header .wrap{padding:0 18px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}a{color:#155b8c}header a{color:#fff}h1{font-size:clamp(22px,3vw,30px);margin:0}h2{font-size:20px;margin:0 0 14px}.intro{color:#607489;line-height:1.65}.notice{background:#fff8e9;border:1px solid #edd7aa;padding:14px 16px;border-radius:10px;font-size:14px;line-height:1.6;margin:18px 0 24px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0}button,.btn{font:inherit;background:#155b8c;color:#fff;border:0;border-radius:8px;padding:10px 15px;text-decoration:none;cursor:pointer}.status{font-size:14px;color:#52677d}.group{background:#fff;border:1px solid #dce5ee;border-radius:14px;margin:22px 0;padding:22px;box-shadow:0 4px 18px #17365309}.group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.count{color:#62778a;font-size:13px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:left}th,td{padding:13px 12px;border-bottom:1px solid #e8edf2;font-size:14px;vertical-align:middle}th{background:#f5f8fb;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#5c7287}tr:last-child td{border-bottom:0}.title{font-weight:700;min-width:210px}.meta{display:block;color:#7b8c9c;font-size:12px;font-weight:400;margin-top:4px}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#e8f5ee;color:#24734a;font-size:12px;white-space:nowrap}.muted{color:#738496}.edit{white-space:nowrap;font-weight:600}.empty{color:#718297;font-size:14px;padding:14px 0}.loading{opacity:.65}footer{font-size:13px;color:#6b7f90;line-height:1.6;margin-top:28px}@media(max-width:640px){.group{padding:15px}.wrap{padding-inline:12px}th,td{padding:11px 8px}.title{min-width:170px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>Quản lý ghim trang chủ</h1><a href="/admin/">← Quay lại Decap CMS</a></div></header>
+<main class="wrap">
+<p class="intro">Tổng hợp các nội dung được đánh dấu <strong>Ghim nổi bật</strong> trong CMS. Sắp xếp theo <strong>Thứ tự ghim</strong> tăng dần; có thể mở bài để chỉnh sửa trực tiếp trong Decap CMS.</p>
+<div class="notice"><strong>Chú ý:</strong> Trang này đọc dữ liệu từ repository GitHub công khai, nên bất kỳ ai có đường dẫn đều có thể xem thông tin ghim. Chỉ tài khoản được cấp quyền GitHub mới có thể lưu chỉnh sửa trong Decap CMS. Dữ liệu cập nhật theo commit trên nhánh <strong>main</strong>, có thể trễ do bộ nhớ đệm GitHub.</div>
+<div class="toolbar"><span id="status" class="status" role="status">Đang tải danh sách ghim…</span><button id="refresh" type="button">Tải lại danh sách</button></div>
+<div id="groups" aria-live="polite"></div>
+<footer>Trang tổng hợp chỉ đọc; để bật/tắt ghim hoặc thay đổi thứ tự, chọn “Chỉnh sửa” và lưu bài trong CMS. Những bài ở trạng thái nháp, ngừng giao dịch hoặc tắt hiển thị trang chủ vẫn được ghi nhận riêng trong danh sách ghim để dễ kiểm tra.</footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<script>
+(()=>{
+'use strict';
+const owner='kieucanhodanang',repo='canhodanang-store',branch='main';
+const collections=['du-an','can-ho','biet-thu','tho-cu'];
+const labels=[['Dự án nổi bật',r=>r.collection==='du-an'],['Căn hộ đang bán',r=>r.collection==='can-ho'&&r.transaction==='ban'],['Căn hộ cho thuê',r=>r.collection==='can-ho'&&r.transaction!=='ban'],['Nhà đất đang bán',r=>(r.collection==='biet-thu'||r.collection==='tho-cu')&&r.transaction==='ban'],['Khác (biệt thự / nhà đất cho thuê)',r=>(r.collection==='biet-thu'||r.collection==='tho-cu')&&r.transaction!=='ban']];
+const groups=document.getElementById('groups'),status=document.getElementById('status'),refresh=document.getElementById('refresh');
+function el(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=String(content);return n;}
+function norm(v){return String(v??'').trim().toLowerCase();}
+function bool(v){return v===true||v===1||norm(v)==='true';}
+function num(v){const n=Number(v);return Number.isFinite(n)&&n>0?n:999999;}
+function date(v){const n=Date.parse(v||'');return Number.isFinite(n)?n:0;}
+function decode64(str){const bytes=Uint8Array.from(atob(str.replace(/\s/g,'')),c=>c.charCodeAt(0));return new TextDecoder().decode(bytes);}
+async function json(url){const response=await fetch(url,{headers:{'Accept':'application/vnd.github+json'}});if(!response.ok)throw new Error(`GitHub API trả về HTTP ${response.status}`);return response.json();}
+async function loadEntry(path,sha){
+ const data=await json(`https://api.github.com/repos/${owner}/${repo}/git/blobs/${encodeURIComponent(sha)}`);
+ const raw=data.encoding==='base64'?decode64(data.content):data.content;
+ const m=raw.match(/^\uFEFF?---\s*\r?\n([\s\S]*?)\r?\n---(?:\s*\r?\n|$)/);
+ if(!m)return null;
+ const d=window.jsyaml.load(m[1])||{};
+ if(!bool(d.featured))return null;
+ const parts=path.split('/'),collection=parts[2],slug=parts.slice(3).join('/').replace(/\.md$/i,'');
+ const status=norm(d.status||'published'),listing=norm(d.listingStatus||'available');
+ const active=status==='published'&&d.showOnHome!==false&&(collection==='du-an'||listing==='available');
+ return {collection,slug,title:String(d.title||slug),price:String(d.price||''),featuredOrder:d.featuredOrder,transaction:norm(d.transaction||'ban'),date:d.date||'',active,status,listing,showOnHome:d.showOnHome!==false};
+}
+function rowFor(item){
+ const tr=el('tr');const name=el('td','title',item.title);name.append(el('small','meta',item.collection+' / '+item.slug));tr.append(name);
+ tr.append(el('td','',num(item.featuredOrder)===999999?'—':item.featuredOrder));
+ tr.append(el('td','',item.price||'—'));
+ const state=el('td');if(item.active)state.append(el('span','pill','Đang hiển thị'));else{let reason=item.status!=='published'?'Bản nháp':!item.showOnHome?'Tắt trang chủ':'Ngừng giao dịch';state.append(el('span','muted',reason));}tr.append(state);
+ const linkCell=el('td');const link=el('a','edit','Chỉnh sửa ↗');link.href=`/admin/#/collections/${encodeURIComponent(item.collection)}/entries/${encodeURIComponent(item.slug)}`;link.target='_blank';link.rel='noopener noreferrer';linkCell.append(link);tr.append(linkCell);return tr;
+}
+function render(records){groups.replaceChildren();for(const [name,predicate] of labels){const items=records.filter(predicate).sort((a,b)=>Number(b.active)-Number(a.active)||num(a.featuredOrder)-num(b.featuredOrder)||date(b.date)-date(a.date)||a.title.localeCompare(b.title,'vi'));
+ const section=el('section','group');const head=el('div','group-head');head.append(el('h2','',name),el('span','count',`${items.length} nội dung ghim`));section.append(head);
+ if(!items.length){section.append(el('p','empty','Chưa có nội dung được ghim.'));groups.append(section);continue;}
+ const wrap=el('div','table-wrap'),table=el('table'),thead=el('thead'),tr=el('tr');for(const h of ['Tên nội dung','Thứ tự','Giá','Trạng thái','Thao tác'])tr.append(el('th','',h));thead.append(tr);table.append(thead);const body=el('tbody');items.forEach(item=>body.append(rowFor(item)));table.append(body);wrap.append(table);section.append(wrap);groups.append(section);
+ }}
+async function load(){refresh.disabled=true;status.textContent='Đang đọc dữ liệu GitHub…';groups.classList.add('loading');try{
+ if(!window.jsyaml)throw new Error('Không tải được thư viện đọc YAML.');
+ const tree=await json(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
+ if(tree.truncated)throw new Error('Danh sách file từ GitHub bị cắt ngắn.');
+ const files=(tree.tree||[]).filter(x=>x.type==='blob'&&/^src\/content\/(du-an|can-ho|biet-thu|tho-cu)\/.+\.md$/i.test(x.path));
+ const result=[];const concurrency=5;let index=0;
+ async function worker(){while(index<files.length){const f=files[index++];try{const r=await loadEntry(f.path,f.sha);if(r)result.push(r);}catch(e){throw new Error(`Không đọc được ${f.path}: ${e.message}`);}}}
+ await Promise.all(Array.from({length:Math.min(concurrency,files.length)},worker));render(result);status.textContent=`Đã tải ${result.length} nội dung ghim từ ${files.length} bài CMS · ${new Date().toLocaleString('vi-VN')}`;
+ }catch(e){status.textContent='Lỗi tải dữ liệu: '+e.message;groups.replaceChildren();const p=el('p','notice','Không thể hiển thị danh sách. Kiểm tra kết nối, giới hạn GitHub API hoặc thử tải lại sau.');groups.append(p);}finally{refresh.disabled=false;groups.classList.remove('loading');}}
+refresh.addEventListener('click',load);load();
+})();
+</script>
+</body>
+</html>
