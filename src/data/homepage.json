@@ -30,5 +30,19 @@
   "bannerPosition": "center",
   "slideInterval": 5,
   "bannerContentWidth": 1200,
-  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG"
+  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG",
+  "floatingBanners": {
+    "left": {
+      "enabled": false,
+      "image": "",
+      "link": "",
+      "alt": "Banner quảng cáo bên trái"
+    },
+    "right": {
+      "enabled": false,
+      "image": "",
+      "link": "",
+      "alt": "Banner quảng cáo bên phải"
+    }
+  }
 }
