@@ -1,13 +1,13 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { sortFeaturedFirst } from '../../utils/listingSort';
 
-const projects = (await getCollection('du-an'))
-  .filter((item) => item.data.status !== 'draft')
-  .sort((a, b) => (a.data.title || '').localeCompare(b.data.title || '', 'vi'));
+const projects = sortFeaturedFirst(
+  (await getCollection('du-an')).filter((item) => item.data.status === 'published')
+);
 
 const description = 'Danh sách dự án bất động sản Đà Nẵng: thông tin dự án căn hộ, biệt thự, shophouse và các sản phẩm đang được giới thiệu.';
-
 const plainText = (value) => typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
 const summary = (data) => {
   const text = plainText(data.summary) || plainText(data.description);
@@ -40,24 +40,33 @@ const imageFor = (data) => {
           <span class="count">{projects.length} dự án</span>
         </div>
         {projects.length ? (
-          <div class="project-grid">
-            {projects.map((project) => {
-              const d = project.data;
-              const image = imageFor(d);
-              return (
-                <article class="project-card">
-                  <a class="project-image" href={`/du-an/${project.id}/`} aria-label={`Xem dự án ${d.title}`}>
-                    {image ? <img src={image} alt={`Hình ảnh dự án ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">DỰ ÁN ĐÀ NẴNG</div>}
-                  </a>
-                  <div class="project-body">
-                    <h3><a href={`/du-an/${project.id}/`}>{d.title}</a></h3>
-                    {summary(d) && <p class="project-summary">{summary(d)}</p>}
-                    <a class="detail-link" href={`/du-an/${project.id}/`}>Khám phá dự án <span aria-hidden="true">→</span></a>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          <>
+            <div class="project-grid" id="project-grid">
+              {projects.map((project, index) => {
+                const d = project.data;
+                const image = imageFor(d);
+                return (
+                  <article class="project-card" data-project-card hidden={index >= 12}>
+                    <a class="project-image" href={`/du-an/${project.id}/`} aria-label={`Xem dự án ${d.title}`}>
+                      {image ? <img src={image} alt={`Hình ảnh dự án ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">DỰ ÁN ĐÀ NẴNG</div>}
+                    </a>
+                    <div class="project-body">
+                      <h3><a href={`/du-an/${project.id}/`}>{d.title}</a></h3>
+                      {summary(d) && <p class="project-summary">{summary(d)}</p>}
+                      <a class="detail-link" href={`/du-an/${project.id}/`}>Khám phá dự án <span aria-hidden="true">→</span></a>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+            {projects.length > 12 && (
+              <nav class="project-pagination" id="project-pagination" aria-label="Phân trang dự án">
+                <button type="button" id="project-prev" disabled>← Trước</button>
+                <span id="project-page-info" aria-live="polite">Trang 1 / {Math.ceil(projects.length / 12)}</span>
+                <button type="button" id="project-next">Tiếp →</button>
+              </nav>
+            )}
+          </>
         ) : (
           <div class="empty-state"><h2>Đang cập nhật dự án</h2><p>Thông tin dự án sẽ được cập nhật từ hệ thống quản trị nội dung.</p></div>
         )}
@@ -66,6 +75,30 @@ const imageFor = (data) => {
     <section class="project-contact"><div class="project-container contact-inner"><div><h2>Cần tư vấn dự án tại Đà Nẵng?</h2><p>Liên hệ để được hỗ trợ tìm hiểu thông tin và sản phẩm phù hợp.</p></div><a href="tel:0869437415">Gọi 0869 437 415</a></div></section>
   </main>
 </Base>
+
+<script>
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-project-card]'));
+  const prev = document.getElementById('project-prev') as HTMLButtonElement | null;
+  const next = document.getElementById('project-next') as HTMLButtonElement | null;
+  const info = document.getElementById('project-page-info');
+  const pagination = document.getElementById('project-pagination');
+  const pageSize = 12;
+  const totalPages = Math.max(1, Math.ceil(cards.length / pageSize));
+  let currentPage = 1;
+  const showPage = (page: number, scroll = false) => {
+    currentPage = Math.min(totalPages, Math.max(1, page));
+    cards.forEach((card, index) => {
+      card.hidden = index < (currentPage - 1) * pageSize || index >= currentPage * pageSize;
+    });
+    if (prev) prev.disabled = currentPage === 1;
+    if (next) next.disabled = currentPage === totalPages;
+    if (info) info.textContent = `Trang ${currentPage} / ${totalPages}`;
+    if (scroll) document.querySelector('.project-section')?.scrollIntoView({ behavior: 'auto', block: 'start' });
+  };
+  prev?.addEventListener('click', () => showPage(currentPage - 1, true));
+  next?.addEventListener('click', () => showPage(currentPage + 1, true));
+  if (pagination) showPage(1);
+</script>
 
 <style>
   .project-container{width:min(1200px,calc(100% - 40px));margin:0 auto}
@@ -81,6 +114,7 @@ const imageFor = (data) => {
   .count{color:#62778b;font-size:14px;white-space:nowrap}
   .project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
   .project-card{overflow:hidden;border:1px solid #e1e7ed;border-radius:15px;background:#fff;box-shadow:0 8px 25px #102c490d;display:flex;flex-direction:column}
+  .project-card[hidden]{display:none!important}
   .project-image{height:220px;display:block;overflow:hidden;background:#dbe6ee}
   .project-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
   .project-image:hover img{transform:scale(1.04)}
@@ -93,10 +127,14 @@ const imageFor = (data) => {
   .detail-link:hover{text-decoration:underline}
   .empty-state{padding:50px 24px;border-radius:15px;text-align:center;background:#fff;border:1px solid #e1e7ed}
   .empty-state h2{color:#173a58}.empty-state p{color:#62778b}
+  .project-pagination{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:32px;color:#173a58;font-weight:700}
+  .project-pagination button{border:1px solid #c99b56;border-radius:9px;background:#fff;color:#173a58;padding:11px 18px;font:inherit;cursor:pointer}
+  .project-pagination button:hover:not(:disabled){background:#173a58;color:#fff}
+  .project-pagination button:disabled{opacity:.45;cursor:not-allowed}
   .project-contact{background:#102c49;color:#fff;padding:35px 0}
   .contact-inner{display:flex;align-items:center;justify-content:space-between;gap:25px}
   .contact-inner h2{font-size:24px;margin:0 0 8px}.contact-inner p{color:#d4e2ee;margin:0}
   .contact-inner>a{display:inline-block;background:#c99b56;color:#fff;padding:14px 22px;border-radius:9px;font-weight:800;text-decoration:none;white-space:nowrap}
   @media(max-width:900px){.project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:600px){.project-container{width:min(100% - 28px,1200px)}.project-hero{padding:30px 0 45px}.breadcrumb{margin-bottom:25px}.project-section{padding:38px 0 50px}.project-grid{grid-template-columns:1fr;gap:18px}.project-image{height:210px}.section-heading{align-items:start}.contact-inner{flex-direction:column;align-items:start}.contact-inner>a{width:100%;text-align:center}}
+  @media(max-width:600px){.project-container{width:min(100% - 28px,1200px)}.project-hero{padding:30px 0 45px}.breadcrumb{margin-bottom:25px}.project-section{padding:38px 0 50px}.project-grid{grid-template-columns:1fr;gap:18px}.project-image{height:210px}.section-heading{align-items:start}.contact-inner{flex-direction:column;align-items:start}.contact-inner>a{width:100%;text-align:center}.project-pagination{gap:9px}.project-pagination button{padding:9px 11px}}
 </style>
