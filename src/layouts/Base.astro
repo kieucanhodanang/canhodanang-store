@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { getCollection } from 'astro:content';
+import homepage from '../data/homepage.json';
 
 interface Props {
   title?: string;
@@ -51,6 +52,21 @@ const logoProjects = projects
   .sort((a, b) => (a.data.logoOrder ?? 999) - (b.data.logoOrder ?? 999)
     || a.data.title.localeCompare(b.data.title, 'vi'));
 
+// Banner nổi hai bên: đọc cấu hình từ homepage.json (sẽ thêm trường qua CMS ở bước kế tiếp).
+type FloatingBanner = { enabled?: boolean; image?: string; link?: string; alt?: string };
+const bannerSettings = (homepage as typeof homepage & {
+  floatingBanners?: { left?: FloatingBanner; right?: FloatingBanner };
+}).floatingBanners;
+const floatingBanners = ([
+  { side: 'left', config: bannerSettings?.left },
+  { side: 'right', config: bannerSettings?.right },
+] as const).filter(({ config }) => config?.enabled === true && Boolean(config.image?.trim()));
+const safeBannerLink = (value?: string) => {
+  if (!value) return '#';
+  const link = value.trim();
+  return link.startsWith('/') && !link.startsWith('//') ? link
+    : /^https:\/\//i.test(link) ? link : '#';
+};
 const projectUrl = (id: string) => `/du-an/${encodeURIComponent(id)}/`;
 const structuredData = {
   '@context': 'https://schema.org',
@@ -163,6 +179,19 @@ const structuredData = {
       <slot />
     </main>
 
+    {floatingBanners.length > 0 && (
+      <aside class="floating-ads" aria-label="Banner giới thiệu dự án">
+        {floatingBanners.map(({ side, config }) => (
+          <div class={`floating-ad floating-ad--${side}`} data-floating-ad>
+            <button type="button" class="floating-ad-close" aria-label={`Đóng banner ${side === 'left' ? 'bên trái' : 'bên phải'}`} data-floating-close>×</button>
+            <a href={safeBannerLink(config?.link)} aria-label={config?.alt || 'Xem thông tin dự án'} rel={safeBannerLink(config?.link).startsWith('https://') ? 'noopener noreferrer' : undefined}>
+              <img src={config!.image} alt={config?.alt || 'Banner dự án'} width="160" height="400" loading="lazy" decoding="async" />
+            </a>
+          </div>
+        ))}
+      </aside>
+    )}
+
     <footer class="site-footer">
       <div class="wrap footer-layout">
         <section class="footer-projects" aria-label="Dự án đang phân phối">
@@ -201,6 +230,53 @@ const structuredData = {
       </div>
     </footer>
 
+    <script is:inline>
+      (() => {
+        const ads = [...document.querySelectorAll('[data-floating-ad]')];
+        if (!ads.length) return;
+        const desktop = window.matchMedia('(min-width: 1600px)');
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const hero = document.querySelector('.cms-hero, .hero');
+        const footer = document.querySelector('.banner') || document.querySelector('.site-footer');
+        const closed = new WeakSet();
+        let queued = false;
+        const update = () => {
+          queued = false;
+          const viewport = window.innerHeight;
+          const heroBottom = hero ? hero.getBoundingClientRect().bottom : 0;
+          const passedTop = hero ? heroBottom < 0 : window.scrollY > 320;
+          const footerTop = footer ? footer.getBoundingClientRect().top : Infinity;
+          // Mờ dần trong 220px trước vùng cuối trang; ẩn trước khi chạm footer.
+          const fadeOut = Math.max(0, Math.min(1, (footerTop - viewport * 0.76) / 220));
+          const opacity = desktop.matches && passedTop ? fadeOut : 0;
+          ads.forEach((ad) => {
+            const value = closed.has(ad) ? 0 : opacity;
+            ad.style.opacity = String(value);
+            ad.style.transform = `translateY(-50%) translateX(${(1 - value) * (ad.classList.contains('floating-ad--left') ? -18 : 18)}px)`;
+            ad.style.pointerEvents = value > 0.98 ? 'auto' : 'none';
+            ad.setAttribute('aria-hidden', value < 0.01 ? 'true' : 'false');
+            ad.querySelectorAll('a,button').forEach((control) => {
+              control.tabIndex = value > 0.98 ? 0 : -1;
+            });
+          });
+        };
+        const requestUpdate = () => {
+          if (!queued) {
+            queued = true;
+            requestAnimationFrame(update);
+          }
+        };
+        ads.forEach((ad) => ad.querySelector('[data-floating-close]')?.addEventListener('click', () => {
+          closed.add(ad);
+          requestUpdate();
+        }));
+        window.addEventListener('scroll', requestUpdate, { passive: true });
+        window.addEventListener('resize', requestUpdate, { passive: true });
+        desktop.addEventListener('change', requestUpdate);
+        reduced.addEventListener('change', requestUpdate);
+        requestUpdate();
+      })();
+    </script>
     <script is:inline>
       (() => {
         // Desktop: chỉ thu chiều cao header khi cuộn, giữ nguyên toàn bộ menu.
@@ -328,6 +404,23 @@ const structuredData = {
       }
       .hamburger-lines { display:flex; flex-direction:column; gap:5px; }
       .hamburger-lines i { display:block; width:25px; height:3px; background:#fff; border-radius:3px; }
+      .floating-ad {
+        position:fixed; z-index:90; top:50%; width:160px; height:400px;
+        opacity:0; pointer-events:none; transform:translateY(-50%);
+        transition:opacity .45s ease, transform .45s ease;
+        filter:drop-shadow(0 5px 16px #0a253330);
+      }
+      .floating-ad--left { left:max(8px, calc((100vw - 1540px) / 2)); }
+      .floating-ad--right { right:max(8px, calc((100vw - 1540px) / 2)); }
+      .floating-ad a { display:block; width:100%; height:100%; border-radius:9px; overflow:hidden; }
+      .floating-ad img { display:block; width:100%; height:100%; object-fit:cover; }
+      .floating-ad-close {
+        position:absolute; z-index:1; right:-9px; top:-10px; width:29px; height:29px;
+        border:1px solid #d9e1e8; border-radius:50%; background:#fff; color:#24384d;
+        font-size:22px; line-height:1; cursor:pointer;
+      }
+      @media (max-width:1599px) { .floating-ads { display:none; } }
+      @media (prefers-reduced-motion:reduce) { .floating-ad { transition:none; } }
       .site-footer { background:#10243a; color:#e8eef5; padding:38px 0; }
       .footer-layout { display:grid; grid-template-columns:minmax(0,3fr) minmax(0,2fr); gap:36px; }
       .site-footer h2 { color:#d4a85e; font-size:15px; letter-spacing:.035em; margin:0 0 20px; }
