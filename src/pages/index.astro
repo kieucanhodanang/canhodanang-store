@@ -60,7 +60,7 @@ const searchableListings = listingCollections.flatMap((entries, index) =>
         district: d.district || '',
         ward: d.ward || '',
         address: d.address || '',
-        url: `/${type}/${item.id}/`,
+        url: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
         type,
         propertyType: d.propertyType || type,
         transaction,
@@ -158,7 +158,7 @@ const homeCards = (items, type) => items.map(item => ({
   area: item.data.area || '',
   bedrooms: item.data.bedrooms,
   place: item.data.district || item.data.address || 'Đà Nẵng',
-  href: `/${type}/${item.id}/`,
+  href: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
   pinned: Boolean(item.data.featured),
 }));
 const saleCards = homeCards(homeSaleApartments, 'can-ho');
@@ -188,7 +188,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         <div class="hero-search-tabs" role="group" aria-label="Loại tìm kiếm">
           <label><input type="radio" name="search-type" value="can-ho" checked /><span>Căn hộ</span></label>
           <label><input type="radio" name="search-type" value="cho-thue" /><span>Cho thuê</span></label>
-          <label><input type="radio" name="search-type" value="nha-dat" /><span>Nhà đất</span></label>
+          <label><input type="radio" name="search-type" value="nha-dat-tho-cu" /><span>Nhà đất</span></label>
         </div>
         <div class="hero-search-input"><input id="hero-keyword" type="search" aria-label="Từ khóa tìm kiếm" placeholder="Tìm tên dự án, khu vực, căn hộ..." autocomplete="off" /><button type="submit">⌕ Tìm kiếm</button></div>
       </form>
@@ -301,7 +301,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         priceTouched = false;
         document.getElementById('price-high-label').textContent = `${max} ${priceUnit()}+`;
         document.getElementById('price-low-label').textContent = `0 ${priceUnit()}`;
-        document.getElementById('search-type-label').textContent = 'Đang tìm: ' + ({'can-ho':'Căn hộ','cho-thue':'Cho thuê','nha-dat':'Nhà đất'}[mode]);
+        document.getElementById('search-type-label').textContent = 'Đang tìm: ' + ({'can-ho':'Căn hộ','cho-thue':'Cho thuê','nha-dat-tho-cu':'Nhà đất'}[mode]);
         syncRanges();
       };
       const render = () => {
@@ -310,7 +310,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         const minA = Number(areaMin.value), maxA = Number(areaMax.value);
         const matched = items.filter(item => {
           if (mode === 'cho-thue' && !['cho-thue','cho-thue-ngay'].includes(item.transaction)) return false;
-          if (mode === 'nha-dat' && (item.type === 'can-ho' || item.transaction !== 'ban')) return false;
+          if (mode === 'nha-dat-tho-cu' && (item.type === 'can-ho' || item.transaction !== 'ban')) return false;
           if (mode === 'can-ho' && (item.type !== 'can-ho' || item.transaction !== 'ban')) return false;
           if (q && !normalize([item.title,item.description,item.projectName,item.district,item.ward,item.address].join(' ')).includes(q)) return false;
           if (project.value && item.project !== project.value) return false;
@@ -454,6 +454,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <h2>Căn Hộ Cho Thuê Tại Đà Nẵng</h2>
           <p>Tham khảo căn hộ cho thuê dài hạn hoặc theo ngày tại Đà Nẵng. Thông tin được cập nhật từ hệ thống quản trị.</p>
         </div>
+        <a class="textlink" href="/cho-thue/">Xem tất cả căn hộ cho thuê →</a>
       </div>
       <div class="cards home-listing-grid">
         {rentCards.map(item => (
@@ -484,6 +485,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <h2>Nhà Đất Thổ Cư Đà Nẵng</h2>
           <p>Danh mục nhà riêng và đất thổ cư tại Hải Châu, Sơn Trà, Ngũ Hành Sơn, Thanh Khê, Liên Chiểu và các khu vực khác. Nội dung sẽ được bổ sung trong thời gian tới.</p>
         </div>
+        <a class="textlink" href="/nha-dat-tho-cu/">Xem tất cả nhà đất →</a>
       </div>
       <div class="cards home-listing-grid">
         {landCards.map(item => (
