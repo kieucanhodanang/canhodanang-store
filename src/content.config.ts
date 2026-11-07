@@ -94,7 +94,7 @@ const duAn = defineCollection({
 });
 
 const thoCu = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/tho-cu' }),
+  loader: glob({ pattern: '**/*.md', base: './src/content/nha-dat-tho-cu' }),
   schema: z.object({
     ...propertyFields,
     image: z.string(),
