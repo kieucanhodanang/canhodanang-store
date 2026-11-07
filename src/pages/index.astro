@@ -153,10 +153,11 @@ const homeRentApartments = homeApartments.filter(item => ['cho-thue', 'cho-thue-
   .sort(homePriority).slice(0, 6);
 const homeSaleLand = homeLand.filter(item => item.data.transaction === 'ban')
   .sort(homePriority).slice(0, 6);
+const cleanProjectName = (name) => String(name || '').trim().replace(/\s*[-–|,]\s*(?:TP\.?\s*)?Đà\s*Nẵng\s*$/i, '').replace(/\s+Đà\s*Nẵng\s*$/i, '').trim();
 const shortAddress = (address, ward) => {
   const parts = String(address || '').split(',').map(v => v.trim()).filter(Boolean);
-  const street = parts.find(v => /^(?:\d+[\w/-]*\s+)?(?:đường|phố|street|đ\.|đường số|đại lộ)\s/i.test(v))
-    || (parts.length > 1 && !/^(phường|xã|quận|huyện|tp\.?|thành phố|đà nẵng)/i.test(parts[0]) ? parts[0] : '');
+  const street = parts.find(v => /(?:^|\s)(?:đường|phố|đại lộ|đ\.|street)\s+[\p{L}\d]/iu)
+    || parts.find(v => /^(?:\d+[\w/-]*\s+)[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v)) || '';
   const wardName = String(ward || '').trim() || parts.find(v => /^(phường|xã|p\.)\s/i.test(v)) || '';
   return [street, wardName].filter(Boolean).join(', ');
 };
@@ -168,7 +169,7 @@ const homeCards = (items, type) => items.map(item => ({
   area: item.data.area || '',
   bedrooms: item.data.bedrooms,
   place: type === 'can-ho' ? shortAddress(item.data.address, item.data.ward) : (item.data.district || item.data.address || 'Đà Nẵng'),
-  projectName: projectNames.get(item.data.project || '') || '',
+  projectName: cleanProjectName(projectNames.get(item.data.project || '') || ''),
   href: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
   pinned: Boolean(item.data.featured),
 }));
@@ -439,11 +440,11 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : item.type === 'biet-thu' ? 'Biệt thự / Shophouse' : 'Nhà đất';
            const image = item.image ? `<img class="result-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy" />` : `<span class="result-image result-image-empty" aria-hidden="true">⌂</span>`;
            const parts = String(item.address || '').split(',').map(v=>v.trim()).filter(Boolean);
-           const street = parts.find(v=>/^(?:\d+[\w/-]*\s+)?(?:đường|phố|street|đ\.|đại lộ)\s/i.test(v))
-             || (parts.length > 1 && !/^(phường|xã|quận|huyện|tp\.?|thành phố|đà nẵng)/i.test(parts[0]) ? parts[0] : '');
+           const street = parts.find(v=>/(?:^|\s)(?:đường|phố|đại lộ|đ\.|street)\s+[\p{L}\d]/iu)
+             || parts.find(v=>/^(?:\d+[\w/-]*\s+)[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v)) || '';
            const ward = item.ward || parts.find(v=>/^(phường|xã|p\.)\s/i.test(v)) || '';
            const place = item.type === 'can-ho' ? [street,ward].filter(Boolean).join(', ') : ([item.district,item.ward].filter(Boolean).join(' · ') || item.address || 'Đà Nẵng');
-           const projectLine = item.type === 'can-ho' && item.projectName ? `<strong class="result-project">${escapeHTML(item.projectName)}</strong>` : '';
+           const projectLine = item.type === 'can-ho' && item.projectName ? `<strong class="result-project">${escapeHTML(String(item.projectName).replace(/\s*[-–|,]\s*(?:TP\.?\s*)?Đà\s*Nẵng\s*$/i, '').replace(/\s+Đà\s*Nẵng\s*$/i, '').trim())}</strong>` : '';
            const locationLine = place ? `<span class="result-place">⌖ ${escapeHTML(place)}</span>` : '';
            // Ngày đăng thực tế từ CMS, không dùng ngày hiện tại khi thiếu dữ liệu.
            const publishedDate = Number(item.publishedAt) > 0 && Number.isFinite(Number(item.publishedAt))
@@ -577,8 +578,11 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
               {item.place && <span class="location">⌖ {item.place}</span>}
               <h3><a href={item.href}>{item.title}</a></h3>
-              <strong class="home-listing-price">{item.price}</strong>
-              <p class="home-listing-meta">{[item.area, item.bedrooms != null ? `${item.bedrooms} phòng ngủ` : ''].filter(Boolean).join(' · ')}</p>
+              <div class="home-listing-facts">
+                <strong class="home-listing-price">{item.price}</strong>
+                {item.area && <span class="home-listing-fact">{item.area}</span>}
+                {item.bedrooms != null && <span class="home-listing-fact">{item.bedrooms} PN</span>}
+              </div>
               <a class="textlink" href={item.href}>Xem chi tiết →</a>
             </div>
           </article>
@@ -609,8 +613,11 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
               {item.place && <span class="location">⌖ {item.place}</span>}
               <h3><a href={item.href}>{item.title}</a></h3>
-              <strong class="home-listing-price">{item.price}</strong>
-              <p class="home-listing-meta">{[item.area, item.bedrooms != null ? `${item.bedrooms} phòng ngủ` : ''].filter(Boolean).join(' · ')}</p>
+              <div class="home-listing-facts">
+                <strong class="home-listing-price">{item.price}</strong>
+                {item.area && <span class="home-listing-fact">{item.area}</span>}
+                {item.bedrooms != null && <span class="home-listing-fact">{item.bedrooms} PN</span>}
+              </div>
               <a class="textlink" href={item.href}>Xem chi tiết →</a>
             </div>
           </article>
@@ -955,6 +962,17 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       .results-section .search-results-list :global(.result-card){min-width:0;max-width:100%;box-sizing:border-box}
       .results-section .search-results-list :global(.result-photo){flex:0 0 100px;width:100px}
       .results-section .search-results-list :global(.result-card-main){min-width:0;overflow-wrap:anywhere}
+    }
+    /* Giá, diện tích và phòng ngủ trên cùng một dòng ở thẻ căn hộ. */
+    #can-ho-ban .home-listing-facts,#can-ho-thue .home-listing-facts{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;min-width:0;width:100%;margin:9px 0;white-space:nowrap}
+    #can-ho-ban .home-listing-facts .home-listing-price,#can-ho-thue .home-listing-facts .home-listing-price{display:inline;margin:0;flex:0 0 auto;font-size:clamp(14px,1.5vw,19px)}
+    .home-listing-fact{font-size:13px;color:#536b81;min-width:0}
+    .home-listing-fact:not(:first-child){border-left:1px solid #d6e0e9;padding-left:10px}
+    @media(max-width:767px){
+      #can-ho-ban .home-listing-facts,#can-ho-thue .home-listing-facts{gap:6px;margin:6px 0}
+      #can-ho-ban .home-listing-facts .home-listing-price,#can-ho-thue .home-listing-facts .home-listing-price{font-size:14px}
+      #can-ho-ban .home-listing-fact,#can-ho-thue .home-listing-fact{font-size:11px}
+      #can-ho-ban .home-listing-fact:not(:first-child),#can-ho-thue .home-listing-fact:not(:first-child){padding-left:6px}
     }
     @media(prefers-reduced-motion:reduce){.hero-slide{transition:none;}}
   </style>
