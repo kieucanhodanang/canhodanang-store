@@ -13,6 +13,8 @@ const apartments = sortFeaturedFirst(
 const pageSize = 12;
 const pagination = paginateListings(apartments, 1, pageSize);
 const totalPages = pagination.totalPages;
+const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft').sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
+const projectNames = new Map(projects.map(item => [item.id, item.data.title]));
 const description = 'Danh sách căn hộ Đà Nẵng đang bán, cập nhật giá, diện tích, phòng ngủ và dự án. Xem căn hộ nổi bật và tin đăng mới nhất.';
 const plain = (value: unknown) => typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
 const formatArea = (value: string | null | undefined) => plain(value) || 'Liên hệ';
@@ -32,23 +34,23 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       </div>
     </section>
 
-    <nav class="region-navigation" aria-label="Khám phá căn hộ theo khu vực">
-      <div class="listing-container">
-        <h2>Khám phá căn hộ theo khu vực</h2>
-        <div class="region-links">
-          <a href="/can-ho/son-tra/">Căn hộ Sơn Trà <span aria-hidden="true">→</span></a>
-          <a href="/can-ho/ngu-hanh-son/">Căn hộ Ngũ Hành Sơn <span aria-hidden="true">→</span></a>
-          <a href="/can-ho/hai-chau/">Căn hộ Hải Châu <span aria-hidden="true">→</span></a>
-        </div>
-      </div>
-    </nav>
-
     <section class="listing-section" aria-label="Danh sách căn hộ đang bán">
       <div class="listing-container">
-        <div class="section-heading">
-          <div><p class="eyebrow">DANH SÁCH CĂN HỘ</p><h2>Căn hộ đang giao dịch</h2></div>
-          <span class="count">{apartments.length} căn hộ</span>
-        </div>
+        <form id="apartment-search" class="apartment-search" role="search">
+          <label class="search-input"><span aria-hidden="true">⌕</span><input id="search-keyword" type="search" placeholder="Tìm tên dự án, khu vực, căn hộ..." aria-label="Từ khóa tìm kiếm căn hộ" autocomplete="off" /></label>
+          <button type="submit">Tìm kiếm</button>
+        </form>
+        <div class="listing-layout">
+          <div class="listing-primary">
+            <div class="section-heading">
+              <div><p class="eyebrow">DANH SÁCH CĂN HỘ</p><h2>Căn hộ đang giao dịch</h2></div>
+              <span class="count" id="result-count">{apartments.length} căn hộ</span>
+            </div>
+            <nav class="region-shortcuts" aria-label="Trang căn hộ theo khu vực">
+              <a href="/can-ho/son-tra/">Sơn Trà →</a>
+              <a href="/can-ho/ngu-hanh-son/">Ngũ Hành Sơn →</a>
+              <a href="/can-ho/hai-chau/">Hải Châu →</a>
+            </nav>
         {apartments.length ? (
           <>
             <div class="listing-grid" id="apartment-grid">
@@ -57,7 +59,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 const image = imageFor(d);
                 const href = `/can-ho/${item.id}/`;
                 return (
-                  <article class="listing-card" data-listing-index={index} hidden={index >= pageSize}>
+                  <article class="listing-card" data-listing-index={index} data-keywords={[d.title,d.description,d.project ? projectNames.get(d.project) : '',d.district,d.ward,d.address].filter(Boolean).join(' ').toLocaleLowerCase('vi')} data-district={(d.district || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-project={d.project || ''} hidden={index >= pageSize}>
                     <a class="listing-image" href={href} aria-label={`Xem căn hộ ${d.title}`}>
                       {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">CĂN HỘ ĐÀ NẴNG</div>}
                       {d.featured && <span class="pin-label">Nổi bật</span>}
@@ -77,67 +79,119 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 );
               })}
             </div>
-            {totalPages > 1 && (
-              <nav class="pagination" aria-label="Phân trang căn hộ" id="apartment-pagination">
-                <button type="button" data-action="prev" aria-label="Trang trước">‹ Trước</button>
-                <span id="pagination-numbers" class="page-numbers"></span>
-                <button type="button" data-action="next" aria-label="Trang sau">Sau ›</button>
-              </nav>
-            )}
-            <p class="page-summary" id="apartment-page-summary" aria-live="polite">Hiển thị {Math.min(pageSize, apartments.length)} / {apartments.length} căn hộ</p>
+            <nav class="pagination" aria-label="Phân trang căn hộ" id="apartment-pagination" hidden>
+              <button type="button" data-action="prev" aria-label="Trang trước">‹ Trước</button>
+              <span id="pagination-numbers" class="page-numbers"></span>
+              <button type="button" data-action="next" aria-label="Trang sau">Sau ›</button>
+            </nav>
+            <p class="page-summary" id="apartment-page-summary" aria-live="polite"></p>
+            <p class="empty-filter" id="empty-filter" hidden>Không tìm thấy căn hộ phù hợp. Hãy thử thay đổi bộ lọc.</p>
           </>
         ) : (
           <div class="empty-state"><h2>Đang cập nhật căn hộ</h2><p>Hiện chưa có căn hộ đang bán phù hợp. Anh/chị có thể liên hệ để được tư vấn.</p></div>
         )}
+          </div>
+          <aside class="listing-sidebar" aria-label="Bộ lọc căn hộ">
+            <div class="filter-box">
+              <div class="filter-top"><h2>Bộ lọc căn hộ</h2><button type="button" id="reset-filters">Xóa lọc</button></div>
+              <fieldset><legend>Khu vực</legend>
+                <label><input type="radio" name="district" value="" checked /> Tất cả khu vực</label>
+                <label><input type="radio" name="district" value="son tra" /> Sơn Trà</label>
+                <label><input type="radio" name="district" value="ngu hanh son" /> Ngũ Hành Sơn</label>
+                <label><input type="radio" name="district" value="hai chau" /> Hải Châu</label>
+              </fieldset>
+              <fieldset><legend>Khoảng giá</legend>
+                <label><input type="radio" name="price" value="" checked /> Tất cả mức giá</label>
+                <label><input type="radio" name="price" value="0-1000" /> Dưới 1 tỷ</label>
+                <label><input type="radio" name="price" value="1000-2000" /> 1 tỷ – 2 tỷ</label>
+                <label><input type="radio" name="price" value="2000-3000" /> 2 tỷ – 3 tỷ</label>
+                <label><input type="radio" name="price" value="3000-5000" /> 3 tỷ – 5 tỷ</label>
+                <label><input type="radio" name="price" value="5000-7000" /> 5 tỷ – 7 tỷ</label>
+                <label><input type="radio" name="price" value="7000+" /> Trên 7 tỷ</label>
+              </fieldset>
+              <fieldset><legend>Diện tích</legend>
+                <label><input type="radio" name="area" value="" checked /> Tất cả diện tích</label>
+                <label><input type="radio" name="area" value="30-45" /> 30m² – 45m²</label>
+                <label><input type="radio" name="area" value="45-60" /> 45m² – 60m²</label>
+                <label><input type="radio" name="area" value="60-80" /> 60m² – 80m²</label>
+                <label><input type="radio" name="area" value="80+" /> Trên 80m²</label>
+              </fieldset>
+              <div class="project-filter"><label for="project-select">Dự án</label><select id="project-select"><option value="">Tất cả dự án</option>{projects.map(item => <option value={item.id}>{item.data.title}</option>)}</select></div>
+            </div>
+          </aside>
+        </div>
       </div>
     </section>
     <section class="listing-contact"><div class="listing-container contact-inner"><div><h2>Cần tư vấn căn hộ Đà Nẵng?</h2><p>Liên hệ để được hỗ trợ tìm căn hộ phù hợp với nhu cầu và ngân sách.</p></div><a href="tel:0869437415">Gọi 0869 437 415</a></div></section>
   </main>
 </Base>
 
-<script define:vars={{ pageSize, totalPages }} is:inline>
+<script is:inline>
   (() => {
     const grid = document.getElementById('apartment-grid');
-    const pagination = document.getElementById('apartment-pagination');
-    if (!grid || !pagination) return;
+    if (!grid) return;
     const cards = [...grid.querySelectorAll('[data-listing-index]')];
+    const pagination = document.getElementById('apartment-pagination');
     const numbers = document.getElementById('pagination-numbers');
     const summary = document.getElementById('apartment-page-summary');
+    const count = document.getElementById('result-count');
+    const empty = document.getElementById('empty-filter');
+    const form = document.getElementById('apartment-search');
+    const keyword = document.getElementById('search-keyword');
+    const project = document.getElementById('project-select');
+    const filterBox = document.querySelector('.filter-box');
+    const norm = value => (value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi,'d').toLowerCase().trim();
+    const chosen = name => filterBox.querySelector(`input[name="${name}"]:checked`)?.value || '';
+    const within = (value, range) => {
+      if (!range) return true;
+      if (value === '' || !Number.isFinite(Number(value))) return false;
+      const n = Number(value);
+      if (range.endsWith('+')) return n > Number(range.slice(0,-1));
+      const [low,high] = range.split('-').map(Number);
+      return n >= low && n < high;
+    };
+    const size = 12;
+    let page = 1;
+    let filtered = cards;
     const readPage = () => {
-      const raw = Number(new URLSearchParams(location.search).get('page'));
-      return Number.isInteger(raw) && raw >= 1 && raw <= totalPages ? raw : 1;
+      const n = Number(new URLSearchParams(location.search).get('page'));
+      return Number.isInteger(n) && n >= 1 ? n : 1;
     };
-    let currentPage = readPage();
-    const render = (page, scroll = false) => {
-      currentPage = Math.min(totalPages, Math.max(1, page));
-      const start = (currentPage - 1) * pageSize;
-      cards.forEach((card, i) => { card.hidden = i < start || i >= start + pageSize; });
+    const render = (scroll = false) => {
+      const pages = Math.max(1,Math.ceil(filtered.length/size));
+      page = Math.min(pages,Math.max(1,page));
+      const start = (page-1)*size;
+      const visible = new Set(filtered.slice(start,start+size));
+      cards.forEach(card => {card.hidden = !visible.has(card);});
       numbers.replaceChildren();
-      for (let n = 1; n <= totalPages; n++) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = String(n);
-        button.className = n === currentPage ? 'active' : '';
-        if (n === currentPage) button.setAttribute('aria-current', 'page');
-        button.addEventListener('click', () => go(n));
-        numbers.append(button);
+      pagination.hidden = pages <= 1;
+      for(let n=1;n<=pages && pages>1;n++){
+        const btn = document.createElement('button');
+        btn.type='button'; btn.textContent=String(n); btn.className=n===page?'active':'';
+        if(n===page)btn.setAttribute('aria-current','page');
+        btn.addEventListener('click',()=>go(n));numbers.append(btn);
       }
-      pagination.querySelector('[data-action="prev"]').disabled = currentPage === 1;
-      pagination.querySelector('[data-action="next"]').disabled = currentPage === totalPages;
-      summary.textContent = `Hiển thị ${start + 1}–${Math.min(start + pageSize, cards.length)} / ${cards.length} căn hộ`;
-      if (scroll) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      pagination.querySelector('[data-action="prev"]').disabled=page===1;
+      pagination.querySelector('[data-action="next"]').disabled=page===pages;
+      count.textContent=`${filtered.length} căn hộ`;
+      summary.textContent=filtered.length?`Hiển thị ${start+1}–${Math.min(start+size,filtered.length)} / ${filtered.length} căn hộ`:'Không có căn hộ phù hợp';
+      empty.hidden=filtered.length!==0;
+      if(scroll)grid.scrollIntoView({behavior:'smooth',block:'start'});
     };
-    const go = (page) => {
-      const url = new URL(location.href);
-      if (page === 1) url.searchParams.delete('page');
-      else url.searchParams.set('page', String(page));
-      history.pushState({ page }, '', url);
-      render(page, true);
+    const apply = (resetPage=true) => {
+      const q=norm(keyword.value),district=chosen('district'),price=chosen('price'),area=chosen('area'),proj=project.value;
+      filtered=cards.filter(card => (!q||norm(card.dataset.keywords).includes(q)) && (!district||card.dataset.district===district) && within(card.dataset.price,price) && within(card.dataset.area,area) && (!proj||card.dataset.project===proj));
+      if(resetPage){page=1;const url=new URL(location.href);url.searchParams.delete('page');history.replaceState(null,'',url);}
+      render();
     };
-    pagination.querySelector('[data-action="prev"]').addEventListener('click', () => go(currentPage - 1));
-    pagination.querySelector('[data-action="next"]').addEventListener('click', () => go(currentPage + 1));
-    addEventListener('popstate', () => render(readPage()));
-    render(currentPage);
+    const go=n=>{page=n;const url=new URL(location.href);if(n===1)url.searchParams.delete('page');else url.searchParams.set('page',String(n));history.pushState(null,'',url);render(true);};
+    form.addEventListener('submit',e=>{e.preventDefault();apply();});
+    filterBox.addEventListener('change',()=>apply());
+    document.getElementById('reset-filters').addEventListener('click',()=>{form.reset();filterBox.querySelectorAll('input[type=radio][value=""]').forEach(x=>x.checked=true);project.value='';apply();});
+    pagination.querySelector('[data-action="prev"]').addEventListener('click',()=>go(page-1));
+    pagination.querySelector('[data-action="next"]').addEventListener('click',()=>go(page+1));
+    addEventListener('popstate',()=>{page=readPage();render();});
+    page=readPage();apply(false);
   })();
 </script>
 
@@ -155,10 +209,22 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   .region-links a{display:inline-flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 18px;border:1px solid #d6e1eb;border-radius:10px;background:#f6f8fb;color:#173a58;font-weight:700;text-decoration:none;transition:background .2s,border-color .2s}
   .region-links a:hover,.region-links a:focus-visible{background:#eaf2f8;border-color:#8daec8}
   .region-links a span{color:#a77630}
-  .listing-section{padding:58px 0 75px;background:#f6f8fb}
+  .listing-section{padding:34px 0 75px;background:#f6f8fb}
+  .apartment-search{display:flex;gap:12px;background:#fff;border:1px solid #e1e7ed;border-radius:12px;padding:12px;margin-bottom:25px}
+  .search-input{display:flex;align-items:center;gap:10px;flex:1;min-width:0;background:#f7f9fb;border:1px solid #cbd7e3;border-radius:9px;padding:0 14px}.search-input span{font-size:28px;color:#173a58}
+  .search-input input{width:100%;height:45px;border:0;background:transparent;outline:0;font:inherit;min-width:0}
+  .apartment-search button{border:0;border-radius:8px;background:#bd3c32;color:white;font:inherit;font-weight:700;padding:0 24px;cursor:pointer}
+  .listing-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(250px,3fr);gap:24px;align-items:start}.listing-primary{min-width:0}
+  .region-shortcuts{display:flex;flex-wrap:wrap;gap:10px;margin:-6px 0 22px}.region-shortcuts a{border:1px solid #d6e1eb;border-radius:8px;padding:9px 12px;background:#fff;color:#174b73;text-decoration:none;font-size:13px;font-weight:700}.region-shortcuts a:hover{background:#eaf2f8}
+  .filter-box{background:white;border:1px solid #e1e7ed;border-radius:13px;padding:20px;position:sticky;top:85px}
+  .filter-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.filter-top h2{font-size:20px;color:#173a58;margin:0}.filter-top button{border:0;background:transparent;color:#a77630;cursor:pointer;font-weight:700}
+  .filter-box fieldset{border:0;border-bottom:1px solid #e9eef3;padding:17px 0;margin:0;display:grid;gap:11px}.filter-box legend,.project-filter label{font-size:16px;font-weight:800;color:#173a58;padding:0}
+  .filter-box fieldset label{display:flex;align-items:center;gap:8px;font-size:14px;color:#314f67;cursor:pointer}.filter-box input{accent-color:#a77630}
+  .project-filter{padding-top:18px;display:grid;gap:10px}.project-filter select{width:100%;padding:11px;border:1px solid #cbd7e3;border-radius:8px;background:white;color:#173a58;font:inherit;min-width:0}
+  .empty-filter{padding:22px;background:#fff;border-radius:12px;color:#536b81;text-align:center}.empty-filter[hidden],.pagination[hidden]{display:none!important}
   .section-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:26px}
   .section-heading h2{font-size:clamp(24px,3vw,32px);color:#173a58;margin:0}.count{color:#62778b;font-size:14px;white-space:nowrap}
-  .listing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;scroll-margin-top:24px}
+  .listing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;scroll-margin-top:24px}
   .listing-card{overflow:hidden;border:1px solid #e1e7ed;border-radius:15px;background:#fff;box-shadow:0 8px 25px #102c490d;display:flex;flex-direction:column}
   .listing-card[hidden]{display:none!important}
   .listing-image{height:220px;display:block;position:relative;overflow:hidden;background:#dbe6ee}
@@ -175,6 +241,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   .page-summary{text-align:center;color:#64798a;font-size:13px;margin:18px 0 0}.empty-state{padding:50px 24px;border-radius:15px;text-align:center;background:#fff;border:1px solid #e1e7ed}.empty-state h2{color:#173a58}.empty-state p{color:#62778b}
   .listing-contact{background:#102c49;color:#fff;padding:35px 0}.contact-inner{display:flex;align-items:center;justify-content:space-between;gap:25px}
   .contact-inner h2{font-size:24px;margin:0 0 8px}.contact-inner p{color:#d4e2ee;margin:0}.contact-inner>a{display:inline-block;background:#c99b56;color:#fff;padding:14px 22px;border-radius:9px;font-weight:800;text-decoration:none;white-space:nowrap}
-  @media(max-width:900px){.listing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:980px){.listing-layout{grid-template-columns:minmax(0,1fr) 255px;gap:15px}.listing-body{padding:15px}.listing-image{height:175px}}
+  @media(max-width:760px){.listing-layout{grid-template-columns:1fr}.listing-sidebar{order:-1}.filter-box{position:static}.filter-box fieldset{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.filter-box legend{margin-bottom:8px}.apartment-search{padding:8px;gap:8px}.apartment-search button{padding:0 12px}.listing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:600px){.listing-container{width:min(100% - 28px,1200px)}.listing-hero{padding:30px 0 45px}.breadcrumb{margin-bottom:25px}.listing-section{padding:38px 0 50px}.listing-grid{grid-template-columns:1fr;gap:18px}.listing-image{height:210px}.region-navigation{padding:24px 0}.region-navigation h2{font-size:19px}.region-links{flex-direction:column}.region-links a{width:100%}.section-heading{align-items:start}.contact-inner{flex-direction:column;align-items:start}.contact-inner>a{width:100%;text-align:center}}
 </style>
