@@ -26,7 +26,8 @@ const {
 } = Astro.props;
 
 // Đặt đường dẫn logo sau khi tải ảnh lên public/uploads, ví dụ: '/uploads/logo-kieu-nguyen.png'.
-const brandLogo = '';
+const brandLogo = typeof homepage.siteLogo === 'string' && homepage.siteLogo.startsWith('/uploads/') ? homepage.siteLogo : '';
+const siteFavicon = typeof homepage.siteFavicon === 'string' && homepage.siteFavicon.startsWith('/uploads/') ? homepage.siteFavicon : '/favicon.svg';
 const siteUrl = 'https://canhodanang.store';
 // Thống nhất canonical theo dạng URL có dấu / cuối (trừ đường dẫn tệp).
 const pathname = Astro.url.pathname;
@@ -119,6 +120,7 @@ const structuredData = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href={siteFavicon} />
     {noindex && <meta name="robots" content="noindex,follow" />}
 
     <meta property="og:type" content={type} />

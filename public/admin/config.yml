@@ -647,6 +647,33 @@ collections:
     file: src/data/homepage.json
     format: json
     fields:
+    - label: Logo website (Header desktop và mobile)
+      name: siteLogo
+      widget: image
+      required: false
+      hint: Nên dùng PNG/WebP nền trong suốt, logo rõ nét.
+    - label: Favicon website (biểu tượng trên tab trình duyệt)
+      name: siteFavicon
+      widget: image
+      required: false
+      hint: Ưu tiên PNG vuông 512x512 hoặc SVG. Nếu để trống dùng favicon mặc định.
+    - label: Ảnh đại diện căn hộ theo khu vực
+      name: areaImages
+      widget: object
+      required: false
+      fields:
+      - label: Ảnh căn hộ Sơn Trà
+        name: sonTra
+        widget: image
+        required: false
+      - label: Ảnh căn hộ Ngũ Hành Sơn
+        name: nguHanhSon
+        widget: image
+        required: false
+      - label: Ảnh căn hộ Hải Châu
+        name: haiChau
+        widget: image
+        required: false
     - label: Banner quảng cáo cố định hai bên (desktop)
       name: floatingBanners
       widget: object

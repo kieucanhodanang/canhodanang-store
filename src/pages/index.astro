@@ -94,21 +94,24 @@ const khuVuc = [
     place: 'Sơn Trà, Đà Nẵng',
     summary: 'Tìm hiểu căn hộ tại khu vực Sơn Trà, gần biển và các tiện ích đô thị.',
     href: '/can-ho/son-tra/',
-    style: ''
+    style: '',
+    image: homepage.areaImages?.sonTra || ''
   },
   {
     title: 'Căn hộ Ngũ Hành Sơn',
     place: 'Ngũ Hành Sơn, Đà Nẵng',
     summary: 'Khám phá căn hộ tại Ngũ Hành Sơn, vị trí và những tiêu chí cần lưu ý.',
     href: '/can-ho/ngu-hanh-son/',
-    style: 'two'
+    style: 'two',
+    image: homepage.areaImages?.nguHanhSon || ''
   },
   {
     title: 'Căn hộ Hải Châu',
     place: 'Hải Châu, Đà Nẵng',
     summary: 'Tìm hiểu căn hộ tại khu vực trung tâm thành phố Đà Nẵng.',
     href: '/can-ho/hai-chau/',
-    style: 'three'
+    style: 'three',
+    image: homepage.areaImages?.haiChau || ''
   }
 ];
 
@@ -667,6 +670,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         {khuVuc.map(item => (
           <article class="card">
             <div class={`visual ${item.style}`}>
+              {item.image?.startsWith("/uploads/") && <img src={item.image} alt={`Căn hộ tại ${item.place}`} loading="lazy" decoding="async" />}
               <span class="tag">Theo khu vực</span>
             </div>
 
@@ -783,6 +787,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
 
   <style>
 
+    #khu-vuc .visual img{display:block;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .4s ease}#khu-vuc .card:hover .visual img{transform:scale(1.045)}
     .home-news-card{display:flex;flex-direction:column}.home-news-photo{display:block;aspect-ratio:16/9;overflow:hidden;background:#e4edf3}.home-news-photo img{display:block;width:100%;height:100%;object-fit:cover}.home-news-card .cardbody{flex:1;display:flex;flex-direction:column}.home-news-card .cardbody h3,.home-news-card .cardbody p{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}.home-news-card .cardbody h3{-webkit-line-clamp:2;line-clamp:2}.home-news-card .cardbody p{-webkit-line-clamp:3;line-clamp:3}.home-news-card .cardbody .textlink{margin-top:auto}
     .home-listing-grid {grid-template-columns:repeat(3,minmax(0,1fr));}
     .home-listing-card {min-width:0;overflow:hidden;}
