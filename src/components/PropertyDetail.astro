@@ -84,6 +84,17 @@ const details = [
   { icon: 'location', label: 'Phường / xã', value: property.ward },
   { icon: 'location', label: 'Khu vực', value: property.district },
 ].filter((item) => item.value !== null && item.value !== undefined && String(item.value).trim() !== '');
+// Loại bỏ địa danh lặp giữa địa chỉ, phường và khu vực.
+const normalizePlace = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').replace(/^(?:phường|xã|quận|huyện)\s+/i, '').toLowerCase().trim();
+const addressParts = String(property.address || '').split(',').map(value => value.trim()).filter(Boolean);
+const seenPlaces = new Set(addressParts.map(normalizePlace));
+const locationParts = [...addressParts];
+for (const value of [property.ward, property.district]) {
+  if (!value?.trim()) continue;
+  const normalized = normalizePlace(value);
+  if (!seenPlaces.has(normalized)) { locationParts.push(value.trim()); seenPlaces.add(normalized); }
+}
+const locationText = locationParts.join(', ');
 const uniqueId = `property-${Math.random().toString(36).slice(2, 10)}`;
 ---
 
@@ -113,6 +124,7 @@ const uniqueId = `property-${Math.random().toString(36).slice(2, 10)}`;
   )}
 
   <h1 class="property-title">{property.title}</h1>
+  {locationText && <p class="property-title-location"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>{locationText}</span></p>}
   {property.listingStatus === 'closed' && <p class="property-status">Bất động sản này đã giao dịch</p>}
   {property.listingStatus === 'paused' && <p class="property-status">Bất động sản đang tạm ngừng giao dịch</p>}
 
@@ -220,7 +232,7 @@ const uniqueId = `property-${Math.random().toString(36).slice(2, 10)}`;
   .gallery-featured{width:100%;height:100%;object-fit:contain;display:block}.gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);width:43px;height:43px;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#26343b;cursor:pointer;font-size:22px;box-shadow:0 2px 12px #0002}
   .gallery-arrow.prev{left:14px}.gallery-arrow.next{right:14px}.gallery-arrow:hover{background:#fff}.gallery-count{position:absolute;right:16px;bottom:14px;border-radius:20px;background:#0009;color:#fff;padding:6px 12px;font-size:13px}
   .gallery-thumbs{display:flex;gap:10px;overflow-x:auto;padding:12px 2px 3px}.gallery-thumb{flex:0 0 108px;height:72px;border:3px solid transparent;border-radius:11px;overflow:hidden;padding:0;background:#000;cursor:pointer}.gallery-thumb.active{border-color:#176347}.gallery-thumb img{width:100%;height:100%;object-fit:contain;display:block}
-  .property-title{font-size:clamp(23px,3vw,32px);line-height:1.35;font-weight:750;margin:8px 0 18px}.property-status{display:inline-block;padding:8px 12px;background:#fff1ed;border-radius:8px;color:#a3432a;font-weight:600;margin:0 0 14px}
+  .property-title{font-size:clamp(23px,3vw,32px);line-height:1.35;font-weight:750;margin:8px 0 7px}.property-title-location{display:flex;align-items:flex-start;gap:6px;color:#657789;font-size:13px;line-height:1.5;margin:0 0 18px}.property-title-location svg{width:15px;height:15px;flex:none;margin-top:2px;color:#a7834c}.property-status{display:inline-block;padding:8px 12px;background:#fff1ed;border-radius:8px;color:#a3432a;font-weight:600;margin:0 0 14px}
   .spec-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.spec-card,.unit-price-card{background:#fff;border:1px solid #dce4e8;border-radius:11px;padding:13px 7px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;min-width:0;box-shadow:0 2px 8px #142e4310}
   .spec-value{font-size:clamp(15px,1.7vw,19px);line-height:1.3;overflow-wrap:anywhere}.price-text,.unit-price-card strong{color:#a82424}.spec-label,.unit-price-card span{font-size:11px;color:#66737a;line-height:1.35}.unit-price-card{margin:0}.unit-price-card strong{font-size:clamp(14px,1.6vw,18px);line-height:1.3}
   .contact-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 22px}.contact-actions a{display:flex;justify-content:center;align-items:center;gap:9px;min-height:52px;border-radius:12px;text-decoration:none;font-size:16px;font-weight:700;transition:filter .2s}.contact-actions a:hover{filter:brightness(.95)}.contact-call{background:#176347;color:white}.contact-zalo{background:#e9edef;color:#25353b}
