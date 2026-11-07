@@ -4,7 +4,7 @@ import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const projects = await getCollection('du-an');
-  return projects.filter((entry) => entry.data.status !== 'draft')
+  return projects.filter((entry) => entry.data.status === 'published')
     .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
@@ -51,7 +51,7 @@ const districtNames = ['Hải Châu', 'Sơn Trà', 'Ngũ Hành Sơn', 'Thanh Kh�
 const district = extra.district || districtNames.find(name =>
   normalizeDistrict(data.location).includes(normalizeDistrict(name))) || '';
 const relatedProjects = (await getCollection('du-an'))
-  .filter(item => item.id !== entry.id && item.data.status !== 'draft' && district
+  .filter(item => item.id !== entry.id && item.data.status === 'published' && district
     && normalizeDistrict((item.data as typeof item.data & {district?:string}).district ||
       districtNames.find(name => normalizeDistrict(item.data.location).includes(normalizeDistrict(name))))
        === normalizeDistrict(district)).slice(0, 6);
