@@ -67,7 +67,9 @@ const searchableListings = listingCollections.flatMap((entries, index) =>
         district: d.district || '',
         ward: d.ward || '',
         address: d.address || '',
-        url: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
+        url: type === 'biet-thu'
+          ? (projects.some(p => p.id === project) ? `/du-an/${project}/` : '/du-an/')
+          : `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
         type,
         propertyType: d.propertyType || type,
         transaction,
