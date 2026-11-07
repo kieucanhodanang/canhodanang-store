@@ -259,6 +259,16 @@ collections:
   identifier_field: title
   fields:
   - *id002
+  - label: SEO Title riêng (để trống để hệ thống tự tạo)
+    name: seoTitle
+    widget: string
+    required: false
+    hint: 'Tiêu đề trang trên Google. Nếu để trống, hệ thống dùng tên và vị trí dự án.'
+  - label: Meta Description riêng (để trống để hệ thống tự tạo)
+    name: seoDescription
+    widget: text
+    required: false
+    hint: 'Viết mô tả SEO tự nhiên, khoảng 140–160 ký tự. Không ảnh hưởng phần giới thiệu hiển thị trên trang.'
   - label: Slug dự án (đường dẫn URL)
     name: slug
     widget: string
