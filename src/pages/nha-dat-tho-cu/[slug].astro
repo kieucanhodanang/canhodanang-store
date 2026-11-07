@@ -16,6 +16,12 @@ const { Content } = await render(entry);
 const project = data.project
   ? (await getCollection('du-an')).find(item => item.id === data.project && item.data.status === 'published')
   : undefined;
+const activeLand = (await getCollection('nha-dat-tho-cu')).filter(item => item.data.status === 'published' && item.data.listingStatus === 'available' && item.data.transaction === 'ban');
+const wardCounts = Object.entries(activeLand.reduce<Record<string, number>>((acc, item) => {
+  const ward = item.data.ward?.trim();
+  if (ward) acc[ward] = (acc[ward] || 0) + 1;
+  return acc;
+}, {})).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'vi'));
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const absoluteImage = (path: string) => new URL(path, siteUrl).href;
@@ -93,14 +99,35 @@ const jsonLd = JSON.stringify([propertySchema, breadcrumbSchema]).replace(/</g, 
         </div>
         <span class:list={['status', { inactive: !isAvailable }]}>{statusLabel}</span>
       </div>
-      <PropertyDetail property={data} kind="nha-dat-tho-cu" phone="0869437415" zalo="0869437415">
-        <Content />
-      </PropertyDetail>
-      {project && <aside class="linked-project"><h2>Dự án liên quan</h2><a href={`/du-an/${project.id}/`}>{project.data.title} →</a><p>{project.data.location}</p></aside>}
+      <div class="property-layout">
+        <main class="property-main">
+          <PropertyDetail property={data} kind="nha-dat-tho-cu" phone="0869437415" zalo="0869437415">
+            <Content />
+          </PropertyDetail>
+          {project && <aside class="linked-project"><h2>Dự án liên quan</h2><a href={`/du-an/${project.id}/`}>{project.data.title} →</a><p>{project.data.location}</p></aside>}
+        </main>
+        <aside class="property-sidebar" aria-label="Tư vấn và nhà đất theo phường">
+          <section class="consultant-card">
+            <div class="consultant-heading"><span>Tư vấn bất động sản</span><strong>Mua nhà Đà Nẵng</strong></div>
+            <div class="consultant-body">
+              <div class="consultant-avatar"><img src="/uploads/tu-van-vien-vest.jpg" alt="Chuyên viên tư vấn bất động sản Đà Nẵng" loading="lazy" /></div>
+              <h2>Liên hệ tư vấn</h2><p>Hỗ trợ xem nhà và thông tin giao dịch</p>
+              <a class="consultant-zalo" href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Chat qua Zalo</a>
+              <a class="consultant-call" href="tel:0869437415">☎ 0869 437 415</a>
+            </div>
+          </section>
+          <section class="sidebar-regions"><h2>Nhà đất theo phường</h2>
+            {wardCounts.length ? <ul>{wardCounts.map(([ward, count]) => <li><span>{ward}</span><strong>{count} căn đang bán</strong></li>)}</ul> : <p>Chưa có nhà đất đang bán.</p>}
+          </section>
+        </aside>
+      </div>
       <p class="back-link"><a href="/nha-dat-tho-cu/">← Xem các nhà đất khác</a></p>
     </div>
   </div>
   <style>
+    .property-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}.property-main{min-width:0}.property-sidebar{min-width:0;position:sticky;top:88px;display:grid;gap:16px}
+    .consultant-card,.sidebar-regions{background:#fff;border:1px solid #e0e7ef;border-radius:14px;overflow:hidden;box-shadow:0 6px 22px #102c4915}.consultant-heading{background:linear-gradient(125deg,#10365e,#185d8c);color:#fff;padding:17px 14px;text-align:center;display:grid;gap:5px;font-size:16px}.consultant-heading strong{font-size:20px;color:#f4c16b;line-height:1.35}.consultant-body{padding:20px 16px;text-align:center}.consultant-avatar{width:150px;height:150px;margin:0 auto 14px;border:2px solid #b88b41;border-radius:50%;overflow:hidden;background:#edf3f8}.consultant-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 20%}.consultant-body h2{font-size:17px;margin:0 0 7px;color:#17334d}.consultant-body p{font-size:13px;color:#718092;margin:0 0 16px}.consultant-zalo,.consultant-call{display:block;padding:12px;border-radius:9px;font-weight:700;text-decoration:none;margin-top:9px}.consultant-zalo{border:1px solid #b9c9dc;color:#135c99}.consultant-call{background:#009d9f;color:#fff}.sidebar-regions h2{margin:0;padding:15px;background:#eff5fa;color:#173d62;font-size:18px}.sidebar-regions ul{list-style:none;padding:5px 14px;margin:0}.sidebar-regions li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid #e6edf2;font-size:14px}.sidebar-regions li:last-child{border:0}.sidebar-regions li strong{font-size:12px;color:#637b90;white-space:nowrap}.sidebar-regions p{padding:0 15px;color:#718092;font-size:13px}
+    @media(max-width:980px){.property-layout{grid-template-columns:minmax(0,1fr)}.property-sidebar{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.property-sidebar{grid-template-columns:1fr}}
     .property-page{background:#f5f8fb;color:#19334d;padding:30px 0 65px}
     .property-wrap{max-width:1160px;margin:0 auto;padding:0 20px}
     .breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:20px;overflow-wrap:anywhere}
