@@ -15,7 +15,7 @@ const pagination = paginateListings(apartments, 1, pageSize);
 const totalPages = pagination.totalPages;
 const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft').sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
 const projectNames = new Map(projects.map(item => [item.id, item.data.title]));
-const description = 'Danh sách căn hộ Đà Nẵng đang bán, cập nhật giá, diện tích, phòng ngủ và dự án. Xem căn hộ nổi bật và tin đăng mới nhất.';
+const description = 'Tìm mua căn hộ Đà Nẵng đang bán theo khu vực Sơn Trà, Ngũ Hành Sơn, Hải Châu. Xem giá chào bán, diện tích, phòng ngủ và thông tin dự án.';
 const plain = (value: unknown) => typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
 const formatArea = (value: string | null | undefined) => plain(value) || 'Liên hệ';
 const imageFor = (data: { image?: string | null; gallery?: string[] | null }) => {
@@ -23,7 +23,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   return candidates.find((value) => typeof value === 'string' && (value.startsWith('/') || value.startsWith('https://'))) || '';
 };
 ---
-<Base title="Căn Hộ Đà Nẵng Đang Bán | Căn Hộ Đà Nẵng" description={description}>
+<Base title="Mua Bán Căn Hộ Đà Nẵng | Giá Bán & Dự Án" description={description}>
   <main>
     <section class="listing-hero">
       <div class="listing-container">
