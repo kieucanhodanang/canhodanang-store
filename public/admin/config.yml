@@ -480,12 +480,12 @@ collections:
     widget: string
   - *id022
   - *id020
-  -     label: Mặt tiền (m)
+  - label: Mặt tiền (m)
     name: frontage
     widget: string
     required: false
     hint: 'Ví dụ: 5,5 m.'
-  -     label: Đường vào (m)
+  - label: Đường vào (m)
     name: roadWidth
     widget: number
     value_type: float
@@ -494,7 +494,7 @@ collections:
     hint: Chiều rộng đường vào tính bằng mét, ví dụ 5.5.
   - *id024
   - *id025
-  -     label: Số tầng
+  - label: Số tầng
     name: floors
     widget: number
     value_type: int
@@ -503,7 +503,7 @@ collections:
     hint: Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng.
   - *id026
   - *id027
-  -     label: Hướng
+  - label: Hướng
     name: direction
     widget: select
     required: false
