@@ -13,6 +13,9 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const data = entry.data;
 const { Content } = await render(entry);
+const project = data.project
+  ? (await getCollection('du-an')).find(item => item.id === data.project && item.data.status === 'published')
+  : undefined;
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const absoluteImage = (path: string) => new URL(path, siteUrl).href;
@@ -93,6 +96,7 @@ const jsonLd = JSON.stringify([propertySchema, breadcrumbSchema]).replace(/</g, 
       <PropertyDetail property={data} kind="tho-cu" phone="0869437415" zalo="0869437415">
         <Content />
       </PropertyDetail>
+      {project && <aside class="linked-project"><h2>Dự án liên quan</h2><a href={`/du-an/${project.id}/`}>{project.data.title} →</a><p>{project.data.location}</p></aside>}
       <p class="back-link"><a href="/nha-dat-tho-cu/">← Xem các nhà đất khác</a></p>
     </div>
   </div>
@@ -107,6 +111,7 @@ const jsonLd = JSON.stringify([propertySchema, breadcrumbSchema]).replace(/</g, 
     .property-address{color:#62788b;margin:7px 0 0;line-height:1.5}
     .status{background:#e5f5ec;color:#14663a;border-radius:30px;padding:8px 14px;font-size:13px;font-weight:700;white-space:nowrap}
     .status.inactive{background:#f2e9e6;color:#8c3d32}
+    .linked-project{margin-top:24px;padding:22px;background:#fff;border:1px solid #e3eaf0;border-radius:12px}.linked-project h2{font-size:20px;margin:0 0 10px}.linked-project a{color:#1a5d8c;font-weight:700}.linked-project p{color:#62788b;margin:8px 0 0}
     .back-link{margin-top:28px}
     @media(max-width:767px){.property-wrap{padding:0 14px}.property-intro{flex-direction:column;gap:10px}}
   </style>
