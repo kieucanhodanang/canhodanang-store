@@ -27,8 +27,21 @@ const linkedProperties = groups.flatMap((entries, groupIndex) =>
     }))
 );
 const properties = linkedProperties;
+const propertyCategory = (item: (typeof properties)[number]) => {
+  const type = String('propertyType' in item.data ? item.data.propertyType || '' : '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  if (/shophouse|shop house|nha pho thuong mai/.test(type)) return 'shophouse';
+  if (/biet thu|villa/.test(type)) return 'villa';
+  return 'other';
+};
 const forSale = properties.filter(item => item.data.transaction === 'ban');
 const forRent = properties.filter(item => item.data.transaction !== 'ban');
+const saleVillas = forSale.filter(item => propertyCategory(item) === 'villa');
+const saleShophouses = forSale.filter(item => propertyCategory(item) === 'shophouse');
+const saleOther = forSale.filter(item => propertyCategory(item) === 'other');
+const rentVillas = forRent.filter(item => propertyCategory(item) === 'villa');
+const rentShophouses = forRent.filter(item => propertyCategory(item) === 'shophouse');
+const rentOther = forRent.filter(item => propertyCategory(item) === 'other');
 const extra = data as typeof data & {
   district?: string; totalArea?: string; towerCount?: string | number;
   unitCount?: string | number; handoverDate?: string; buildingDensity?: string;
@@ -156,9 +169,13 @@ const schema = {
       </section>
 
       {[
-        { id: 'sale', heading: `Căn hộ, biệt thự, shophouse đang bán tại ${data.title}`, items: forSale },
-        { id: 'rent', heading: `Căn hộ, biệt thự, shophouse cho thuê tại ${data.title}`, items: forRent },
-      ].map(group => (
+        { id: 'villa-sale', heading: `Biệt thự đang bán tại ${data.title}`, items: saleVillas },
+        { id: 'shophouse-sale', heading: `Shophouse đang bán tại ${data.title}`, items: saleShophouses },
+        { id: 'other-sale', heading: `Căn hộ và bất động sản khác đang bán tại ${data.title}`, items: saleOther },
+        { id: 'villa-rent', heading: `Biệt thự cho thuê tại ${data.title}`, items: rentVillas },
+        { id: 'shophouse-rent', heading: `Shophouse cho thuê tại ${data.title}`, items: rentShophouses },
+        { id: 'other-rent', heading: `Căn hộ và bất động sản khác cho thuê tại ${data.title}`, items: rentOther },
+      ].filter(group => group.items.length > 0).map(group => (
         <section class="listings property-list" data-property-list>
           <h2>{group.heading}</h2>
           {group.items.length ? (
