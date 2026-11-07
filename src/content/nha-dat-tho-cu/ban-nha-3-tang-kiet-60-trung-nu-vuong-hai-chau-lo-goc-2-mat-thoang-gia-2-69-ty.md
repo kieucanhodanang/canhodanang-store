@@ -14,7 +14,7 @@ priceValue: 2690
 area: "41"
 areaValue: 41
 ward: Hải Châu
-roadWidth: 3
+roadWidth: "3"
 interior: Đầy đủ
 legal: Sổ hồng chính chủ
 floors: 3
