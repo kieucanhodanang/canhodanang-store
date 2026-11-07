@@ -18,6 +18,8 @@ const relatedArticles = articles.sort((a, b) => {
   const score = (item: typeof a) => (data.project && item.data.project === data.project ? 2 : 0) + (data.category && item.data.category === data.category ? 1 : 0);
   return score(b) - score(a) || b.data.date.getTime() - a.data.date.getTime();
 }).slice(0, 6);
+const isLandArticle = data.category === 'tho-cu';
+const consultantHeading = isLandArticle ? 'Mua nhà Đà Nẵng' : (linkedProject?.data.title || 'Bất động sản Đà Nẵng');
 const featuredProjects = [...projects].sort((a, b) => Number(b.id === data.project) - Number(a.id === data.project)).slice(0, 8);
 const linkedProject = data.project ? projects.find(item => item.id === data.project && item.data.status === 'published') : undefined;
 const siteUrl = 'https://canhodanang.store';
@@ -81,10 +83,10 @@ const schema = {
     <aside class="news-sidebar" aria-label="Thông tin tư vấn và danh sách dự án">
       <div class="sidebar-sticky">
         <section class="consultant-card">
-          <div class="consultant-heading"><span>Nhận thông tin dự án</span><strong>{linkedProject?.data.title || 'Bất động sản Đà Nẵng'}</strong></div>
+          <div class="consultant-heading"><span>{isLandArticle ? 'Tư vấn bất động sản' : 'Nhận thông tin dự án'}</span><strong>{consultantHeading}</strong></div>
           <div class="consultant-body">
             <div class="consultant-avatar"><img src="/uploads/tu-van-vien-vest.jpg" alt="Chuyên viên tư vấn bất động sản Đà Nẵng" loading="lazy" onerror="this.style.display='none'" /></div>
-            <h2>Tư vấn Bất động sản Đà Nẵng</h2><p>Hỗ trợ thông tin dự án và căn hộ</p>
+            <h2>Mr. Kiều Nguyễn</h2><p>Hỗ trợ thông tin dự án và căn hộ</p>
             <a class="consultant-zalo" href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Chat qua Zalo</a>
             <a class="consultant-call" href="tel:0869437415">☎ 0869 437 415</a>
           </div>
