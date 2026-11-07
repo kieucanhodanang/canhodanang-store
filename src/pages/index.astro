@@ -121,7 +121,7 @@ const landDistrictAreas = [
 ].map(area => ({
   ...area,
   count: searchableListings.filter(item => item.type === 'nha-dat-tho-cu' && item.transaction === 'ban' && normalizeLandDistrict(item.district) === normalizeLandDistrict(area.name)).length,
-  href: '/nha-dat-tho-cu/',
+  href: '/nha-dat-tho-cu/' + ({ 'Sơn Trà': 'son-tra', 'Hải Châu': 'hai-chau', 'Thanh Khê': 'thanh-khe' }[area.name] || '') + '/',
 }));
 // Chọn tối đa 3 dự án công khai, được bật hiển thị trang chủ.
 // Dự án được ghim nổi bật ưu tiên trước; featuredOrder nhỏ lên trước.
