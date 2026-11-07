@@ -53,5 +53,10 @@
   "slideInterval": 5,
   "bannerContentWidth": 1200,
   "bannerVideoPoster": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
-  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG"
+  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG",
+  "landAreaImages": {
+    "sonTra": "",
+    "haiChau": "",
+    "thanhKhe": ""
+  }
 }
