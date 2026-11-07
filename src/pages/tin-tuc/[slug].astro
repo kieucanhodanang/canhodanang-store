@@ -67,7 +67,6 @@ const schema = {
         <span aria-current="page">{data.title}</span>
       </nav>
       <header class="news-header">
-        {data.category && <p class="category">{data.category}</p>}
         <h1>{data.title}</h1>
         {dateText && <time datetime={dateText}>{new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' }).format(data.date)}</time>}
         <p class="lead">{description}</p>
@@ -108,9 +107,9 @@ const schema = {
     .related-articles{margin-top:32px;padding-top:20px;border-top:1px solid #dce6ef}.related-articles h2{font-size:22px;color:#173b60;margin:0 0 14px}.related-articles ul{margin:0;padding-left:20px}.related-articles li{margin:9px 0;line-height:1.6}.related-articles a{color:#175e9b;text-decoration:none}.related-articles a:hover{text-decoration:underline}
     @media(max-width:980px){.news-layout{grid-template-columns:minmax(0,1fr)}.news-sidebar{position:static}.sidebar-sticky{max-height:none;overflow:visible;grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:640px){.sidebar-sticky{grid-template-columns:1fr}}
-    .breadcrumbs{display:flex;gap:9px;flex-wrap:wrap;color:#718092;font-size:13px;margin-bottom:28px;overflow-wrap:anywhere}
+    .breadcrumbs{display:flex;gap:9px;flex-wrap:wrap;color:#718092;font-size:13px;margin-bottom:24px;overflow-wrap:anywhere}
     .breadcrumbs a,.news-footer a{color:#17628e;text-decoration:none}
-    .news-header h1{font-size:clamp(27px,4vw,42px);line-height:1.3;margin:8px 0 16px;color:#183b58}
+    .news-header h1{font-size:clamp(27px,4vw,42px);line-height:1.3;margin:0 0 16px;color:#183b58}
     .category{color:#ad7c32;font-size:13px;font-weight:700;text-transform:uppercase;margin:0}
     .news-header time{color:#6d7e8b;font-size:14px}
     .lead{font-size:17px;line-height:1.75;color:#536879;margin:20px 0 26px}
