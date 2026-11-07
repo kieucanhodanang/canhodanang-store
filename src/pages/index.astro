@@ -505,6 +505,58 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     })();
   </script>
 
+  <!-- H2: DU AN NOI BAT -->
+  <section class="section" id="du-an">
+    <div class="wrap">
+
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">
+            THÔNG TIN DỰ ÁN
+          </span>
+
+          <h2>Dự Án Bất Động Sản Đà Nẵng Nổi Bật</h2>
+
+          <p>
+            Tìm hiểu các dự án căn hộ và
+            những dự án bất động sản đáng quan tâm
+            tại Đà Nẵng.
+          </p>
+        </div>
+
+        <a class="textlink" href="/du-an/">
+          Xem tất cả dự án →
+        </a>
+      </div>
+
+      <div class="cards">
+        {duAn.map(item => (
+          <article class="card">
+            <div class="visual home-project-visual">
+              {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
+              <span class="tag">{item.tag}</span>
+            </div>
+
+            <div class="cardbody">
+              <span class="location">
+                ⌖ {item.place}
+              </span>
+
+              <h3>{item.title}</h3>
+
+              <p>{item.summary}</p>
+
+              <a class="textlink" href={item.href}>
+                Khám phá dự án →
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
   <!-- H2: CAN HO BAN -->
   <section class="section" id="can-ho-ban">
     <div class="wrap">
@@ -717,58 +769,6 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           </article>
         ))}
       </div>
-    </div>
-  </section>
-
-  <!-- H2: DU AN NOI BAT -->
-  <section class="section" id="du-an">
-    <div class="wrap">
-
-      <div class="sectionhead">
-        <div>
-          <span class="eyebrow">
-            THÔNG TIN DỰ ÁN
-          </span>
-
-          <h2>Dự Án Bất Động Sản Đà Nẵng Nổi Bật</h2>
-
-          <p>
-            Tìm hiểu các dự án căn hộ và
-            những dự án bất động sản đáng quan tâm
-            tại Đà Nẵng.
-          </p>
-        </div>
-
-        <a class="textlink" href="/du-an/">
-          Xem tất cả dự án →
-        </a>
-      </div>
-
-      <div class="cards">
-        {duAn.map(item => (
-          <article class="card">
-            <div class="visual home-project-visual">
-              {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
-              <span class="tag">{item.tag}</span>
-            </div>
-
-            <div class="cardbody">
-              <span class="location">
-                ⌖ {item.place}
-              </span>
-
-              <h3>{item.title}</h3>
-
-              <p>{item.summary}</p>
-
-              <a class="textlink" href={item.href}>
-                Khám phá dự án →
-              </a>
-            </div>
-          </article>
-        ))}
-      </div>
-
     </div>
   </section>
 
