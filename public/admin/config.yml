@@ -1,5 +1,4 @@
-# Decap CMS | canhodanang.store | Bước 1
-# Lưu ý: cập nhật Astro ở các bước sau để bật slideshow, dropdown và dải logo.
+# Decap CMS | canhodanang.store | Nâng cấp dữ liệu dự án
 backend:
   name: github
   repo: kieucanhodanang/canhodanang-store
@@ -23,27 +22,32 @@ collections:
   slug: '{{slug}}'
   identifier_field: title
   fields:
-  - label: Tiêu đề bài đăng
+  - &id002
+    label: Tiêu đề bài đăng
     name: title
     widget: string
-  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
+  - &id003
+    label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
     name: description
     widget: text
-  - label: SEO Title riêng (để trống dùng tiêu đề)
+  - &id004
+    label: SEO Title riêng (để trống dùng tiêu đề)
     name: seoTitle
     widget: string
     required: false
-  - label: Thuộc dự án
+  - &id016
+    label: Thuộc dự án
     name: project
     widget: relation
     required: false
     collection: du-an
-    search_fields:
+    search_fields: &id028
     - title
     value_field: '{{slug}}'
-    display_fields:
+    display_fields: &id029
     - title
-  - label: Hình thức giao dịch
+  - &id017
+    label: Hình thức giao dịch
     name: transaction
     widget: select
     options:
@@ -54,7 +58,8 @@ collections:
     - label: Cho thuê theo ngày
       value: cho-thue-ngay
     default: ban
-  - label: Tình trạng giao dịch
+  - &id018
+    label: Tình trạng giao dịch
     name: listingStatus
     widget: select
     options:
@@ -68,30 +73,35 @@ collections:
   - label: Giá bán hoặc cho thuê
     name: price
     widget: string
-  - label: Giá để lọc (triệu đồng)
+  - &id023
+    label: Giá để lọc (triệu đồng)
     name: priceValue
     widget: number
     value_type: float
     min: 0
     required: false
-    hint: "Nhập số, không kèm đơn vị. Bán: 3,5 tỷ = 3500. Thuê tháng: 15 triệu = 15. Thuê ngày: 800 nghìn/đêm = 0.8."
-  - label: Diện tích (m²)
+    hint: 'Nhập số, không kèm đơn vị. Bán: 3,5 tỷ = 3500. Thuê tháng: 15 triệu = 15. Thuê ngày: 800 nghìn/đêm = 0.8.'
+  - &id021
+    label: Diện tích (m²)
     name: area
     widget: string
-  - label: Diện tích để lọc (m²)
+  - &id022
+    label: Diện tích để lọc (m²)
     name: areaValue
     widget: number
     value_type: float
     min: 0
     required: false
-    hint: "Nhập số, ví dụ 75.5. Thanh trượt trang chủ hiển thị khoảng 25–125 m²."
-  - label: Số phòng ngủ
+    hint: Nhập số, ví dụ 75.5. Thanh trượt trang chủ hiển thị khoảng 25–125 m².
+  - &id026
+    label: Số phòng ngủ
     name: bedrooms
     widget: number
     required: false
     value_type: int
     min: 0
-  - label: Số phòng vệ sinh
+  - &id027
+    label: Số phòng vệ sinh
     name: bathrooms
     widget: number
     required: false
@@ -101,7 +111,8 @@ collections:
     name: areaSlug
     widget: select
     required: false
-    hint: "Chọn khu vực để phân loại căn hộ trên website. Giữ nguyên Quận / Khu vực và Phường / Xã bên dưới để ghi địa chỉ thực tế."
+    hint: Chọn khu vực để phân loại căn hộ trên website. Giữ nguyên Quận / Khu vực và Phường / Xã bên dưới để ghi địa chỉ
+      thực tế.
     options:
     - label: Sơn Trà
       value: son-tra
@@ -112,7 +123,7 @@ collections:
   - label: Quận / Khu vực
     name: district
     widget: select
-    options:
+    options: &id030
     - label: Hải Châu
       value: Hải Châu
     - label: Sơn Trà
@@ -130,14 +141,16 @@ collections:
     - label: Khu vực khác
       value: Khu vực khác
     required: false
-  - label: Phường / Xã
+  - &id020
+    label: Phường / Xã
     name: ward
     widget: string
     required: false
   - label: Địa chỉ bất động sản
     name: address
     widget: string
-  - label: Thông tin pháp lý
+  - &id025
+    label: Thông tin pháp lý
     name: legal
     widget: string
     required: false
@@ -145,7 +158,7 @@ collections:
     name: direction
     widget: select
     required: false
-    options:
+    options: &id001
     - Đông
     - Tây
     - Nam
@@ -158,21 +171,15 @@ collections:
     name: balconyDirection
     widget: select
     required: false
-    options:
-    - Đông
-    - Tây
-    - Nam
-    - Bắc
-    - Đông Bắc
-    - Đông Nam
-    - Tây Bắc
-    - Tây Nam
-  - label: Nội thất
+    options: *id001
+  - &id024
+    label: Nội thất
     name: interior
     widget: string
     required: false
-    hint: "Ví dụ: Đầy đủ nội thất, Nội thất cơ bản, Bàn giao thô."
-  - label: Thư viện hình ảnh
+    hint: 'Ví dụ: Đầy đủ nội thất, Nội thất cơ bản, Bàn giao thô.'
+  - &id005
+    label: Thư viện hình ảnh
     name: gallery
     widget: list
     required: false
@@ -180,32 +187,38 @@ collections:
       label: Hình ảnh
       name: image
       widget: image
-  - label: Ảnh chia sẻ mạng xã hội
+  - &id006
+    label: Ảnh chia sẻ mạng xã hội
     name: ogImage
     widget: image
     required: false
-  - label: Ảnh đại diện
+  - &id007
+    label: Ảnh đại diện
     name: image
     widget: image
-  - label: Alt Text ảnh đại diện
+  - &id008
+    label: Alt Text ảnh đại diện
     name: imageAlt
     widget: string
     required: false
-  - label: Ngày đăng
+  - &id009
+    label: Ngày đăng
     name: date
     widget: datetime
     required: false
     date_format: YYYY-MM-DD
     time_format: HH:mm
     format: YYYY-MM-DDTHH:mm:ss
-  - label: Ngày cập nhật
+  - &id010
+    label: Ngày cập nhật
     name: updatedAt
     widget: datetime
     required: false
     date_format: YYYY-MM-DD
     time_format: HH:mm
     format: YYYY-MM-DDTHH:mm:ss
-  - label: Trạng thái xuất bản
+  - &id011
+    label: Trạng thái xuất bản
     name: status
     widget: select
     options:
@@ -214,21 +227,25 @@ collections:
     - label: Bản nháp / Ẩn
       value: draft
     default: published
-  - label: Hiển thị trên trang chủ
+  - &id012
+    label: Hiển thị trên trang chủ
     name: showOnHome
     widget: boolean
     default: true
-  - label: Ghim nổi bật trên trang chủ
+  - &id013
+    label: Ghim nổi bật trên trang chủ
     name: featured
     widget: boolean
     default: false
-  - label: Thứ tự ưu tiên (số nhỏ lên trước)
+  - &id014
+    label: Thứ tự ưu tiên (số nhỏ lên trước)
     name: featuredOrder
     widget: number
     required: false
     value_type: int
     min: 1
-  - label: Nội dung chi tiết
+  - &id015
+    label: Nội dung chi tiết
     name: body
     widget: markdown
 - name: du-an
@@ -241,24 +258,17 @@ collections:
   slug: '{{fields.slug}}'
   identifier_field: title
   fields:
-  - label: Tiêu đề bài đăng
-    name: title
-    widget: string
+  - *id002
   - label: Slug dự án (đường dẫn URL)
     name: slug
     widget: string
     required: true
     pattern:
-    - '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+    - ^[a-z0-9]+(?:-[a-z0-9]+)*$
     - 'Chỉ dùng chữ thường không dấu, số và dấu gạch ngang. Ví dụ: capital-square'
     hint: 'Ví dụ: capital-square. Không nhập /du-an/ hoặc .md. Sau khi xuất bản không nên đổi slug vì sẽ đổi URL.'
-  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
-    name: description
-    widget: text
-  - label: SEO Title riêng (để trống dùng tiêu đề)
-    name: seoTitle
-    widget: string
-    required: false
+  - *id003
+  - *id004
   - label: Chủ đầu tư
     name: developer
     widget: string
@@ -266,6 +276,84 @@ collections:
   - label: Vị trí dự án
     name: location
     widget: string
+  - label: Quận / Khu vực dự án
+    name: district
+    widget: select
+    required: false
+    options: &id019
+    - Hải Châu
+    - Sơn Trà
+    - Ngũ Hành Sơn
+    - Thanh Khê
+    - Liên Chiểu
+    - Cẩm Lệ
+    - Hòa Vang
+    - Khu vực khác
+    hint: Dùng để tự động lấy các dự án liên quan cùng quận.
+  - label: Tổng diện tích dự án
+    name: totalArea
+    widget: string
+    required: false
+    hint: 'Ví dụ: 2,5 ha hoặc 25.000 m²'
+  - label: Số tòa
+    name: towerCount
+    widget: string
+    required: false
+  - label: Số căn hộ / biệt thự
+    name: unitCount
+    widget: string
+    required: false
+  - label: Thời gian bàn giao dự kiến
+    name: handoverDate
+    widget: string
+    required: false
+  - label: Mật độ xây dựng
+    name: buildingDensity
+    widget: string
+    required: false
+  - label: Nội dung mặt bằng dự án
+    name: floorPlanText
+    widget: text
+    required: false
+  - label: Hình ảnh mặt bằng dự án
+    name: floorPlanImages
+    widget: list
+    required: false
+    field:
+      label: Ảnh mặt bằng
+      name: image
+      widget: image
+  - label: Nội dung tiến độ dự án
+    name: progressText
+    widget: text
+    required: false
+  - label: Các lần cập nhật tiến độ
+    name: progressItems
+    widget: list
+    required: false
+    summary: '{{fields.title}}'
+    fields:
+    - label: Tiêu đề H3 của ảnh / video
+      name: title
+      widget: string
+    - label: Nội dung cập nhật
+      name: description
+      widget: text
+      required: false
+    - label: Hình ảnh tiến độ
+      name: image
+      widget: image
+      required: false
+    - label: Link video YouTube
+      name: videoUrl
+      widget: string
+      required: false
+      hint: Dán link YouTube thông thường hoặc YouTube Shorts.
+    - label: Tệp video tải lên (MP4/WebM)
+      name: videoFile
+      widget: file
+      required: false
+      hint: Chỉ dùng video dung lượng nhỏ; ưu tiên YouTube để tránh tăng dung lượng GitHub và Cloudflare.
   - label: Loại hình trong dự án
     name: propertyTypes
     widget: select
@@ -282,25 +370,10 @@ collections:
       value: nha-pho
     - label: Đất nền
       value: dat-nen
-  - label: Thư viện hình ảnh
-    name: gallery
-    widget: list
-    required: false
-    field:
-      label: Hình ảnh
-      name: image
-      widget: image
-  - label: Ảnh chia sẻ mạng xã hội
-    name: ogImage
-    widget: image
-    required: false
-  - label: Ảnh đại diện
-    name: image
-    widget: image
-  - label: Alt Text ảnh đại diện
-    name: imageAlt
-    widget: string
-    required: false
+  - *id005
+  - *id006
+  - *id007
+  - *id008
   - label: Logo dự án (hiển thị trong dải logo Footer)
     name: logo
     widget: image
@@ -335,46 +408,13 @@ collections:
     name: showInMenu
     widget: boolean
     default: true
-  - label: Ngày đăng
-    name: date
-    widget: datetime
-    required: false
-    date_format: YYYY-MM-DD
-    time_format: HH:mm
-    format: YYYY-MM-DDTHH:mm:ss
-  - label: Ngày cập nhật
-    name: updatedAt
-    widget: datetime
-    required: false
-    date_format: YYYY-MM-DD
-    time_format: HH:mm
-    format: YYYY-MM-DDTHH:mm:ss
-  - label: Trạng thái xuất bản
-    name: status
-    widget: select
-    options:
-    - label: Công khai
-      value: published
-    - label: Bản nháp / Ẩn
-      value: draft
-    default: published
-  - label: Hiển thị trên trang chủ
-    name: showOnHome
-    widget: boolean
-    default: true
-  - label: Ghim nổi bật trên trang chủ
-    name: featured
-    widget: boolean
-    default: false
-  - label: Thứ tự ưu tiên (số nhỏ lên trước)
-    name: featuredOrder
-    widget: number
-    required: false
-    value_type: int
-    min: 1
-  - label: Nội dung chi tiết
-    name: body
-    widget: markdown
+  - *id009
+  - *id010
+  - *id011
+  - *id012
+  - *id013
+  - *id014
+  - *id015
 - name: biet-thu
   label: Biệt thự & Shophouse
   label_singular: Biệt thự & Shophouse
@@ -385,16 +425,9 @@ collections:
   slug: '{{slug}}'
   identifier_field: title
   fields:
-  - label: Tiêu đề bài đăng
-    name: title
-    widget: string
-  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
-    name: description
-    widget: text
-  - label: SEO Title riêng (để trống dùng tiêu đề)
-    name: seoTitle
-    widget: string
-    required: false
+  - *id002
+  - *id003
+  - *id004
   - label: Loại hình
     name: propertyType
     widget: select
@@ -404,193 +437,69 @@ collections:
     - label: Shophouse
       value: shophouse
     default: biet-thu
-  - label: Thuộc dự án
-    name: project
-    widget: relation
-    required: false
-    collection: du-an
-    search_fields:
-    - title
-    value_field: '{{slug}}'
-    display_fields:
-    - title
-  - label: Hình thức giao dịch
-    name: transaction
-    widget: select
-    options:
-    - label: Bán
-      value: ban
-    - label: Cho thuê dài hạn
-      value: cho-thue
-    - label: Cho thuê theo ngày
-      value: cho-thue-ngay
-    default: ban
-  - label: Tình trạng giao dịch
-    name: listingStatus
-    widget: select
-    options:
-    - label: Còn giao dịch
-      value: available
-    - label: Đã bán / Đã cho thuê
-      value: closed
-    - label: Tạm ngừng
-      value: paused
-    default: available
+  - *id016
+  - *id017
+  - *id018
   - label: Quận / Khu vực
     name: district
     widget: select
+    options: *id019
     required: false
-    options:
-    - Hải Châu
-    - Sơn Trà
-    - Ngũ Hành Sơn
-    - Thanh Khê
-    - Liên Chiểu
-    - Cẩm Lệ
-    - Hòa Vang
-    - Khu vực khác
-  - label: Phường / Xã
-    name: ward
-    widget: string
-    required: false
+  - *id020
   - label: Địa chỉ
     name: address
     widget: string
     required: false
-  - label: Diện tích
-    name: area
-    widget: string
-    required: false
-  - label: Diện tích để lọc (m²)
-    name: areaValue
-    widget: number
-    value_type: float
-    min: 0
-    required: false
-    hint: "Nhập số, ví dụ 75.5. Thanh trượt trang chủ hiển thị khoảng 25–125 m²."
+  - *id021
+  - *id022
   - label: Giá bán / cho thuê
     name: price
     widget: string
     required: false
-  - label: Giá để lọc (triệu đồng)
-    name: priceValue
-    widget: number
-    value_type: float
-    min: 0
-    required: false
-    hint: "Nhập số, không kèm đơn vị. Bán: 3,5 tỷ = 3500. Thuê tháng: 15 triệu = 15. Thuê ngày: 800 nghìn/đêm = 0.8."
-  - label: Mặt tiền (m)
+  - *id023
+  - &id031
+    label: Mặt tiền (m)
     name: frontage
     widget: string
     required: false
-    hint: "Ví dụ: 5,5 m."
-  - label: Đường vào (m)
+    hint: 'Ví dụ: 5,5 m.'
+  - &id032
+    label: Đường vào (m)
     name: roadWidth
     widget: number
     value_type: float
     min: 0
     required: false
-    hint: "Chiều rộng đường vào tính bằng mét, ví dụ 5.5."
-  - label: Nội thất
-    name: interior
-    widget: string
-    required: false
-    hint: "Ví dụ: Đầy đủ nội thất, Nội thất cơ bản, Bàn giao thô."
-  - label: Thông tin pháp lý
-    name: legal
-    widget: string
-    required: false
-  - label: Số tầng
+    hint: Chiều rộng đường vào tính bằng mét, ví dụ 5.5.
+  - *id024
+  - *id025
+  - &id033
+    label: Số tầng
     name: floors
     widget: number
     value_type: int
     min: 1
     required: false
-    hint: "Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng."
-  - label: Số phòng ngủ (nếu có)
-    name: bedrooms
-    widget: number
-    value_type: int
-    min: 0
-    required: false
-  - label: Số phòng vệ sinh
-    name: bathrooms
-    widget: number
-    value_type: int
-    min: 0
-    required: false
-  - label: Hướng
+    hint: Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng.
+  - *id026
+  - *id027
+  - &id034
+    label: Hướng
     name: direction
     widget: select
     required: false
-    options:
-    - Đông
-    - Tây
-    - Nam
-    - Bắc
-    - Đông Bắc
-    - Đông Nam
-    - Tây Bắc
-    - Tây Nam
-  - label: Thư viện hình ảnh
-    name: gallery
-    widget: list
-    required: false
-    field:
-      label: Hình ảnh
-      name: image
-      widget: image
-  - label: Ảnh chia sẻ mạng xã hội
-    name: ogImage
-    widget: image
-    required: false
-  - label: Ảnh đại diện
-    name: image
-    widget: image
-  - label: Alt Text ảnh đại diện
-    name: imageAlt
-    widget: string
-    required: false
-  - label: Ngày đăng
-    name: date
-    widget: datetime
-    required: false
-    date_format: YYYY-MM-DD
-    time_format: HH:mm
-    format: YYYY-MM-DDTHH:mm:ss
-  - label: Ngày cập nhật
-    name: updatedAt
-    widget: datetime
-    required: false
-    date_format: YYYY-MM-DD
-    time_format: HH:mm
-    format: YYYY-MM-DDTHH:mm:ss
-  - label: Trạng thái xuất bản
-    name: status
-    widget: select
-    options:
-    - label: Công khai
-      value: published
-    - label: Bản nháp / Ẩn
-      value: draft
-    default: published
-  - label: Hiển thị trên trang chủ
-    name: showOnHome
-    widget: boolean
-    default: true
-  - label: Ghim nổi bật trên trang chủ
-    name: featured
-    widget: boolean
-    default: false
-  - label: Thứ tự ưu tiên (số nhỏ lên trước)
-    name: featuredOrder
-    widget: number
-    required: false
-    value_type: int
-    min: 1
-  - label: Nội dung chi tiết
-    name: body
-    widget: markdown
+    options: *id001
+  - *id005
+  - *id006
+  - *id007
+  - *id008
+  - *id009
+  - *id010
+  - *id011
+  - *id012
+  - *id013
+  - *id014
+  - *id015
 - name: tho-cu
   label: Nhà đất thổ cư
   label_singular: Nhà đất thổ cư
@@ -601,26 +510,17 @@ collections:
   slug: '{{slug}}'
   identifier_field: title
   fields:
-  - label: Tiêu đề bài đăng
-    name: title
-    widget: string
-  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
-    name: description
-    widget: text
-  - label: SEO Title riêng (để trống dùng tiêu đề)
-    name: seoTitle
-    widget: string
-    required: false
+  - *id002
+  - *id003
+  - *id004
   - label: Thuộc dự án (nếu có)
     name: project
     widget: relation
     required: false
     collection: du-an
-    search_fields:
-    - title
+    search_fields: *id028
     value_field: '{{slug}}'
-    display_fields:
-    - title
+    display_fields: *id029
   - label: Loại tài sản
     name: propertyType
     widget: select
@@ -632,181 +532,49 @@ collections:
   - label: Hình thức giao dịch
     name: transaction
     widget: select
-    default: ban
     options:
     - label: Bán
       value: ban
     - label: Cho thuê
       value: cho-thue
-  - label: Tình trạng giao dịch
-    name: listingStatus
-    widget: select
-    options:
-    - label: Còn giao dịch
-      value: available
-    - label: Đã bán / Đã cho thuê
-      value: closed
-    - label: Tạm ngừng
-      value: paused
-    default: available
+    default: ban
+  - *id018
   - label: Quận / Khu vực
     name: district
     widget: select
-    options:
-    - label: Hải Châu
-      value: Hải Châu
-    - label: Sơn Trà
-      value: Sơn Trà
-    - label: Ngũ Hành Sơn
-      value: Ngũ Hành Sơn
-    - label: Thanh Khê
-      value: Thanh Khê
-    - label: Liên Chiểu
-      value: Liên Chiểu
-    - label: Cẩm Lệ
-      value: Cẩm Lệ
-    - label: Hòa Vang
-      value: Hòa Vang
-    - label: Khu vực khác
-      value: Khu vực khác
+    options: *id030
+    required: true
   - label: Địa chỉ
     name: address
     widget: string
   - label: Giá bán
     name: price
     widget: string
-  - label: Giá để lọc (triệu đồng)
-    name: priceValue
-    widget: number
-    value_type: float
-    min: 0
-    required: false
-    hint: "Nhập số, không kèm đơn vị. Bán: 3,5 tỷ = 3500. Thuê tháng: 15 triệu = 15. Thuê ngày: 800 nghìn/đêm = 0.8."
+  - *id023
   - label: Diện tích đất
     name: area
     widget: string
-  - label: Diện tích để lọc (m²)
-    name: areaValue
-    widget: number
-    value_type: float
-    min: 0
-    required: false
-    hint: "Nhập số, ví dụ 75.5. Thanh trượt trang chủ hiển thị khoảng 25–125 m²."
-  - label: Phường / Xã
-    name: ward
-    widget: string
-    required: false
-  - label: Mặt tiền (m)
-    name: frontage
-    widget: string
-    required: false
-  - label: Đường vào (m)
-    name: roadWidth
-    widget: number
-    value_type: float
-    min: 0
-    required: false
-    hint: "Chiều rộng đường vào tính bằng mét, ví dụ 5.5."
-  - label: Nội thất
-    name: interior
-    widget: string
-    required: false
-    hint: "Ví dụ: Đầy đủ nội thất, Nội thất cơ bản, Bàn giao thô."
-  - label: Thông tin pháp lý
-    name: legal
-    widget: string
-    required: false
-  - label: Số tầng
-    name: floors
-    widget: number
-    value_type: int
-    min: 1
-    required: false
-    hint: "Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng."
-  - label: Số phòng ngủ (nếu có)
-    name: bedrooms
-    widget: number
-    value_type: int
-    min: 0
-    required: false
-  - label: Số phòng vệ sinh
-    name: bathrooms
-    widget: number
-    value_type: int
-    min: 0
-    required: false
-  - label: Hướng
-    name: direction
-    widget: select
-    required: false
-    options:
-    - Đông
-    - Tây
-    - Nam
-    - Bắc
-    - Đông Bắc
-    - Đông Nam
-    - Tây Bắc
-    - Tây Nam
-  - label: Thư viện hình ảnh
-    name: gallery
-    widget: list
-    required: false
-    field:
-      label: Hình ảnh
-      name: image
-      widget: image
-  - label: Ảnh chia sẻ mạng xã hội
-    name: ogImage
-    widget: image
-    required: false
-  - label: Ảnh đại diện
-    name: image
-    widget: image
-  - label: Alt Text ảnh đại diện
-    name: imageAlt
-    widget: string
-    required: false
-  - label: Ngày đăng
-    name: date
-    widget: datetime
-    required: false
-    date_format: YYYY-MM-DD
-    time_format: HH:mm
-    format: YYYY-MM-DDTHH:mm:ss
-  - label: Ngày cập nhật
-    name: updatedAt
-    widget: datetime
-    required: false
-    date_format: YYYY-MM-DD
-    time_format: HH:mm
-    format: YYYY-MM-DDTHH:mm:ss
-  - label: Trạng thái xuất bản
-    name: status
-    widget: select
-    options:
-    - label: Công khai
-      value: published
-    - label: Bản nháp / Ẩn
-      value: draft
-    default: published
-  - label: Hiển thị trên trang chủ
-    name: showOnHome
-    widget: boolean
-    default: true
-  - label: Ghim nổi bật trên trang chủ
-    name: featured
-    widget: boolean
-    default: false
-  - label: Thứ tự ưu tiên (số nhỏ lên trước)
-    name: featuredOrder
-    widget: number
-    required: false
-    value_type: int
-    min: 1
-  - label: Nội dung chi tiết
-    name: body
-    widget: markdown
+  - *id022
+  - *id020
+  - *id031
+  - *id032
+  - *id024
+  - *id025
+  - *id033
+  - *id026
+  - *id027
+  - *id034
+  - *id005
+  - *id006
+  - *id007
+  - *id008
+  - *id009
+  - *id010
+  - *id011
+  - *id012
+  - *id013
+  - *id014
+  - *id015
 - name: bai-viet
   label: Tin tức và bài viết SEO
   label_singular: Tin tức và bài viết SEO
@@ -817,19 +585,13 @@ collections:
   slug: '{{slug}}'
   identifier_field: title
   fields:
-  - label: Tiêu đề bài đăng
-    name: title
-    widget: string
-  - label: Mô tả SEO (khoảng 140–160 ký tự, viết tự nhiên)
-    name: description
-    widget: text
-  - label: SEO Title riêng (để trống dùng tiêu đề)
-    name: seoTitle
-    widget: string
-    required: false
+  - *id002
+  - *id003
+  - *id004
   - label: Danh mục bài viết
     name: category
     widget: select
+    required: false
     options:
     - label: Tin thị trường
       value: thi-truong
@@ -843,58 +605,31 @@ collections:
       value: phap-ly
     - label: Kinh nghiệm mua bán
       value: kinh-nghiem
+  - label: Tin tức thuộc dự án (tự động liên kết)
+    name: project
+    widget: relation
     required: false
-  - label: Ảnh chia sẻ mạng xã hội
-    name: ogImage
-    widget: image
-    required: false
-  - label: Ảnh đại diện
-    name: image
-    widget: image
-    required: false
-  - label: Alt Text ảnh đại diện
-    name: imageAlt
-    widget: string
-    required: false
+    collection: du-an
+    search_fields: *id028
+    value_field: '{{slug}}'
+    display_fields: *id029
+    hint: Chọn dự án để bài viết tự động xuất hiện trong phần Tin tức về dự án.
+  - *id006
+  - *id007
+  - *id008
   - label: Ngày đăng
     name: date
     widget: datetime
+    required: true
     date_format: YYYY-MM-DD
     time_format: HH:mm
     format: YYYY-MM-DDTHH:mm:ss
-  - label: Ngày cập nhật
-    name: updatedAt
-    widget: datetime
-    required: false
-    date_format: YYYY-MM-DD
-    time_format: HH:mm
-    format: YYYY-MM-DDTHH:mm:ss
-  - label: Trạng thái xuất bản
-    name: status
-    widget: select
-    options:
-    - label: Công khai
-      value: published
-    - label: Bản nháp / Ẩn
-      value: draft
-    default: published
-  - label: Hiển thị trên trang chủ
-    name: showOnHome
-    widget: boolean
-    default: true
-  - label: Ghim nổi bật trên trang chủ
-    name: featured
-    widget: boolean
-    default: false
-  - label: Thứ tự ưu tiên (số nhỏ lên trước)
-    name: featuredOrder
-    widget: number
-    required: false
-    value_type: int
-    min: 1
-  - label: Nội dung chi tiết
-    name: body
-    widget: markdown
+  - *id010
+  - *id011
+  - *id012
+  - *id013
+  - *id014
+  - *id015
 - name: cai-dat-trang-chu
   label: Cài đặt trang chủ
   files:
@@ -958,8 +693,7 @@ collections:
       name: bannerSlides
       widget: list
       required: false
-      hint: Có thể thêm nhiều slide. Khi chưa có slide, giao diện tiếp tục dùng banner cũ cho đến khi cập nhật
-        code Astro.
+      hint: Có thể thêm nhiều slide. Khi chưa có slide, giao diện tiếp tục dùng banner cũ cho đến khi cập nhật code Astro.
       fields:
       - label: Bật hiển thị
         name: enabled
