@@ -4,7 +4,7 @@ description: "Khám phá Vinhomes Hải Vân Bay tại Làng Vân, Đà Nẵng: 
   500 ha, vị trí ven biển, hạ tầng Tây Bắc và tiềm năng đầu tư biệt thự,
   shophouse. Vinhomes Làng Vân, Hải Vân Bay Đà Nẵng, bất động sản Tây Bắc Đà
   Nẵng"
-seoTitle: vinhomes-hai-van-bay-do-thi-nghi-duong-da-nang
+seoTitle: "Vinhomes Hải Vân Bay: Diện mạo đô thị nghỉ dưỡng mới tại Đà Nẵng"
 category: du-an
 project: vinhomes-hai-van-bay
 ogImage: /uploads/vinhomes-hai-van-bay.webp
