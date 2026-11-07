@@ -27,16 +27,10 @@ const propertyFields = {
   project: optionalText,
   transaction: z.enum(['ban', 'cho-thue', 'cho-thue-ngay']).default('ban'),
   listingStatus: z.enum(['available', 'closed', 'paused']).default('available'),
-
-  // Giá và diện tích dạng văn bản.
   price: optionalText,
   area: optionalText,
-
-  // Giá trị số dùng để lọc.
-  // priceValue: triệu đồng; areaValue: mét vuông.
   priceValue: optionalNumber,
   areaValue: optionalNumber,
-
   bedrooms: optionalNumber,
   district: optionalText,
   ward: optionalText,
@@ -50,16 +44,12 @@ const canHo = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/can-ho' }),
   schema: z.object({
     ...propertyFields,
-    // Nhóm khu vực phục vụ trang danh mục SEO và bộ lọc.
-    // Giữ optional để bài đăng cũ vẫn build bình thường.
     areaSlug: z.enum(['son-tra', 'ngu-hanh-son', 'hai-chau']).nullish(),
     price: z.string(),
     area: z.string(),
     address: z.string(),
     image: z.string(),
     bathrooms: optionalNumber,
-
-    // Thông số căn hộ bổ sung.
     balconyDirection: optionalText,
     interior: optionalText,
   }),
@@ -72,6 +62,22 @@ const duAn = defineCollection({
     location: z.string(),
     image: z.string(),
     developer: optionalText,
+    district: optionalText,
+    totalArea: optionalText,
+    towerCount: optionalText,
+    unitCount: optionalText,
+    handoverDate: optionalText,
+    buildingDensity: optionalText,
+    floorPlanText: optionalText,
+    floorPlanImages: z.array(z.string()).nullish(),
+    progressText: optionalText,
+    progressItems: z.array(z.object({
+      title: z.string(),
+      description: optionalText,
+      image: optionalText,
+      videoUrl: optionalText,
+      videoFile: optionalText,
+    })).nullish(),
     propertyTypes: z.array(z.string()).nullish(),
     gallery: z.array(z.string()).nullish(),
     logo: optionalText,
@@ -94,8 +100,6 @@ const bietThu = defineCollection({
     image: z.string(),
     propertyType: z.string(),
     floors: optionalNumber,
-
-    // Thông số biệt thự / shophouse bổ sung.
     frontage: optionalText,
     roadWidth: optionalText,
     interior: optionalText,
@@ -115,8 +119,6 @@ const thoCu = defineCollection({
     area: z.string(),
     frontage: optionalText,
     floors: optionalNumber,
-
-    // Thông số nhà đất bổ sung.
     roadWidth: optionalText,
     interior: optionalText,
     bathrooms: optionalNumber,
@@ -129,6 +131,7 @@ const baiViet = defineCollection({
     ...seoFields,
     date: z.coerce.date(),
     category: optionalText,
+    project: optionalText,
   }),
 });
 
