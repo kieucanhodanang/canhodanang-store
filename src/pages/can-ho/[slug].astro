@@ -54,8 +54,22 @@ const regionGuides: Record<string, { intro: string; highlights: string[]; advice
   }
 };
 const regionGuide = region ? regionGuides[region.slug] : undefined;
-const regionSeoTitle = region ? `Căn Hộ ${region.name} Đà Nẵng | Mua Bán & Cho Thuê` : '';
-const regionSeoDescription = region ? `Danh sách căn hộ tại ${region.name}, Đà Nẵng đang bán và cho thuê. Cập nhật từ hệ thống bất động sản. Liên hệ 0869 437 415.` : '';
+const regionSeoMetadata: Record<string, { title: string; description: string }> = {
+  'son-tra': {
+    title: 'Căn Hộ Sơn Trà Đà Nẵng | Mua Bán & Cho Thuê',
+    description: 'Tìm căn hộ Sơn Trà, Đà Nẵng để mua hoặc thuê. Tham khảo vị trí gần biển, thông tin diện tích, phòng ngủ và tình trạng giao dịch từng căn.'
+  },
+  'ngu-hanh-son': {
+    title: 'Căn Hộ Ngũ Hành Sơn Đà Nẵng | Bán & Cho Thuê',
+    description: 'Khám phá căn hộ Ngũ Hành Sơn, Đà Nẵng đang bán và cho thuê. Xem vị trí dự án, diện tích, mức giá chào và thông tin căn hộ chi tiết.'
+  },
+  'hai-chau': {
+    title: 'Căn Hộ Hải Châu Đà Nẵng | Mua Bán & Cho Thuê',
+    description: 'Tìm mua hoặc thuê căn hộ Hải Châu, trung tâm Đà Nẵng. Tham khảo thông tin vị trí, giá chào, diện tích và số phòng ngủ theo từng tin đăng.'
+  }
+};
+const regionSeoTitle = region ? regionSeoMetadata[region.slug]?.title || `Căn Hộ ${region.name} Đà Nẵng` : '';
+const regionSeoDescription = region ? regionSeoMetadata[region.slug]?.description || `Thông tin căn hộ tại ${region.name}, Đà Nẵng.` : '';
 
 const isAvailable = data.listingStatus === 'available';
 const isRent = data.transaction === 'cho-thue' || data.transaction === 'cho-thue-ngay';
