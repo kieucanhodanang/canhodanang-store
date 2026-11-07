@@ -95,6 +95,18 @@ const linkedProject = !region && data.project
   ? (await getCollection('du-an')).find(item => item.id === data.project && item.data.status === 'published')
   : undefined;
 const projectName = linkedProject?.data.title || (data.project || '');
+const normalizeRelatedDistrict = (value: unknown) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim();
+const relatedApartments = !region && entry
+  ? sortFeaturedFirst((await getCollection('can-ho')).filter(item =>
+      item.id !== entry.id && item.data.status !== 'draft'
+      && item.data.listingStatus === 'available'
+      && item.data.transaction === data.transaction
+      && ((data.project && item.data.project === data.project)
+        || (data.district && normalizeRelatedDistrict(item.data.district) === normalizeRelatedDistrict(data.district))))
+      .sort((a, b) => Number(Boolean(data.project && b.data.project === data.project)) - Number(Boolean(data.project && a.data.project === data.project)))
+      .slice(0, 6)
+  : [];
+
 
 const seoTitle = region ? regionSeoTitle : (data.seoTitle || data.title);
 const seoDescription = region ? regionSeoDescription : (data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`);
@@ -256,6 +268,24 @@ const schema = {
       </PropertyDetail>
 
       {linkedProject && <aside class="linked-project"><h2>Dự án liên quan</h2><a href={`/du-an/${linkedProject.id}/`}>{linkedProject.data.title} →</a><p>{linkedProject.data.location}</p></aside>}
+      {relatedApartments.length > 0 && <section class="similar-apartments" aria-label="Căn hộ tương tự">
+        <h2>Căn hộ tương tự</h2>
+        <div class="similar-grid">{relatedApartments.map(item => <article class="similar-card">
+          <a class="similar-image" href={`/can-ho/${encodeURIComponent(item.id)}/`}>
+            {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" decoding="async" />}
+          </a>
+          <div class="similar-info">
+            <p class="similar-location">{[item.data.ward, item.data.district].filter(Boolean).join(' · ')}</p>
+            <h3><a href={`/can-ho/${encodeURIComponent(item.id)}/`}>{item.data.title}</a></h3>
+            <div class="similar-facts">
+              <strong>{item.data.price || 'Liên hệ'}</strong>
+              {formatRegionArea(item.data.area, item.data.areaValue) && <span>{formatRegionArea(item.data.area, item.data.areaValue)}</span>}
+              {item.data.bedrooms != null && <span>{item.data.bedrooms} PN</span>}
+            </div>
+            <a class="similar-detail" href={`/can-ho/${encodeURIComponent(item.id)}/`}>Xem chi tiết →</a>
+          </div>
+        </article>)}</div>
+      </section>}
       <p class="back-link"><a href="/can-ho/">← Xem các căn hộ khác</a></p>
     </div>
   </main>
@@ -329,6 +359,21 @@ const schema = {
     .status { background:#e5f5ec; color:#14663a; border-radius:30px; padding:8px 14px; font-size:13px; font-weight:700; white-space:nowrap; }
     .status.inactive { background:#f2e9e6; color:#8c3d32; }
     .linked-project{margin-top:24px;padding:22px;background:#fff;border:1px solid #e3eaf0;border-radius:12px}.linked-project h2{font-size:20px;margin:0 0 10px}.linked-project a{color:#1a5d8c;font-weight:700}.linked-project p{color:#62788b;margin:8px 0 0}
+    .similar-apartments{margin-top:30px;padding-top:24px;border-top:1px solid #dce6ef}
+    .similar-apartments>h2{font-size:24px;color:#173b60;margin:0 0 20px}
+    .similar-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .similar-card{min-width:0;background:#fff;border:1px solid #e1e8ee;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+    .similar-image{display:block;aspect-ratio:16/10;background:#e6edf4}
+    .similar-image img{width:100%;height:100%;object-fit:cover;display:block}
+    .similar-info{padding:17px;display:flex;flex-direction:column;flex:1}
+    .similar-location{font-size:12px;color:#617789;margin:0}
+    .similar-info h3{font-size:17px;line-height:1.45;margin:9px 0 15px}
+    .similar-info h3 a{color:#173b60;text-decoration:none}
+    .similar-facts{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:auto;font-size:13px;color:#617789}
+    .similar-facts strong{color:#c42626;font-size:18px}
+    .similar-detail{margin-top:17px;color:#ae7b32;font-size:14px;font-weight:700;text-decoration:none}
+    @media(max-width:900px){.similar-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.similar-grid{grid-template-columns:1fr}}
     .back-link { margin-top:28px; }
     @media(max-width:767px) {
       .property-wrap { padding:0 14px; }
