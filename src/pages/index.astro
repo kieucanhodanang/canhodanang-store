@@ -35,6 +35,10 @@ const slideSeconds = clamp(homepage.slideInterval, 3, 12, 5);
 const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft')
   .sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
 const slideData = JSON.stringify(slides).replace(/</g, '\\u003c');
+const latestNews = (await getCollection('bai-viet'))
+  .filter(item => item.data.status === 'published')
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
 // Dữ liệu tin đăng thật từ Decap CMS, được Astro dựng sẵn khi build.
 // Chỉ công khai các sản phẩm còn giao dịch; không đưa bài dự án vào danh sách hàng bán.
 const projectNames = new Map(projects.map((item) => [item.id, item.data.title]));
@@ -770,7 +774,20 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           Xem tin tức →
         </a>
       </div>
-
+      {latestNews.length > 0 && (
+        <div class="grid">
+          {latestNews.map(item => (
+            <article class="card">
+              {item.data.image && <a href={`/tin-tuc/${item.id}/`} aria-label={`Đọc ${item.data.title}`}><img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" /></a>}
+              <div class="cardbody">
+                <h3><a href={`/tin-tuc/${item.id}/`}>{item.data.title}</a></h3>
+                {item.data.description && <p>{item.data.description}</p>}
+                <a class="textlink" href={`/tin-tuc/${item.id}/`}>Đọc bài viết →</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   </section>
 
