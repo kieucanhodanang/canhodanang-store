@@ -107,8 +107,8 @@ collections:
       value: son-tra
     - label: Ngũ Hành Sơn
       value: ngu-hanh-son
-    - label: Hòa Xuân
-      value: hoa-xuan
+    - label: Hải Châu
+      value: hai-chau
   - label: Quận / Khu vực
     name: district
     widget: select
