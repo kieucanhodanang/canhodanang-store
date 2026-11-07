@@ -11,10 +11,9 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const data = entry.data;
 const { Content } = await render(entry);
-// Gộp các collection đang tồn tại trong repository, tránh hiển thị trùng.
+// Gộp căn hộ và nhà đất thổ cư thuộc dự án, tránh hiển thị trùng.
 const groups = await Promise.all([
   getCollection('can-ho'),
-  getCollection('biet-thu'),
   getCollection('tho-cu'),
 ]);
 const linkedProperties = groups.flatMap((entries, groupIndex) =>
@@ -24,11 +23,9 @@ const linkedProperties = groups.flatMap((entries, groupIndex) =>
     .map(item => ({
       id: item.id,
       data: item.data,
-      href: groupIndex === 0 ? `/can-ho/${item.id}/`
-        : groupIndex === 1 ? `#lien-he-du-an` : `/nha-dat-tho-cu/${item.id}/`,
+      href: groupIndex === 0 ? `/can-ho/${item.id}/` : `/nha-dat-tho-cu/${item.id}/`,
     }))
 );
-// Các biệt thự chưa có route chi tiết: chỉ dẫn tới liên hệ, không gộp nhầm thành một thẻ.
 const properties = linkedProperties;
 const forSale = properties.filter(item => item.data.transaction === 'ban');
 const forRent = properties.filter(item => item.data.transaction !== 'ban');
