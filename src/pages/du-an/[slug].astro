@@ -4,18 +4,73 @@ import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const projects = await getCollection('du-an');
-  return projects
-    .filter((entry) => entry.data.status !== 'draft')
+  return projects.filter((entry) => entry.data.status !== 'draft')
     .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
 const { entry } = Astro.props;
 const data = entry.data;
 const { Content } = await render(entry);
-const apartments = (await getCollection('can-ho'))
-  .filter((item) => item.data.status !== 'draft' && item.data.project === entry.id);
-const forSale = apartments.filter((item) => item.data.transaction === 'ban');
-const forRent = apartments.filter((item) => item.data.transaction !== 'ban');
+// Gộp các collection đang tồn tại trong repository, tránh hiển thị trùng.
+const groups = await Promise.all([
+  getCollection('can-ho'),
+  getCollection('biet-thu'),
+  getCollection('tho-cu'),
+]);
+const linkedProperties = groups.flatMap((entries, groupIndex) =>
+  entries.filter(item => item.data.status !== 'draft'
+    && item.data.listingStatus === 'available'
+    && item.data.project === entry.id)
+    .map(item => ({
+      id: item.id,
+      data: item.data,
+      href: groupIndex === 0 ? `/can-ho/${item.id}/`
+        : groupIndex === 1 ? `#lien-he-du-an` : `/nha-dat-tho-cu/${item.id}/`,
+    }))
+);
+const properties = [...new Map(linkedProperties.map(item => [item.href, item])).values()];
+const forSale = properties.filter(item => item.data.transaction === 'ban');
+const forRent = properties.filter(item => item.data.transaction !== 'ban');
+const extra = data as typeof data & {
+  district?: string; totalArea?: string; towerCount?: string | number;
+  unitCount?: string | number; handoverDate?: string; buildingDensity?: string;
+  floorPlanText?: string; floorPlanImages?: string[];
+  progressText?: string; progressItems?: { title?: string; image?: string; videoUrl?: string; videoFile?: string; description?: string }[];
+};
+const detailRows = [
+  ['Tên gọi', data.title], ['Chủ đầu tư', data.developer],
+  ['Diện tích', extra.totalArea], ['Vị trí', data.location],
+  ['Số tòa', extra.towerCount], ['Số căn hộ / biệt thự', extra.unitCount],
+  ['Bàn giao dự kiến', extra.handoverDate], ['Mật độ xây dựng', extra.buildingDensity],
+].filter((row) => row[1] !== undefined && row[1] !== null && String(row[1]).trim() !== '');
+const normalizeDistrict = (value: unknown) => String(value || '').normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')
+  .toLowerCase().replace(/^(quan|huyen|thi xa)\s+/, '').trim();
+const districtNames = ['Hải Châu', 'Sơn Trà', 'Ngũ Hành Sơn', 'Thanh Khê', 'Liên Chiểu', 'Cẩm Lệ', 'Hòa Vang'];
+const district = extra.district || districtNames.find(name =>
+  normalizeDistrict(data.location).includes(normalizeDistrict(name))) || '';
+const relatedProjects = (await getCollection('du-an'))
+  .filter(item => item.id !== entry.id && item.data.status !== 'draft' && district
+    && normalizeDistrict((item.data as typeof item.data & {district?:string}).district ||
+      districtNames.find(name => normalizeDistrict(item.data.location).includes(normalizeDistrict(name))))
+       === normalizeDistrict(district)).slice(0, 6);
+const relatedNews = (await getCollection('bai-viet'))
+  .filter(item => item.data.status !== 'draft'
+    && (item.data as typeof item.data & { project?: string }).project === entry.id)
+  .sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()).slice(0, 6);
+const youtubeEmbed = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, '');
+    let id = '';
+    if (host === 'youtu.be') id = parsed.pathname.slice(1).split('/')[0];
+    if (host === 'youtube.com' || host === 'm.youtube.com') {
+      id = parsed.pathname.startsWith('/shorts/') || parsed.pathname.startsWith('/embed/')
+        ? parsed.pathname.split('/')[2] : parsed.searchParams.get('v') || '';
+    }
+    return /^[a-zA-Z0-9_-]{11}$/.test(id) ? `https://www.youtube-nocookie.com/embed/${id}` : '';
+  } catch { return ''; }
+};
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const toAbsolute = (value: string) => new URL(value, siteUrl).href;
@@ -79,60 +134,133 @@ const schema = {
       )}
 
       <section class="description" aria-label="Giới thiệu và thông tin chi tiết dự án">
-        <div class="article-content">
+        <div class="article-content" id="project-detail-content">
           <Content />
         </div>
+        <button type="button" class="project-read-more" id="project-read-more" aria-controls="project-detail-content" aria-expanded="false" hidden>
+          <span class="project-read-more-label">Xem thêm</span>
+          <svg class="project-read-more-icon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
       </section>
 
-      <section class="listings">
-        <h2>Căn hộ đang bán tại {data.title}</h2>
-        {forSale.length > 0 ? (
-          <div class="cards">
-            {forSale.map((item) => (
-              <a class="card" href={`/can-ho/${item.id}/`}>
-                {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
-                <div class="card-body">
-                  <h3>{item.data.title}</h3>
-                  <div class="card-info-row">
-                    {item.data.price && <strong class="apartment-price">{item.data.price}</strong>}
-                    {item.data.bedrooms != null && <span class="apartment-detail">🛏 {item.data.bedrooms} PN</span>}
-                    {formatArea(item.data.area) && <span class="apartment-detail">📐 {formatArea(item.data.area)}</span>}
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        ) : <p class="empty">Hiện chưa có căn hộ bán được đăng trong dự án này.</p>}
+      <section class="description" aria-label="Thông số chi tiết dự án">
+        <h2>Thông số chi tiết dự án {data.title}</h2>
+        <dl class="spec-grid">
+          {detailRows.map(([label, value]) => (
+            <div class="spec-item"><dt>◈ {label}</dt><dd>{String(value)}</dd></div>
+          ))}
+        </dl>
       </section>
 
-      <section class="listings">
-        <h2>Căn hộ cho thuê tại {data.title}</h2>
-        {forRent.length > 0 ? (
-          <div class="cards">
-            {forRent.map((item) => (
-              <a class="card" href={`/can-ho/${item.id}/`}>
-                {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
-                <div class="card-body">
-                  <h3>{item.data.title}</h3>
-                  <div class="card-info-row">
-                    {item.data.price && <strong class="apartment-price">{item.data.price}</strong>}
-                    {item.data.bedrooms != null && <span class="apartment-detail">🛏 {item.data.bedrooms} PN</span>}
-                    {formatArea(item.data.area) && <span class="apartment-detail">📐 {formatArea(item.data.area)}</span>}
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        ) : <p class="empty">Hiện chưa có căn hộ cho thuê được đăng trong dự án này.</p>}
+      {[
+        { id: 'sale', heading: `Căn hộ, biệt thự, shophouse đang bán tại ${data.title}`, items: forSale },
+        { id: 'rent', heading: `Căn hộ, biệt thự, shophouse cho thuê tại ${data.title}`, items: forRent },
+      ].map(group => (
+        <section class="listings property-list" data-property-list>
+          <h2>{group.heading}</h2>
+          {group.items.length ? (
+            <>
+              <div class="cards">
+                {group.items.map((item, index) => (
+                  <a class="card property-card" href={item.href} data-card-index={index}>
+                    {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
+                    <div class="card-body">
+                      <h3>{item.data.title}</h3>
+                      <div class="card-info-row">
+                        {item.data.price && <strong class="apartment-price">{item.data.price}</strong>}
+                        {formatArea(item.data.area) && <span class="apartment-detail">{formatArea(item.data.area)}</span>}
+                        {item.data.bedrooms != null && <span class="apartment-detail">{item.data.bedrooms} PN</span>}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+              <button class="project-read-more property-more" type="button" hidden aria-label={`Xem thêm bất động sản ${group.id}`}>
+                <span>Xem thêm</span><svg class="project-read-more-icon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+            </>
+          ) : <p class="empty">Hiện chưa có bất động sản phù hợp được đăng trong dự án này.</p>}
+        </section>
+      ))}
+
+      <section class="description">
+        <h2>Mặt bằng dự án {data.title}</h2>
+        {extra.floorPlanText && <p class="section-copy">{extra.floorPlanText}</p>}
+        {extra.floorPlanImages?.length ? <div class="floor-plan-gallery">{extra.floorPlanImages.filter(Boolean).map((image, index) => <img src={image} alt={`Mặt bằng ${data.title} - ảnh ${index+1}`} loading="lazy" />)}</div> : <p class="empty">Thông tin mặt bằng đang được cập nhật.</p>}
       </section>
 
-      <div class="contact">
+      <section class="description">
+        <h2>Tiến độ dự án {data.title}</h2>
+        {extra.progressText && <p class="section-copy">{extra.progressText}</p>}
+        {extra.progressItems?.length ? extra.progressItems.map((item, index) => (
+          <article class="progress-item">
+            <h3>{item.title || `Cập nhật tiến độ ${data.title} - ${index + 1}`}</h3>
+            {item.description && <p>{item.description}</p>}
+            {item.image && <img src={item.image} alt={item.title || `Tiến độ ${data.title}`} loading="lazy" />}
+            {item.videoUrl && youtubeEmbed(item.videoUrl) && <iframe src={youtubeEmbed(item.videoUrl)} title={item.title || `Video tiến độ ${data.title}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>}
+            {item.videoFile && <video controls preload="metadata" playsinline src={item.videoFile}></video>}
+          </article>
+        )) : <p class="empty">Tiến độ dự án đang được cập nhật.</p>}
+      </section>
+
+      {relatedNews.length > 0 && <section class="listings">
+        <h2>Tin tức về dự án {data.title}</h2>
+        <div class="cards">
+          {relatedNews.map(item => <a class="card" href={`#lien-he-du-an`}>
+            {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
+            <div class="card-body"><h3>{item.data.title}</h3><p class="empty">Liên hệ để nhận bài viết chi tiết</p></div>
+          </a>)}
+        </div>
+      </section>}
+
+      {relatedProjects.length > 0 && <section class="listings">
+        <h2>Dự án liên quan</h2>
+        <div class="cards">
+          {relatedProjects.map(item => <a class="card" href={`/du-an/${item.id}/`}>
+            {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
+            <div class="card-body"><h3>{item.data.title}</h3><p class="empty">{item.data.location}</p></div>
+          </a>)}
+        </div>
+      </section>}
+
+      <div class="contact" id="lien-he-du-an">
         <a href="tel:0869437415">Gọi tư vấn: 0869 437 415</a>
         <a href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Liên hệ Zalo</a>
       </div>
     </div>
   </main>
+  <script is:inline>
+    (() => {
+      const content = document.getElementById('project-detail-content');
+      const button = document.getElementById('project-read-more');
+      if (content && button && content.scrollHeight > 344) {
+      const collapsedHeight = 320;
+      content.classList.add('is-collapsed');
+      button.hidden = false;
+      button.addEventListener('click', () => {
+        const expanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!expanded));
+        content.classList.toggle('is-collapsed', expanded);
+        button.querySelector('.project-read-more-label').textContent = expanded ? 'Xem thêm' : 'Thu gọn';
+        if (expanded) content.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      });
+      }
+      document.querySelectorAll('[data-property-list]').forEach(section => {
+        const cards = Array.from(section.querySelectorAll('.property-card'));
+        const more = section.querySelector('.property-more');
+        if (!more) return;
+        let visible = window.matchMedia('(max-width: 767px)').matches ? 3 : 6;
+        const render = () => {
+          cards.forEach((card, index) => { card.hidden = index >= visible; });
+          more.hidden = visible >= cards.length;
+        };
+        more.addEventListener('click', () => { visible += 6; render(); });
+        render();
+      });
+    })();
+  </script>
   <style>
+    .project-read-more[hidden]{display:none!important}
     .project-page{background:#f5f8fb;color:#19334d;padding:28px 0 64px}
     .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
     .breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:28px}
@@ -150,8 +278,29 @@ const schema = {
     .gallery img{display:block;width:100%;height:190px;object-fit:cover;border-radius:10px}
     .description,.listings{background:#fff;border:1px solid #e8eef3;border-radius:14px;padding:clamp(20px,3vw,34px);margin-top:24px;overflow-wrap:anywhere}
     .article-content{font-size:16px;line-height:1.85;color:#354a5d}
-    /* Giữ nguyên cách hiển thị nội dung Markdown hiện tại. */
-    .article-content :global(> h1:first-child){display:none}
+    .description h2{font-size:clamp(20px,2.1vw,24px);margin:0 0 20px}
+    .spec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0}
+    .spec-item{border:1px solid #e8eef3;border-radius:10px;padding:12px 14px}
+    .spec-item dt{font-size:13px;color:#62788b;margin-bottom:5px}
+    .spec-item dd{font-size:15px;font-weight:650;margin:0}
+    .floor-plan-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .floor-plan-gallery img,.progress-item img{width:100%;height:auto;border-radius:10px}
+    .section-copy,.progress-item p{line-height:1.8}
+    .progress-item{margin-top:24px}
+    .progress-item h3{font-size:18px}
+    .progress-item iframe,.progress-item video{width:100%;aspect-ratio:16/9;border:0;border-radius:10px}
+    .property-card[hidden]{display:none!important}
+    .article-content.is-collapsed{max-height:320px;overflow:hidden;position:relative}
+    .article-content.is-collapsed::after{content:"";position:absolute;left:0;right:0;bottom:0;height:65px;background:linear-gradient(transparent,#fff);pointer-events:none}
+    .project-read-more[hidden]{display:none!important}
+    .project-read-more{display:flex;align-items:center;justify-content:center;gap:5px;margin:15px auto 0;padding:7px 10px;border:0;background:transparent;color:#274f6d;font:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:color .2s}
+    .project-read-more-icon{opacity:0;transform:translateY(-3px);transition:opacity .2s,transform .2s;flex-shrink:0}
+    .project-read-more:hover,.project-read-more:focus-visible{color:#dc2626}
+    .project-read-more:hover .project-read-more-icon,.project-read-more:focus-visible .project-read-more-icon{opacity:1;transform:translateY(0)}
+    .project-read-more[aria-expanded="true"] .project-read-more-icon{transform:rotate(180deg) translateY(3px)}
+    .project-read-more[aria-expanded="true"]:hover .project-read-more-icon,.project-read-more[aria-expanded="true"]:focus-visible .project-read-more-icon{transform:rotate(180deg)}
+    .project-read-more:focus-visible{outline:2px solid #dc2626;outline-offset:3px;border-radius:4px}
+    .article-content :global(h1){display:none}
     .article-content :global(h1),.article-content :global(h2){font-size:clamp(21px,2.2vw,25px);font-weight:750;line-height:1.4;color:#19334d;margin:30px 0 13px;letter-spacing:-.012em}
     .article-content :global(h3){font-size:19px;font-weight:700;line-height:1.5;color:#234561;margin:24px 0 10px}
     .article-content :global(h4){font-size:17px;font-weight:700;margin:20px 0 8px}
@@ -183,6 +332,7 @@ const schema = {
       .heading h1{font-size:29px}.intro{font-size:16px;line-height:1.75;text-align:left}.article-content :global(p),.article-content :global(li){text-align:left}
       .cover{aspect-ratio:16/10;max-height:340px}.gallery,.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
       .gallery img{height:130px}.card img{height:135px}
+      .spec-grid{grid-template-columns:1fr}.floor-plan-gallery{grid-template-columns:1fr}
       .description,.listings{padding:20px;margin-top:18px}.article-content{font-size:15.5px;line-height:1.8}
     }
     @media(max-width:440px){.cards{grid-template-columns:1fr}.card img{height:195px}.contact a{flex:1;text-align:center}}
