@@ -609,6 +609,23 @@ collections:
         name: haiChau
         widget: image
         required: false
+    - label: Ảnh đại diện nhà đất thổ cư theo khu vực
+      name: landAreaImages
+      widget: object
+      required: false
+      fields:
+      - label: Ảnh nhà đất Sơn Trà
+        name: sonTra
+        widget: image
+        required: false
+      - label: Ảnh nhà đất Hải Châu
+        name: haiChau
+        widget: image
+        required: false
+      - label: Ảnh nhà đất Thanh Khê
+        name: thanhKhe
+        widget: image
+        required: false
     - label: Banner quảng cáo cố định hai bên (desktop)
       name: floatingBanners
       widget: object
