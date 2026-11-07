@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
 const articles = (await getCollection('bai-viet'))
-  .filter((item) => item.data.status !== 'draft')
+  .filter((item) => item.data.status === 'published')
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const description = 'Tin tức bất động sản Đà Nẵng: thông tin dự án, căn hộ, nhà đất, thị trường và cập nhật mới nhất từ Căn Hộ Đà Nẵng.';
 const formatDate = (date: Date) => new Intl.DateTimeFormat('vi-VN', {
