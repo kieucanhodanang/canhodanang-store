@@ -96,17 +96,24 @@ const linkedProject = !region && data.project
   : undefined;
 const projectName = linkedProject?.data.title || (data.project || '');
 const normalizeRelatedDistrict = (value: unknown) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim();
-const relatedApartments = !region && entry
-  ? sortFeaturedFirst((await getCollection('can-ho')).filter(item =>
-      item.id !== entry.id && item.data.status !== 'draft'
+const apartmentCandidates = !region && entry
+  ? (await getCollection('can-ho')).filter(item =>
+      item.id !== entry.id
+      && item.data.status !== 'draft'
       && item.data.listingStatus === 'available'
       && item.data.transaction === data.transaction
-      && ((data.project && item.data.project === data.project)
-        || (data.district && normalizeRelatedDistrict(item.data.district) === normalizeRelatedDistrict(data.district)))
-      .sort((a, b) => Number(Boolean(data.project && b.data.project === data.project)) - Number(Boolean(data.project && a.data.project === data.project)))
-      .slice(0, 6)
+      && (
+        (Boolean(data.project) && item.data.project === data.project)
+        || (Boolean(data.district) && normalizeRelatedDistrict(item.data.district) === normalizeRelatedDistrict(data.district))
+      )
+    )
   : [];
-
+const relatedApartments = sortFeaturedFirst(apartmentCandidates)
+  .sort((a, b) =>
+    Number(Boolean(data.project && b.data.project === data.project))
+    - Number(Boolean(data.project && a.data.project === data.project))
+  )
+  .slice(0, 6);
 
 const seoTitle = region ? regionSeoTitle : (data.seoTitle || data.title);
 const seoDescription = region ? regionSeoDescription : (data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`);
