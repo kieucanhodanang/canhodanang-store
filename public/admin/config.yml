@@ -48,6 +48,7 @@ collections:
     - title
   - label: Phân khu Vinhomes Hải Vân Bay
     name: subdivision
+    condition: { field: project, value: vinhomes-hai-van-bay }
     widget: select
     required: false
     hint: Chỉ chọn khi sản phẩm thuộc dự án Vinhomes Hải Vân Bay.
@@ -58,6 +59,7 @@ collections:
     - { label: Vịnh Mây, value: vinh-may }
   - label: Loại hình sản phẩm trong Vinhomes Hải Vân Bay
     name: projectPropertyType
+    condition: { field: project, value: vinhomes-hai-van-bay }
     widget: select
     required: false
     hint: Chỉ chọn khi sản phẩm thuộc dự án Vinhomes Hải Vân Bay.
@@ -70,6 +72,7 @@ collections:
     - { label: Resort, value: resort }
   - label: Mã sản phẩm trong dự án
     name: productCode
+    condition: { field: project, value: vinhomes-hai-van-bay }
     widget: string
     required: false
     hint: Ví dụ TV-001, chỉ dùng cho sản phẩm thuộc dự án.
@@ -474,6 +477,7 @@ collections:
     display_fields: *id029
   - label: Phân khu Vinhomes Hải Vân Bay
     name: subdivision
+    condition: { field: project, value: vinhomes-hai-van-bay }
     widget: select
     required: false
     hint: Chỉ chọn khi sản phẩm thuộc dự án Vinhomes Hải Vân Bay.
@@ -484,6 +488,7 @@ collections:
     - { label: Vịnh Mây, value: vinh-may }
   - label: Loại hình sản phẩm trong Vinhomes Hải Vân Bay
     name: projectPropertyType
+    condition: { field: project, value: vinhomes-hai-van-bay }
     widget: select
     required: false
     hint: Chỉ chọn khi sản phẩm thuộc dự án Vinhomes Hải Vân Bay.
@@ -496,6 +501,7 @@ collections:
     - { label: Resort, value: resort }
   - label: Mã sản phẩm trong dự án
     name: productCode
+    condition: { field: project, value: vinhomes-hai-van-bay }
     widget: string
     required: false
     hint: Ví dụ TV-001, chỉ dùng cho sản phẩm thuộc dự án.
