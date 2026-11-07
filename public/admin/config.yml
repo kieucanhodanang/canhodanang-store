@@ -46,6 +46,33 @@ collections:
     value_field: '{{slug}}'
     display_fields: &id029
     - title
+  - label: Phân khu Vinhomes Hải Vân Bay
+    name: subdivision
+    widget: select
+    required: false
+    hint: Chỉ chọn khi sản phẩm thuộc dự án Vinhomes Hải Vân Bay.
+    options:
+    - { label: Tinh Vân, value: tinh-van }
+    - { label: Bạch Vân, value: bach-van }
+    - { label: Đảo Ngọc, value: dao-ngoc }
+    - { label: Vịnh Mây, value: vinh-may }
+  - label: Loại hình sản phẩm trong Vinhomes Hải Vân Bay
+    name: projectPropertyType
+    widget: select
+    required: false
+    hint: Chỉ chọn khi sản phẩm thuộc dự án Vinhomes Hải Vân Bay.
+    options:
+    - { label: Biệt thự đơn lập, value: biet-thu-don-lap }
+    - { label: Biệt thự song lập, value: biet-thu-song-lap }
+    - { label: Biệt thự liền kề, value: biet-thu-lien-ke }
+    - { label: Shophouse, value: shophouse }
+    - { label: Căn hộ cao tầng, value: can-ho-cao-tang }
+    - { label: Resort, value: resort }
+  - label: Mã sản phẩm trong dự án
+    name: productCode
+    widget: string
+    required: false
+    hint: Ví dụ TV-001, chỉ dùng cho sản phẩm thuộc dự án.
   - &id017
     label: Hình thức giao dịch
     name: transaction
@@ -445,6 +472,33 @@ collections:
     search_fields: *id028
     value_field: '{{slug}}'
     display_fields: *id029
+  - label: Phân khu Vinhomes Hải Vân Bay
+    name: subdivision
+    widget: select
+    required: false
+    hint: Chỉ chọn khi sản phẩm thuộc dự án Vinhomes Hải Vân Bay.
+    options:
+    - { label: Tinh Vân, value: tinh-van }
+    - { label: Bạch Vân, value: bach-van }
+    - { label: Đảo Ngọc, value: dao-ngoc }
+    - { label: Vịnh Mây, value: vinh-may }
+  - label: Loại hình sản phẩm trong Vinhomes Hải Vân Bay
+    name: projectPropertyType
+    widget: select
+    required: false
+    hint: Chỉ chọn khi sản phẩm thuộc dự án Vinhomes Hải Vân Bay.
+    options:
+    - { label: Biệt thự đơn lập, value: biet-thu-don-lap }
+    - { label: Biệt thự song lập, value: biet-thu-song-lap }
+    - { label: Biệt thự liền kề, value: biet-thu-lien-ke }
+    - { label: Shophouse, value: shophouse }
+    - { label: Căn hộ cao tầng, value: can-ho-cao-tang }
+    - { label: Resort, value: resort }
+  - label: Mã sản phẩm trong dự án
+    name: productCode
+    widget: string
+    required: false
+    hint: Ví dụ TV-001, chỉ dùng cho sản phẩm thuộc dự án.
   - label: Loại tài sản
     name: propertyType
     widget: select
