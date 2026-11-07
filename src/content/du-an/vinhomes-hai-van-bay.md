@@ -1,24 +1,24 @@
 ---
 title: Vinhomes Hải Vân Bay Đà Nẵng
+seoTitle: Vinhomes Hải Vân Bay Đà Nẵng | Giá Bán, Mặt Bằng 2026
 slug: vinhomes-hai-van-bay
 description: Vinhomes Hải Vân Bay Đà Nẵng quy mô 512,2 ha. Cập nhật vị trí, phân
   khu, biệt thự, shophouse, giá bán, mặt bằng, pháp lý và tiến độ mới nhất.
-seoTitle: Vinhomes Hải Vân Bay Đà Nẵng | Giá Bán, Mặt Bằng 2026
 developer: Công ty Cổ phần Vinpearl
 location: Khu vực Làng Vân, phường Hải Vân, TP. Đà Nẵng
 propertyTypes:
   - can-ho
   - shophouse
   - biet-thu
-gallery:
-  - /uploads/vinhomes-hai-van-bay.webp
+gallery: []
 image: /uploads/vinhomes-hai-van-bay.webp
-logo: /uploads/logo-vinhomes-hai-van-bay.png
+logo: /uploads/logo-vinhomes-hai-van-bay-danang.png
 logoAlt: logo vinhomes hải vân bay
 distributionStatus: dang-phan-phoi
 showLogoInFooter: true
 showInMenu: true
 date: 2026-11-07T12:34:00
+updatedAt: 2026-11-07T18:06:00
 status: published
 showOnHome: true
 featured: true
