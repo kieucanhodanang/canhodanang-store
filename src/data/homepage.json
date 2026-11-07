@@ -16,9 +16,15 @@
     }
   },
   "bannerOverlay": 45,
+  "areaImages": {
+    "sonTra": "/uploads/can-ho-son-tra.jfif",
+    "nguHanhSon": "/uploads/can-ho-ngu-hanh-son.jfif",
+    "haiChau": "/uploads/can-ho-hai-chau.jfif"
+  },
   "bannerTextAlign": "left",
   "bannerTitle": "Căn Hộ Đà Nẵng – Mua Bán, Cho Thuê & Dự Án Nổi Bật",
   "bannerTitleSize": 56,
+  "siteFavicon": "",
   "primaryButtonLink": "/can-ho/",
   "bannerSlides": [
     {
@@ -40,18 +46,12 @@
   "bannerImage": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
   "primaryButtonColor": "#D4A85E",
   "bannerDescription": "Khám phá thông tin căn hộ Đà Nẵng, các dự án nổi bật và lựa chọn bất động sản phù hợp nhu cầu an cư hoặc đầu tư.",
+  "siteLogo": "",
   "secondaryButtonText": "Liên hệ tư vấn",
   "bannerHeight": 610,
   "bannerPosition": "center",
   "slideInterval": 5,
   "bannerContentWidth": 1200,
   "bannerVideoPoster": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
-  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG",
-  "siteLogo": "",
-  "siteFavicon": "",
-  "areaImages": {
-    "sonTra": "",
-    "nguHanhSon": "",
-    "haiChau": ""
-  }
+  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG"
 }
