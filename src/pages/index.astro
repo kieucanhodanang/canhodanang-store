@@ -153,6 +153,13 @@ const homeRentApartments = homeApartments.filter(item => ['cho-thue', 'cho-thue-
   .sort(homePriority).slice(0, 6);
 const homeSaleLand = homeLand.filter(item => item.data.transaction === 'ban')
   .sort(homePriority).slice(0, 6);
+const shortAddress = (address, ward) => {
+  const parts = String(address || '').split(',').map(v => v.trim()).filter(Boolean);
+  const street = parts.find(v => /^(?:\d+[\w/-]*\s+)?(?:đường|phố|street|đ\.|đường số|đại lộ)\s/i.test(v))
+    || (parts.length > 1 && !/^(phường|xã|quận|huyện|tp\.?|thành phố|đà nẵng)/i.test(parts[0]) ? parts[0] : '');
+  const wardName = String(ward || '').trim() || parts.find(v => /^(phường|xã|p\.)\s/i.test(v)) || '';
+  return [street, wardName].filter(Boolean).join(', ');
+};
 const homeCards = (items, type) => items.map(item => ({
   title: item.data.title,
   image: item.data.image || '',
@@ -160,7 +167,8 @@ const homeCards = (items, type) => items.map(item => ({
   price: item.data.price || 'Liên hệ',
   area: item.data.area || '',
   bedrooms: item.data.bedrooms,
-  place: item.data.district || item.data.address || 'Đà Nẵng',
+  place: type === 'can-ho' ? shortAddress(item.data.address, item.data.ward) : (item.data.district || item.data.address || 'Đà Nẵng'),
+  projectName: projectNames.get(item.data.project || '') || '',
   href: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
   pinned: Boolean(item.data.featured),
 }));
@@ -208,18 +216,11 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
   <section class="results-section" id="tim-kiem" hidden aria-label="Kết quả tìm kiếm bất động sản">
     <div class="wrap">
       <div class="results-heading"><div><span class="eyebrow">TÌM KIẾM BẤT ĐỘNG SẢN</span><h2>Kết quả tìm kiếm</h2></div><span id="result-count" aria-live="polite"></span></div>
-      <div class="filter-panel">
-        <div class="filter-grid">
-          <label class="filter-field filter-keyword">Từ khóa<input id="filter-keyword" type="search" placeholder="Tên dự án, khu vực..." /></label>
-          <label class="filter-field">Dự án<select id="filter-project"><option value="">Tất cả dự án</option>{projects.map(item => <option value={item.id}>{item.data.title}</option>)}</select></label>
-          <label class="filter-field">Phòng ngủ<select id="filter-bedrooms"><option value="">Tất cả</option><option value="0">Studio</option><option value="1">1 phòng</option><option value="2">2 phòng</option><option value="3">3 phòng</option><option value="4">4+ phòng</option></select></label>
-          <label class="filter-field">Hướng<select id="filter-direction"><option value="">Tất cả hướng</option>{['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc'].map(v => <option value={v}>{v}</option>)}</select></label>
-        </div>
-        <div class="range-grid">
-          <div class="range-field"><div class="range-header"><strong>Khoảng giá</strong><output id="price-output">0 – 20 tỷ</output></div><div class="dual-range" id="price-range"><div class="range-track"><div class="range-fill"></div></div><input id="price-min" aria-label="Giá từ" type="range" min="0" max="20" step="0.1" value="0" /><input id="price-max" aria-label="Giá đến" type="range" min="0" max="20" step="0.1" value="20" /></div><div class="range-limits"><span id="price-low-label">0 tỷ</span><span id="price-high-label">20 tỷ+</span></div></div>
-          <div class="range-field"><div class="range-header"><strong>Diện tích</strong><output id="area-output">25 – 125 m²</output></div><div class="dual-range" id="area-range"><div class="range-track"><div class="range-fill"></div></div><input id="area-min" aria-label="Diện tích từ" type="range" min="25" max="125" step="1" value="25" /><input id="area-max" aria-label="Diện tích đến" type="range" min="25" max="125" step="1" value="125" /></div><div class="range-limits"><span>25 m²</span><span>125 m²+</span></div></div>
-        </div>
-        <div class="filter-actions"><button id="clear-filters" type="button">Xóa bộ lọc</button><span id="search-type-label">Đang tìm: Căn hộ</span></div>
+      <div class="home-quick-filters" aria-label="Bộ lọc nhanh">
+        <label>Từ khóa<input id="quick-keyword" type="search" placeholder="Tên dự án, khu vực..." /></label>
+        <label>Dự án<select id="quick-project"><option value="">Tất cả dự án</option>{projects.map(item => <option value={item.id}>{item.data.title}</option>)}</select></label>
+        <label>Phòng ngủ<select id="quick-bedrooms"><option value="">Tất cả</option><option value="0">Studio</option><option value="1">1 phòng</option><option value="2">2 phòng</option><option value="3">3 phòng</option><option value="4">4+ phòng</option></select></label>
+        <label>Hướng<select id="quick-direction"><option value="">Tất cả hướng</option>{['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc'].map(v => <option value={v}>{v}</option>)}</select></label>
       </div>
       <div class="results-layout">
         <div class="results-primary">
@@ -236,6 +237,20 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <nav class="results-pagination" id="results-pagination" aria-label="Phân trang kết quả tìm kiếm"></nav>
         </div>
         <aside class="results-sidebar" aria-label="Khám phá thêm bất động sản">
+      <div class="filter-panel">
+        <div class="filter-grid">
+          <label class="filter-field filter-keyword">Từ khóa<input id="filter-keyword" type="search" placeholder="Tên dự án, khu vực..." /></label>
+          <label class="filter-field">Dự án<select id="filter-project"><option value="">Tất cả dự án</option>{projects.map(item => <option value={item.id}>{item.data.title}</option>)}</select></label>
+          <label class="filter-field">Phòng ngủ<select id="filter-bedrooms"><option value="">Tất cả</option><option value="0">Studio</option><option value="1">1 phòng</option><option value="2">2 phòng</option><option value="3">3 phòng</option><option value="4">4+ phòng</option></select></label>
+          <label class="filter-field">Hướng<select id="filter-direction"><option value="">Tất cả hướng</option>{['Đông','Tây','Nam','Bắc','Đông Nam','Đông Bắc','Tây Nam','Tây Bắc'].map(v => <option value={v}>{v}</option>)}</select></label>
+        </div>
+        <div class="range-grid">
+          <div class="range-field"><div class="range-header"><strong>Khoảng giá</strong><output id="price-output">0 – 20 tỷ</output></div><div class="dual-range" id="price-range"><div class="range-track"><div class="range-fill"></div></div><input id="price-min" aria-label="Giá từ" type="range" min="0" max="20" step="0.1" value="0" /><input id="price-max" aria-label="Giá đến" type="range" min="0" max="20" step="0.1" value="20" /></div><div class="range-limits"><span id="price-low-label">0 tỷ</span><span id="price-high-label">20 tỷ+</span></div></div>
+          <div class="range-field"><div class="range-header"><strong>Diện tích</strong><output id="area-output">25 – 125 m²</output></div><div class="dual-range" id="area-range"><div class="range-track"><div class="range-fill"></div></div><input id="area-min" aria-label="Diện tích từ" type="range" min="25" max="125" step="1" value="25" /><input id="area-max" aria-label="Diện tích đến" type="range" min="25" max="125" step="1" value="125" /></div><div class="range-limits"><span>25 m²</span><span>125 m²+</span></div></div>
+        </div>
+        <div class="filter-actions"><button id="clear-filters" type="button">Xóa bộ lọc</button><span id="search-type-label">Đang tìm: Căn hộ</span></div>
+      </div>
+
           <section class="sidebar-panel">
             <h3>Dự án được quan tâm</h3>
             <div class="sidebar-projects">
@@ -301,6 +316,24 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       const project = document.getElementById('filter-project');
       const bedrooms = document.getElementById('filter-bedrooms');
       const direction = document.getElementById('filter-direction');
+      const quickFields = {
+        keyword: document.getElementById('quick-keyword'),
+        project: document.getElementById('quick-project'),
+        bedrooms: document.getElementById('quick-bedrooms'),
+        direction: document.getElementById('quick-direction')
+      };
+      const syncQuick = () => {
+        quickFields.keyword.value = filterKeyword.value;
+        quickFields.project.value = project.value;
+        quickFields.bedrooms.value = bedrooms.value;
+        quickFields.direction.value = direction.value;
+      };
+      Object.entries(quickFields).forEach(([name, el]) => {
+        el.addEventListener('input', () => {
+          ({keyword:filterKeyword,project,bedrooms,direction})[name].value = el.value;
+          render();
+        });
+      });
       const priceMin = document.getElementById('price-min');
       const priceMax = document.getElementById('price-max');
       const areaMin = document.getElementById('area-min');
@@ -405,7 +438,13 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const shownPrice = item.priceText || (priceValue === null ? 'Liên hệ báo giá' : `${format(priceValue)} ${priceUnit()}`);
            const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : item.type === 'biet-thu' ? 'Biệt thự / Shophouse' : 'Nhà đất';
            const image = item.image ? `<img class="result-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy" />` : `<span class="result-image result-image-empty" aria-hidden="true">⌂</span>`;
-           const place = [item.district, item.ward].filter(Boolean).join(' · ') || item.address || 'Đà Nẵng';
+           const parts = String(item.address || '').split(',').map(v=>v.trim()).filter(Boolean);
+           const street = parts.find(v=>/^(?:\d+[\w/-]*\s+)?(?:đường|phố|street|đ\.|đại lộ)\s/i.test(v))
+             || (parts.length > 1 && !/^(phường|xã|quận|huyện|tp\.?|thành phố|đà nẵng)/i.test(parts[0]) ? parts[0] : '');
+           const ward = item.ward || parts.find(v=>/^(phường|xã|p\.)\s/i.test(v)) || '';
+           const place = item.type === 'can-ho' ? [street,ward].filter(Boolean).join(', ') : ([item.district,item.ward].filter(Boolean).join(' · ') || item.address || 'Đà Nẵng');
+           const projectLine = item.type === 'can-ho' && item.projectName ? `<strong class="result-project">${escapeHTML(item.projectName)}</strong>` : '';
+           const locationLine = place ? `<span class="result-place">⌖ ${escapeHTML(place)}</span>` : '';
            // Ngày đăng thực tế từ CMS, không dùng ngày hiện tại khi thiếu dữ liệu.
            const publishedDate = Number(item.publishedAt) > 0 && Number.isFinite(Number(item.publishedAt))
              ? new Date(Number(item.publishedAt)) : null;
@@ -415,7 +454,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const dateBadge = publishedLabel
              ? `<time class="result-posted-date" datetime="${publishedDate.toISOString().slice(0, 10)}">Đăng: ${escapeHTML(publishedLabel)}</time>`
              : '';
-           card.innerHTML = `<a class="result-photo" href="${escapeHTML(item.url)}" aria-label="Xem ${escapeHTML(item.title)}">${image}</a><div class="result-card-main"><div class="result-card-top"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span>${dateBadge}</div><h3><a href="${escapeHTML(item.url)}">${escapeHTML(item.title)}</a></h3><span class="result-place">⌖ ${escapeHTML(place)}</span><div class="result-meta">${escapeHTML(details || 'Xem thông tin chi tiết')}</div><div class="result-card-bottom"><strong class="result-price">${escapeHTML(shownPrice)}</strong><a class="result-detail-link" href="${escapeHTML(item.url)}">Xem chi tiết →</a></div></div>`;
+           card.innerHTML = `<a class="result-photo" href="${escapeHTML(item.url)}" aria-label="Xem ${escapeHTML(item.title)}">${image}</a><div class="result-card-main"><div class="result-card-top"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span>${dateBadge}</div><h3><a href="${escapeHTML(item.url)}">${escapeHTML(item.title)}</a></h3>${projectLine}${locationLine}<div class="result-meta">${escapeHTML(details || 'Xem thông tin chi tiết')}</div><div class="result-card-bottom"><strong class="result-price">${escapeHTML(shownPrice)}</strong><a class="result-detail-link" href="${escapeHTML(item.url)}">Xem chi tiết →</a></div></div>`;
            list.append(card);
          });
          if (totalPages > 1) {
@@ -443,6 +482,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         event.preventDefault();
         setMode(form.querySelector('input[name="search-type"]:checked')?.value || 'can-ho');
         filterKeyword.value = keyword.value;
+        syncQuick();
         section.hidden = false;
         render();
         section.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
@@ -451,15 +491,15 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         if (!section.hidden) { setMode(r.value); render(); }
       }));
       sortSelect?.addEventListener('change', () => render());
-      [filterKeyword,project,bedrooms,direction].forEach(el=>el?.addEventListener('input',render));
+      [filterKeyword,project,bedrooms,direction].forEach(el=>el?.addEventListener('input',()=>{syncQuick();render();}));
       [priceMin,priceMax].forEach(el=>el?.addEventListener('input',()=>{priceTouched=true;syncRanges();render();}));
       [areaMin,areaMax].forEach(el=>el?.addEventListener('input',()=>{areaTouched=true;syncRanges();render();}));
       document.getElementById('clear-filters')?.addEventListener('click',()=>{
         filterKeyword.value='';keyword.value='';project.value='';bedrooms.value='';direction.value='';
         areaMin.value='25';areaMax.value='125';areaTouched=false;
-        setMode(mode);render();
+        setMode(mode);syncQuick();render();
       });
-      setMode(mode);
+      setMode(mode);syncQuick();
     })();
   </script>
 
@@ -534,7 +574,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
             </a>
             <div class="cardbody home-listing-body">
-              <span class="location">⌖ {item.place}</span>
+              {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
+              {item.place && <span class="location">⌖ {item.place}</span>}
               <h3><a href={item.href}>{item.title}</a></h3>
               <strong class="home-listing-price">{item.price}</strong>
               <p class="home-listing-meta">{[item.area, item.bedrooms != null ? `${item.bedrooms} phòng ngủ` : ''].filter(Boolean).join(' · ')}</p>
@@ -565,7 +606,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
             </a>
             <div class="cardbody home-listing-body">
-              <span class="location">⌖ {item.place}</span>
+              {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
+              {item.place && <span class="location">⌖ {item.place}</span>}
               <h3><a href={item.href}>{item.title}</a></h3>
               <strong class="home-listing-price">{item.price}</strong>
               <p class="home-listing-meta">{[item.area, item.bedrooms != null ? `${item.bedrooms} phòng ngủ` : ''].filter(Boolean).join(' · ')}</p>
@@ -890,6 +932,29 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       #biet-thu .sectionhead, #tin-tuc .sectionhead {flex-wrap:wrap;display:flex;}
       #biet-thu .sectionhead > div, #tin-tuc .sectionhead > div {min-width:0;flex:1 1 100%;}
       #biet-thu .sectionhead h2, #tin-tuc .sectionhead h2 {white-space:nowrap;font-size:clamp(25px,2.5vw,34px);}
+    }
+    .home-quick-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 16px;padding:15px;background:#fff;border:1px solid #dce5ee;border-radius:13px;min-width:0}
+    .home-quick-filters label{display:grid;gap:6px;min-width:0;font-size:13px;font-weight:700;color:#173a58}
+    .home-quick-filters input,.home-quick-filters select{width:100%;min-width:0;max-width:100%;height:43px;padding:0 10px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#19334d;font:inherit;font-weight:400;box-sizing:border-box}
+    .results-sidebar>.filter-panel{min-width:0;padding:16px}
+    .results-sidebar>.filter-panel .filter-grid,.results-sidebar>.filter-panel .range-grid{grid-template-columns:minmax(0,1fr);gap:13px}
+    .results-sidebar>.filter-panel .range-grid{margin-top:18px}
+    .results-sidebar>.filter-panel .range-field,.results-sidebar>.filter-panel .range-header,.results-sidebar>.filter-panel .dual-range{min-width:0;max-width:100%}
+    .results-sidebar>.filter-panel .range-header{flex-wrap:wrap}
+    .results-sidebar>.filter-panel .filter-actions{flex-wrap:wrap}
+    .home-listing-project{display:block;color:#173d5e;font-size:14px;font-weight:800;line-height:1.4;margin:0 0 4px;overflow-wrap:anywhere}
+    .search-results-list :global(.result-project){display:block;color:#173d5e;font-weight:800;font-size:13px;overflow-wrap:anywhere}
+    .results-section .wrap,.results-layout,.results-sidebar,.results-primary,.filter-panel,.range-field{min-width:0;max-width:100%;box-sizing:border-box}
+    @media(max-width:767px){
+      .home-quick-filters{grid-template-columns:minmax(0,1fr);padding:12px;gap:10px}
+      .results-sidebar>.filter-panel{display:none}
+      .results-section .wrap{width:calc(100% - 28px);margin-inline:auto}
+      .results-section .results-layout{grid-template-columns:minmax(0,1fr)}
+      .results-section .results-heading{flex-wrap:wrap}
+      .results-section .results-sortbar{min-width:0;flex-wrap:wrap}
+      .results-section .search-results-list :global(.result-card){min-width:0;max-width:100%;box-sizing:border-box}
+      .results-section .search-results-list :global(.result-photo){flex:0 0 100px;width:100px}
+      .results-section .search-results-list :global(.result-card-main){min-width:0;overflow-wrap:anywhere}
     }
     @media(prefers-reduced-motion:reduce){.hero-slide{transition:none;}}
   </style>
