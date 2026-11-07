@@ -427,7 +427,7 @@ collections:
 - name: nha-dat-tho-cu
   label: Nhà đất thổ cư
   label_singular: Nhà đất thổ cư
-  folder: src/content/tho-cu
+  folder: src/content/nha-dat-tho-cu
   create: true
   extension: md
   format: frontmatter
