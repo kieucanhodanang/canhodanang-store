@@ -15,6 +15,19 @@ const { Content } = await render(entry);
 const projects = (await getCollection('du-an')).filter(item => item.data.status === 'published');
 const articles = (await getCollection('bai-viet')).filter(item => item.data.status === 'published' && item.id !== entry.id);
 const relatedArticles = data.project ? articles.filter(item => item.data.project === data.project).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 6) : [];
+// Căn hộ còn giao dịch thuộc dự án được gắn với bài viết.
+const relatedApartments = data.project
+  ? (await getCollection('can-ho')).filter(item =>
+      item.data.status !== 'draft'
+      && item.data.listingStatus === 'available'
+      && item.data.project === data.project)
+  : [];
+const saleApartments = relatedApartments.filter(item => item.data.transaction === 'ban').slice(0, 6);
+const rentApartments = relatedApartments.filter(item => item.data.transaction !== 'ban').slice(0, 6);
+const formatApartmentPrice = (value: unknown) => {
+  if (value === undefined || value === null || value === '') return 'Liên hệ';
+  return String(value);
+};
 const isLandArticle = data.category === 'tho-cu';
 const linkedProject = data.project ? projects.find(item => item.id === data.project && item.data.status === 'published') : undefined;
 const consultantHeading = isLandArticle ? 'Mua nhà Đà Nẵng' : (linkedProject?.data.title || 'Bất động sản Đà Nẵng');
@@ -70,6 +83,27 @@ const schema = {
       </header>
       {data.image && <img class="cover" src={data.image} alt={data.imageAlt || data.title} loading="eager" decoding="async" />}
       <div class="article-body"><Content /></div>
+      {linkedProject && relatedApartments.length > 0 && <section class="news-apartments" aria-label={`Căn hộ tại ${linkedProject.data.title}`}>
+        <div class="news-apartments-heading">
+          <h2>Căn hộ đang bán và cho thuê tại {linkedProject.data.title}</h2>
+          <a href={`/du-an/${linkedProject.id}/`}>Xem dự án →</a>
+        </div>
+        {[
+          { title: 'Căn hộ đang bán', items: saleApartments },
+          { title: 'Căn hộ cho thuê', items: rentApartments },
+        ].filter(group => group.items.length > 0).map(group => <div class="news-apartment-group">
+          <h3>{group.title}</h3>
+          <div class="news-apartment-grid">{group.items.map(item => <a class="news-apartment-card" href={`/can-ho/${encodeURIComponent(item.id)}/`}>
+            {item.data.image ? <img src={item.data.image} alt={item.data.title} loading="lazy" decoding="async" /> : <div class="news-apartment-placeholder">Căn hộ Đà Nẵng</div>}
+            <div class="news-apartment-info">
+              <strong>{item.data.title}</strong>
+              <span class="news-apartment-price">{formatApartmentPrice(item.data.price)}</span>
+              <span class="news-apartment-meta">{[item.data.area ? `${item.data.area} m²` : '', item.data.bedrooms ? `${item.data.bedrooms} phòng ngủ` : ''].filter(Boolean).join(' · ')}</span>
+              <span class="news-apartment-detail">Xem chi tiết →</span>
+            </div>
+          </a>)}</div>
+        </div>)}
+      </section>}
       <section class="article-share" aria-label="Chia sẻ bài viết">
         <p>Chia sẻ bài viết này</p>
         <div class="share-actions">
@@ -123,6 +157,22 @@ const schema = {
     .consultant-body{padding:20px 16px;text-align:center}.consultant-avatar{width:150px;height:150px;margin:0 auto 14px;border:2px solid #b88b41;border-radius:50%;overflow:hidden;background:#edf3f8}.consultant-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
     .consultant-body h2{font-size:17px;margin:0 0 7px;color:#17334d}.consultant-body p{font-size:13px;color:#718092;margin:0 0 16px}.consultant-zalo,.consultant-call{display:block;padding:12px;border-radius:9px;font-weight:700;text-decoration:none;margin-top:9px}.consultant-zalo{border:1px solid #b9c9dc;color:#135c99}.consultant-call{background:#009d9f;color:#fff}
     .sidebar-projects h2{margin:0;padding:15px;background:#eff5fa;color:#173d62;font-size:18px}.sidebar-projects ul{list-style:none;padding:5px 13px;margin:0}.sidebar-projects li+li{border-top:1px solid #e6edf2}.sidebar-projects li a{display:flex;gap:10px;align-items:center;padding:11px 0;color:#173d62;text-decoration:none;font-weight:650;font-size:13px}.sidebar-projects li img{width:62px;height:48px;object-fit:cover;border-radius:7px;flex-shrink:0}.sidebar-projects li a span:nth-last-child(2){flex:1}.sidebar-projects li a span:last-child{margin-left:auto;font-size:23px}.all-projects{display:block;text-align:center;margin:0 13px 14px;padding:11px;border:1px solid #9eb8d2;border-radius:8px;color:#145b90;text-decoration:none;font-weight:700;font-size:13px}
+    .news-apartments{margin-top:34px;padding-top:28px;border-top:1px solid #dce6ef}
+    .news-apartments-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+    .news-apartments-heading h2{font-size:23px;line-height:1.4;color:#173b60;margin:0}
+    .news-apartments-heading a{color:#17628e;font-weight:700;text-decoration:none;font-size:14px}
+    .news-apartment-group{margin-top:22px}.news-apartment-group h3{font-size:18px;color:#244c6b;margin:0 0 12px}
+    .news-apartment-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .news-apartment-card{display:block;min-width:0;border:1px solid #e0e8f0;border-radius:12px;overflow:hidden;text-decoration:none;color:#213547;background:#fff;transition:box-shadow .2s}
+    .news-apartment-card:hover{box-shadow:0 7px 20px #18334d18}
+    .news-apartment-card img,.news-apartment-placeholder{width:100%;height:160px;object-fit:cover;display:block;background:#edf4fa}
+    .news-apartment-placeholder{display:grid;place-items:center;color:#7890a3}
+    .news-apartment-info{padding:13px;display:grid;gap:7px}
+    .news-apartment-info strong{font-size:15px;line-height:1.45}
+    .news-apartment-price{font-weight:750;color:#cf3333;font-size:16px}
+    .news-apartment-meta{font-size:13px;color:#617789}
+    .news-apartment-detail{font-size:13px;font-weight:700;color:#17628e}
+    @media(max-width:600px){.news-apartment-grid{grid-template-columns:1fr}.news-apartment-card img,.news-apartment-placeholder{height:190px}}
     .article-share{margin-top:32px;padding-top:22px;border-top:1px solid #e1e8ef}.article-share p{font-size:14px;color:#62758a;margin:0 0 12px}.share-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.share-actions a,.share-actions button{font:inherit;font-size:14px;font-weight:650;border-radius:8px;padding:10px 16px;min-height:42px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer;border:1px solid transparent}.share-facebook{background:#1877f2;color:white}.share-zalo{background:#087de5;color:white}.share-actions .share-copy{background:white;color:#184c73;border-color:#b9cbdc}.share-actions a:hover,.share-actions button:hover{filter:brightness(.94)}.share-feedback{display:block;font-size:13px;color:#24714b;margin-top:9px;min-height:1em}
     .related-articles{margin-top:30px;padding-top:26px;border-top:1px solid #dce6ef}.related-articles h2{font-size:23px;line-height:1.4;color:#173b60;margin:0 0 18px}.related-list{display:grid;gap:16px}.related-item{display:flex;align-items:flex-start;gap:16px;padding:0 0 16px;border-bottom:1px solid #e8edf2;text-decoration:none;color:#173b60}.related-item img,.related-placeholder{width:180px;height:110px;object-fit:cover;border-radius:9px;flex-shrink:0}.related-placeholder{display:grid;place-items:center;background:#edf4fa;color:#51738f}.related-info{display:grid;gap:6px;min-width:0}.related-info time{font-size:12px;color:#78899a}.related-info strong{font-size:17px;line-height:1.45}.related-description{font-size:13px;line-height:1.6;color:#62758a;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.related-item:hover strong{text-decoration:underline}.related-empty{font-size:14px;color:#728294;margin:0 0 10px}
     @media(max-width:600px){.related-item img,.related-placeholder{width:110px;height:88px}.related-info strong{font-size:15px}.related-description{display:none}}
