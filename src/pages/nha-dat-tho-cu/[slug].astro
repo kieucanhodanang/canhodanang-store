@@ -93,7 +93,7 @@ const jsonLd = JSON.stringify([propertySchema, breadcrumbSchema]).replace(/</g, 
         </div>
         <span class:list={['status', { inactive: !isAvailable }]}>{statusLabel}</span>
       </div>
-      <PropertyDetail property={data} kind="tho-cu" phone="0869437415" zalo="0869437415">
+      <PropertyDetail property={data} kind="nha-dat-tho-cu" phone="0869437415" zalo="0869437415">
         <Content />
       </PropertyDetail>
       {project && <aside class="linked-project"><h2>Dự án liên quan</h2><a href={`/du-an/${project.id}/`}>{project.data.title} →</a><p>{project.data.location}</p></aside>}
