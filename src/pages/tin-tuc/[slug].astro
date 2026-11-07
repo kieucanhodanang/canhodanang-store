@@ -12,6 +12,8 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const data = entry.data;
 const { Content } = await render(entry);
+const projects = await getCollection('du-an');
+const linkedProject = data.project ? projects.find(item => item.id === data.project && item.data.status === 'published') : undefined;
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const description = data.description || `Tin tức bất động sản Đà Nẵng: ${data.title}`;
@@ -52,7 +54,7 @@ const schema = {
     <article class="news-wrap">
       <nav class="breadcrumbs" aria-label="Đường dẫn">
         <a href="/">Trang chủ</a><span aria-hidden="true">/</span>
-        <span>Tin tức</span><span aria-hidden="true">/</span>
+        <a href="/tin-tuc/">Tin tức</a><span aria-hidden="true">/</span>
         <span aria-current="page">{data.title}</span>
       </nav>
       <header class="news-header">
@@ -63,6 +65,7 @@ const schema = {
       </header>
       {data.image && <img class="cover" src={data.image} alt={data.imageAlt || data.title} loading="eager" decoding="async" />}
       <div class="article-body"><Content /></div>
+      {linkedProject && <aside class="project-related"><h2>Dự án liên quan</h2><a href={`/du-an/${linkedProject.id}/`}>{linkedProject.data.title} →</a><p>{linkedProject.data.location}</p></aside>}
       <footer class="news-footer">
         <a href="/">← Về trang chủ</a>
         <a href="tel:0869437415">Liên hệ tư vấn: 0869 437 415</a>
@@ -86,6 +89,7 @@ const schema = {
     .article-body :global(img){max-width:100%;height:auto;border-radius:10px}
     .article-body :global(a){color:#17628e}
     .article-body :global(ul),.article-body :global(ol){padding-left:24px;margin-bottom:18px}
+    .project-related{background:#f3f7fa;border:1px solid #e1eaf1;border-radius:12px;padding:20px;margin-top:28px}.project-related h2{font-size:19px;margin:0 0 10px;color:#193b58}.project-related a{color:#17628e;font-weight:700;text-decoration:none}.project-related p{margin:8px 0 0;color:#65788a;font-size:14px}
     .news-footer{border-top:1px solid #e8edf2;margin-top:35px;padding-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:15px;font-weight:600}
     @media(max-width:600px){.news-page{padding:14px 10px 45px}.news-wrap{padding:20px 16px}.lead{font-size:15px}}
   </style>
