@@ -14,7 +14,7 @@ const { Content } = await render(entry);
 // Gộp căn hộ và nhà đất thổ cư thuộc dự án, tránh hiển thị trùng.
 const groups = await Promise.all([
   getCollection('can-ho'),
-  getCollection('tho-cu'),
+  getCollection('nha-dat-tho-cu'),
 ]);
 const linkedProperties = groups.flatMap((entries, groupIndex) =>
   entries.filter(item => item.data.status !== 'draft'
