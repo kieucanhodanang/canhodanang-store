@@ -127,9 +127,6 @@ const rentalDistrictAreas = [
   { name: 'Sơn Trà', slug: 'son-tra', image: homepage.rentalAreaImages?.sonTra || '' },
   { name: 'Hải Châu', slug: 'hai-chau', image: homepage.rentalAreaImages?.haiChau || '' },
   { name: 'Thanh Khê', slug: 'thanh-khe', image: homepage.rentalAreaImages?.thanhKhe || '' },
-  { name: 'Ngũ Hành Sơn', slug: 'ngu-hanh-son', image: homepage.rentalAreaImages?.nguHanhSon || '' },
-  { name: 'Liên Chiểu', slug: 'lien-chieu', image: homepage.rentalAreaImages?.lienChieu || '' },
-  { name: 'Cẩm Lệ', slug: 'cam-le', image: homepage.rentalAreaImages?.camLe || '' },
 ].map(area => ({
   ...area,
   href: `/cho-thue/${area.slug}/`,
@@ -508,58 +505,6 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     })();
   </script>
 
-  <!-- H2: DU AN NOI BAT -->
-  <section class="section" id="du-an">
-    <div class="wrap">
-
-      <div class="sectionhead">
-        <div>
-          <span class="eyebrow">
-            THÔNG TIN DỰ ÁN
-          </span>
-
-          <h2>Dự Án Bất Động Sản Đà Nẵng Nổi Bật</h2>
-
-          <p>
-            Tìm hiểu các dự án căn hộ và
-            những dự án bất động sản đáng quan tâm
-            tại Đà Nẵng.
-          </p>
-        </div>
-
-        <a class="textlink" href="/du-an/">
-          Xem tất cả dự án →
-        </a>
-      </div>
-
-      <div class="cards">
-        {duAn.map(item => (
-          <article class="card">
-            <div class="visual home-project-visual">
-              {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
-              <span class="tag">{item.tag}</span>
-            </div>
-
-            <div class="cardbody">
-              <span class="location">
-                ⌖ {item.place}
-              </span>
-
-              <h3>{item.title}</h3>
-
-              <p>{item.summary}</p>
-
-              <a class="textlink" href={item.href}>
-                Khám phá dự án →
-              </a>
-            </div>
-          </article>
-        ))}
-      </div>
-
-    </div>
-  </section>
-
   <!-- H2: CAN HO BAN -->
   <section class="section" id="can-ho-ban">
     <div class="wrap">
@@ -598,41 +543,51 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     </div>
   </section>
 
-  <!-- H2: CAN HO CHO THUE -->
-  <section class="section light" id="can-ho-thue">
+  <!-- H2: CAN HO THEO KHU VUC -->
+  <section class="section light" id="khu-vuc">
     <div class="wrap">
+
       <div class="sectionhead">
         <div>
-          <span class="eyebrow">THỊ TRƯỜNG CHO THUÊ</span>
-          <h2>Căn Hộ Cho Thuê Tại Đà Nẵng</h2>
-          <p>Tham khảo căn hộ cho thuê dài hạn hoặc theo ngày tại Đà Nẵng. Thông tin được cập nhật từ hệ thống quản trị.</p>
+          <span class="eyebrow">
+            KHÁM PHÁ THEO KHU VỰC
+          </span>
+
+          <h2>Căn Hộ Đà Nẵng Theo Khu Vực</h2>
+
+          <p>
+            Tìm hiểu đặc điểm vị trí,
+            giao thông và tiện ích của các
+            khu vực căn hộ tại Đà Nẵng.
+          </p>
         </div>
-        <a class="textlink" href="/cho-thue/">Xem tất cả căn hộ cho thuê →</a>
       </div>
-      <div class="cards home-listing-grid">
-        {rentCards.map(item => (
-          <article class="card home-listing-card">
-            <a class="home-listing-photo" href={item.href} aria-label={`Xem ${item.title}`}>
-              {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
-              {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
-            </a>
-            <div class="cardbody home-listing-body">
-              <div class="home-listing-address">
-                {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
-                {item.projectName && item.place && <span class="address-comma">, </span>}
-                {item.place && <span class="location">{item.place}</span>}
-              </div>
-              <h3 class="home-listing-title"><a href={item.href}>{item.title}</a></h3>
-              <div class="home-listing-facts">
-                <strong class="home-listing-price">{item.price}</strong>
-                {item.area && <span class="home-listing-fact">{item.area}</span>}
-                {item.bedrooms != null && <span class="home-listing-fact">{item.bedrooms} PN</span>}
-              </div>
-              <a class="textlink" href={item.href}>Xem chi tiết →</a>
+
+      <div class="cards">
+        {khuVuc.map(item => (
+          <article class="card">
+            <div class={`visual ${item.style}`}>
+              {item.image?.startsWith("/uploads/") && <img src={item.image} alt={`Căn hộ tại ${item.place}`} loading="lazy" decoding="async" />}
+              <span class="tag">Theo khu vực</span>
+            </div>
+
+            <div class="cardbody">
+              <span class="location">
+                ⌖ {item.place}
+              </span>
+
+              <h3>{item.title}</h3>
+
+              <p>{item.summary}</p>
+
+              <a class="textlink" href={item.href}>
+                Tìm hiểu khu vực →
+              </a>
             </div>
           </article>
         ))}
       </div>
+
     </div>
   </section>
 
@@ -697,6 +652,44 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     </div>
   </section>
 
+  <!-- H2: CAN HO CHO THUE -->
+  <section class="section light" id="can-ho-thue">
+    <div class="wrap">
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">THỊ TRƯỜNG CHO THUÊ</span>
+          <h2>Căn Hộ & Nhà Đất Thổ Cư Cho Thuê Tại Đà Nẵng</h2>
+          <p>Tham khảo căn hộ và nhà đất thổ cư cho thuê tại Đà Nẵng. Thông tin được cập nhật từ hệ thống quản trị.</p>
+        </div>
+        <a class="textlink" href="/cho-thue/">Xem tất cả bất động sản cho thuê →</a>
+      </div>
+      <div class="cards home-listing-grid">
+        {rentCards.map(item => (
+          <article class="card home-listing-card">
+            <a class="home-listing-photo" href={item.href} aria-label={`Xem ${item.title}`}>
+              {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
+              {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
+            </a>
+            <div class="cardbody home-listing-body">
+              <div class="home-listing-address">
+                {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
+                {item.projectName && item.place && <span class="address-comma">, </span>}
+                {item.place && <span class="location">{item.place}</span>}
+              </div>
+              <h3 class="home-listing-title"><a href={item.href}>{item.title}</a></h3>
+              <div class="home-listing-facts">
+                <strong class="home-listing-price">{item.price}</strong>
+                {item.area && <span class="home-listing-fact">{item.area}</span>}
+                {item.bedrooms != null && <span class="home-listing-fact">{item.bedrooms} PN</span>}
+              </div>
+              <a class="textlink" href={item.href}>Xem chi tiết →</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- H2: CHO THUE THEO KHU VUC -->
   <section class="section light" id="cho-thue-theo-khu-vuc">
     <div class="wrap">
@@ -727,32 +720,36 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     </div>
   </section>
 
-  <!-- H2: CAN HO THEO KHU VUC -->
-  <section class="section light" id="khu-vuc">
+  <!-- H2: DU AN NOI BAT -->
+  <section class="section" id="du-an">
     <div class="wrap">
 
       <div class="sectionhead">
         <div>
           <span class="eyebrow">
-            KHÁM PHÁ THEO KHU VỰC
+            THÔNG TIN DỰ ÁN
           </span>
 
-          <h2>Căn Hộ Đà Nẵng Theo Khu Vực</h2>
+          <h2>Dự Án Bất Động Sản Đà Nẵng Nổi Bật</h2>
 
           <p>
-            Tìm hiểu đặc điểm vị trí,
-            giao thông và tiện ích của các
-            khu vực căn hộ tại Đà Nẵng.
+            Tìm hiểu các dự án căn hộ và
+            những dự án bất động sản đáng quan tâm
+            tại Đà Nẵng.
           </p>
         </div>
+
+        <a class="textlink" href="/du-an/">
+          Xem tất cả dự án →
+        </a>
       </div>
 
       <div class="cards">
-        {khuVuc.map(item => (
+        {duAn.map(item => (
           <article class="card">
-            <div class={`visual ${item.style}`}>
-              {item.image?.startsWith("/uploads/") && <img src={item.image} alt={`Căn hộ tại ${item.place}`} loading="lazy" decoding="async" />}
-              <span class="tag">Theo khu vực</span>
+            <div class="visual home-project-visual">
+              {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
+              <span class="tag">{item.tag}</span>
             </div>
 
             <div class="cardbody">
@@ -765,7 +762,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               <p>{item.summary}</p>
 
               <a class="textlink" href={item.href}>
-                Tìm hiểu khu vực →
+                Khám phá dự án →
               </a>
             </div>
           </article>
