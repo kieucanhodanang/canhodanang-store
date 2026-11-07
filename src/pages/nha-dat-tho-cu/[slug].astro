@@ -46,8 +46,8 @@ const propertySchema = {
     address: {
       '@type': 'PostalAddress',
       ...(data.address ? { streetAddress: data.address } : {}),
-      ...(data.ward ? { addressLocality: data.ward } : {}),
-      ...(data.district ? { addressRegion: data.district } : {}),
+      ...(data.ward || data.district ? { addressLocality: [data.ward, data.district].filter(Boolean).join(', ') } : {}),
+      addressRegion: 'Đà Nẵng',
       addressCountry: 'VN',
     },
   } : {}),
