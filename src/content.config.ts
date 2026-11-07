@@ -93,20 +93,6 @@ const duAn = defineCollection({
   }),
 });
 
-const bietThu = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/biet-thu' }),
-  schema: z.object({
-    ...propertyFields,
-    image: z.string(),
-    propertyType: z.string(),
-    floors: optionalNumber,
-    frontage: optionalText,
-    roadWidth: optionalText,
-    interior: optionalText,
-    bathrooms: optionalNumber,
-  }),
-});
-
 const thoCu = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/tho-cu' }),
   schema: z.object({
@@ -138,7 +124,6 @@ const baiViet = defineCollection({
 export const collections = {
   'can-ho': canHo,
   'du-an': duAn,
-  'biet-thu': bietThu,
   'tho-cu': thoCu,
   'bai-viet': baiViet,
 };
