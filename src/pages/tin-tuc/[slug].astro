@@ -1,0 +1,92 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('bai-viet');
+  return articles
+    .filter((entry) => entry.data.status !== 'draft')
+    .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const data = entry.data;
+const { Content } = await render(entry);
+const siteUrl = 'https://canhodanang.store';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const description = data.description || `Tin tức bất động sản Đà Nẵng: ${data.title}`;
+const image = data.ogImage || data.image || undefined;
+const dateText = data.date instanceof Date && !Number.isNaN(data.date.getTime())
+  ? data.date.toISOString() : undefined;
+const updatedText = data.updatedAt instanceof Date && !Number.isNaN(data.updatedAt.getTime())
+  ? data.updatedAt.toISOString() : undefined;
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BlogPosting',
+      '@id': `${pageUrl}#article`,
+      headline: data.title,
+      description,
+      mainEntityOfPage: pageUrl,
+      url: pageUrl,
+      ...(image ? { image: new URL(image, siteUrl).href } : {}),
+      ...(dateText ? { datePublished: dateText } : {}),
+      ...(updatedText ? { dateModified: updatedText } : {}),
+      publisher: { '@type': 'Organization', name: 'Căn Hộ Đà Nẵng', url: siteUrl },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Tin tức', item: `${siteUrl}/tin-tuc/` },
+        { '@type': 'ListItem', position: 3, name: data.title, item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+<Base title={data.seoTitle || data.title} description={description} image={image} imageAlt={data.imageAlt || data.title} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
+  <main class="news-page">
+    <article class="news-wrap">
+      <nav class="breadcrumbs" aria-label="Đường dẫn">
+        <a href="/">Trang chủ</a><span aria-hidden="true">/</span>
+        <span>Tin tức</span><span aria-hidden="true">/</span>
+        <span aria-current="page">{data.title}</span>
+      </nav>
+      <header class="news-header">
+        {data.category && <p class="category">{data.category}</p>}
+        <h1>{data.title}</h1>
+        {dateText && <time datetime={dateText}>{new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' }).format(data.date)}</time>}
+        <p class="lead">{description}</p>
+      </header>
+      {data.image && <img class="cover" src={data.image} alt={data.imageAlt || data.title} loading="eager" decoding="async" />}
+      <div class="article-body"><Content /></div>
+      <footer class="news-footer">
+        <a href="/">← Về trang chủ</a>
+        <a href="tel:0869437415">Liên hệ tư vấn: 0869 437 415</a>
+      </footer>
+    </article>
+  </main>
+  <style>
+    .news-page{background:#f5f8fb;min-height:65vh;padding:28px 16px 70px;color:#213547}
+    .news-wrap{max-width:900px;margin:0 auto;background:#fff;border-radius:16px;padding:clamp(20px,4vw,44px);box-shadow:0 4px 24px #18334d0a}
+    .breadcrumbs{display:flex;gap:9px;flex-wrap:wrap;color:#718092;font-size:13px;margin-bottom:28px;overflow-wrap:anywhere}
+    .breadcrumbs a,.news-footer a{color:#17628e;text-decoration:none}
+    .news-header h1{font-size:clamp(27px,4vw,42px);line-height:1.3;margin:8px 0 16px;color:#183b58}
+    .category{color:#ad7c32;font-size:13px;font-weight:700;text-transform:uppercase;margin:0}
+    .news-header time{color:#6d7e8b;font-size:14px}
+    .lead{font-size:17px;line-height:1.75;color:#536879;margin:20px 0 26px}
+    .cover{display:block;width:100%;max-height:490px;object-fit:cover;border-radius:12px;margin-bottom:28px}
+    .article-body{font-size:16px;line-height:1.85;overflow-wrap:anywhere}
+    .article-body :global(h2){font-size:25px;line-height:1.4;margin:30px 0 12px}
+    .article-body :global(h3){font-size:20px;margin:24px 0 10px}
+    .article-body :global(p){margin:0 0 18px}
+    .article-body :global(img){max-width:100%;height:auto;border-radius:10px}
+    .article-body :global(a){color:#17628e}
+    .article-body :global(ul),.article-body :global(ol){padding-left:24px;margin-bottom:18px}
+    .news-footer{border-top:1px solid #e8edf2;margin-top:35px;padding-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:15px;font-weight:600}
+    @media(max-width:600px){.news-page{padding:14px 10px 45px}.news-wrap{padding:20px 16px}.lead{font-size:15px}}
+  </style>
+</Base>
