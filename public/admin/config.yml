@@ -424,7 +424,7 @@ collections:
   - *id013
   - *id014
   - *id015
-- name: tho-cu
+- name: nha-dat-tho-cu
   label: Nhà đất thổ cư
   label_singular: Nhà đất thổ cư
   folder: src/content/tho-cu
