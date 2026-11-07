@@ -1,4 +1,3 @@
-
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
@@ -51,6 +50,9 @@ const canHo = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/can-ho' }),
   schema: z.object({
     ...propertyFields,
+    // Nhóm khu vực phục vụ trang danh mục SEO và bộ lọc.
+    // Giữ optional để bài đăng cũ vẫn build bình thường.
+    areaSlug: z.enum(['son-tra', 'ngu-hanh-son', 'hoa-xuan']).nullish(),
     price: z.string(),
     area: z.string(),
     address: z.string(),
