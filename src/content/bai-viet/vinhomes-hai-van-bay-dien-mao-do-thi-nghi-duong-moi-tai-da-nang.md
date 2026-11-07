@@ -15,12 +15,6 @@ status: published
 showOnHome: true
 featured: true
 ---
-# Vinhomes Hải Vân Bay: Diện mạo đô thị nghỉ dưỡng mới tại cửa ngõ Tây Bắc Đà Nẵng
-
-*Ngày đăng: 07/11/2026 | Chuyên mục: Tin tức bất động sản Đà Nẵng*
-
-**Vinhomes Hải Vân Bay đang trở thành một trong những dự án bất động sản đáng chú ý tại Đà Nẵng năm 2026. Với quy mô hơn 512 ha, tọa lạc dưới chân đèo Hải Vân và tiếp giáp vịnh Nam Chơn, dự án được kỳ vọng góp phần hình thành không gian đô thị, du lịch và nghỉ dưỡng mới tại khu vực Tây Bắc thành phố.**
-
 ## Vinhomes Hải Vân Bay – Dự án hơn 512 ha dưới chân đèo Hải Vân
 
 Ngày 20/4/2026, Công ty Cổ phần Vinhomes chính thức giới thiệu dự án Vinhomes Hải Vân Bay, còn được biết đến với tên gọi Vinhomes Làng Vân.
