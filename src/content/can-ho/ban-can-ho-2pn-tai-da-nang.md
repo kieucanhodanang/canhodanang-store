@@ -11,7 +11,7 @@ areaValue: 75
 bedrooms: 2
 bathrooms: 0
 district: Sơn Trà
-address: FourS Tower, Phước Lan, Nam Hòa Xuân, Đà Nẵng
+address: Phước Lan, Minh Mạng, Ngũ Hành Sơn
 legal: Chính Chủ
 direction: Đông
 balconyDirection: Đông
