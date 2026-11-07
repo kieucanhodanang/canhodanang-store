@@ -45,9 +45,9 @@ const latestNews = (await getCollection('bai-viet'))
 // Chỉ công khai các sản phẩm còn giao dịch; không đưa bài dự án vào danh sách hàng bán.
 const projectNames = new Map(projects.map((item) => [item.id, item.data.title]));
 const listingCollections = await Promise.all([
-  getCollection('can-ho'), getCollection('biet-thu'), getCollection('tho-cu'),
+  getCollection('can-ho'), getCollection('tho-cu'),
 ]);
-const listingTypes = ['can-ho', 'biet-thu', 'tho-cu'];
+const listingTypes = ['can-ho', 'tho-cu'];
 const searchableListings = listingCollections.flatMap((entries, index) =>
   entries.filter((item) => item.data.status === 'published' && item.data.listingStatus === 'available')
     .map((item) => {
@@ -69,9 +69,7 @@ const searchableListings = listingCollections.flatMap((entries, index) =>
         district: d.district || '',
         ward: d.ward || '',
         address: d.address || '',
-        url: type === 'biet-thu'
-          ? (projects.some(p => p.id === project) ? `/du-an/${project}/` : '/du-an/')
-          : `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
+        url: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
         type,
         propertyType: d.propertyType || type,
         transaction,
@@ -420,7 +418,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            // Giá nhập dạng văn bản trong CMS được ưu tiên để không ghi nhầm đơn vị thuê ngày/tháng.
            const priceValue = mode === 'cho-thue' ? item.rent : item.price;
            const shownPrice = item.priceText || (priceValue === null ? 'Liên hệ báo giá' : `${format(priceValue)} ${priceUnit()}`);
-           const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : item.type === 'biet-thu' ? 'Biệt thự / Shophouse' : 'Nhà đất';
+           const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : 'Nhà đất';
            const image = item.image ? `<img class="result-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy" />` : `<span class="result-image result-image-empty" aria-hidden="true">⌂</span>`;
            const parts = String(item.address || '').split(',').map(v=>v.trim()).filter(Boolean);
            const street = parts.find(v=>/(?:^|\s)(?:đường|phố|đại lộ|đ\.|street)\s+[\p{L}\d]/iu)
