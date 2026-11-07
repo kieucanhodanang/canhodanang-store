@@ -1,0 +1,116 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('bai-viet'))
+  .filter((item) => item.data.status !== 'draft')
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const description = 'Tin tức bất động sản Đà Nẵng: thông tin dự án, căn hộ, nhà đất, thị trường và cập nhật mới nhất từ Căn Hộ Đà Nẵng.';
+const formatDate = (date: Date) => new Intl.DateTimeFormat('vi-VN', {
+  day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh',
+}).format(date);
+const summary = (value: string) => value.length > 165 ? `${value.slice(0, 162).trimEnd()}…` : value;
+const siteUrl = 'https://canhodanang.store';
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Tin tức bất động sản Đà Nẵng',
+  description,
+  url: `${siteUrl}/tin-tuc/`,
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: articles.map((article, index) => ({
+      '@type': 'ListItem', position: index + 1,
+      name: article.data.title,
+      url: `${siteUrl}/tin-tuc/${article.id}/`,
+    })),
+  },
+};
+---
+<Base title="Tin Tức Bất Động Sản Đà Nẵng | Căn Hộ Đà Nẵng" description={description}>
+  <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\u003c')} />
+  <main class="news-index">
+    <section class="hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Đường dẫn"><a href="/">Trang chủ</a><span aria-hidden="true">/</span><span aria-current="page">Tin tức</span></nav>
+        <p class="eyebrow">THÔNG TIN BẤT ĐỘNG SẢN</p>
+        <h1>Tin Tức Bất Động Sản Đà Nẵng</h1>
+        <p>Cập nhật thông tin dự án, căn hộ, nhà đất và thị trường bất động sản Đà Nẵng.</p>
+      </div>
+    </section>
+    <section class="listing" aria-label="Danh sách bài viết">
+      <div class="container">
+        <div class="heading"><h2>Bài viết mới nhất</h2><span>{articles.length} bài viết</span></div>
+        {articles.length ? (
+          <>
+            <div class="grid">
+              {articles.map((article, index) => (
+                <article class="card" data-news-card hidden={index >= 12}>
+                  <a class="cover-link" href={`/tin-tuc/${article.id}/`} aria-label={`Đọc bài viết ${article.data.title}`}>
+                    {article.data.image ? <img src={article.data.image} alt={article.data.imageAlt || article.data.title} loading="lazy" /> : <div class="placeholder">TIN TỨC ĐÀ NẴNG</div>}
+                  </a>
+                  <div class="card-content">
+                    <div class="meta">
+                      {article.data.category && <span class="category">{article.data.category}</span>}
+                      <time datetime={article.data.date.toISOString()}>{formatDate(article.data.date)}</time>
+                    </div>
+                    <h3><a href={`/tin-tuc/${article.id}/`}>{article.data.title}</a></h3>
+                    {article.data.description && <p>{summary(article.data.description)}</p>}
+                    <a class="read-link" href={`/tin-tuc/${article.id}/`}>Đọc bài viết <span aria-hidden="true">→</span></a>
+                  </div>
+                </article>
+              ))}
+            </div>
+            {articles.length > 12 && <nav class="pagination" aria-label="Phân trang tin tức">
+              <button id="prev-page" type="button" disabled>← Trước</button>
+              <span id="page-status" aria-live="polite">Trang 1 / {Math.ceil(articles.length / 12)}</span>
+              <button id="next-page" type="button">Tiếp →</button>
+            </nav>}
+          </>
+        ) : (
+          <div class="empty"><h2>Đang cập nhật tin tức</h2><p>Các bài viết mới sẽ hiển thị tại đây sau khi được xuất bản trong hệ thống quản trị.</p></div>
+        )}
+      </div>
+    </section>
+    <section class="contact"><div class="container contact-inner"><div><h2>Cần tư vấn bất động sản Đà Nẵng?</h2><p>Liên hệ để được hỗ trợ thông tin dự án và sản phẩm phù hợp.</p></div><a href="tel:0869437415">Gọi 0869 437 415</a></div></section>
+  </main>
+  <script>
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-news-card]'));
+    const prev = document.getElementById('prev-page') as HTMLButtonElement | null;
+    const next = document.getElementById('next-page') as HTMLButtonElement | null;
+    const status = document.getElementById('page-status');
+    const perPage = 12;
+    const total = Math.max(1, Math.ceil(cards.length / perPage));
+    let current = 1;
+    const showPage = (page: number) => {
+      current = Math.min(total, Math.max(1, page));
+      cards.forEach((card, index) => { card.hidden = index < (current - 1) * perPage || index >= current * perPage; });
+      if (prev) prev.disabled = current === 1;
+      if (next) next.disabled = current === total;
+      if (status) status.textContent = `Trang ${current} / ${total}`;
+    };
+    prev?.addEventListener('click', () => { showPage(current - 1); document.querySelector('.listing')?.scrollIntoView({ block: 'start' }); });
+    next?.addEventListener('click', () => { showPage(current + 1); document.querySelector('.listing')?.scrollIntoView({ block: 'start' }); });
+    showPage(1);
+  </script>
+  <style>
+    .news-index{color:#19334d;background:#f6f8fb}.container{width:min(1200px,calc(100% - 40px));margin:auto}
+    .hero{background:linear-gradient(120deg,#102c49,#245679);color:#fff;padding:45px 0 62px}
+    .breadcrumb{display:flex;gap:10px;font-size:13px;color:#e3edf5;margin-bottom:32px}.breadcrumb a{color:inherit;text-decoration:none}.breadcrumb a:hover{text-decoration:underline}
+    .eyebrow{font-size:12px;letter-spacing:1.5px;font-weight:800;color:#c9a064;margin:0 0 12px}
+    .hero h1{font-size:clamp(30px,4vw,46px);line-height:1.2;margin:0 0 16px}.hero p:last-child{max-width:760px;line-height:1.8;color:#e3edf5;margin:0}
+    .listing{padding:54px 0 75px}.heading{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:25px}
+    .heading h2{font-size:clamp(23px,3vw,31px);margin:0}.heading span{color:#65798b;font-size:14px;white-space:nowrap}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:23px}.card{display:flex;flex-direction:column;background:#fff;border:1px solid #e1e8ee;border-radius:14px;overflow:hidden;box-shadow:0 6px 20px #102c490b}
+    .card[hidden]{display:none!important}.cover-link{height:215px;display:block;overflow:hidden;background:#dce6ee}.cover-link img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}.cover-link:hover img{transform:scale(1.04)}
+    .placeholder{height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#d8e4ed,#aac2d4);font-weight:800;color:#295574;letter-spacing:1px}
+    .card-content{padding:21px;display:flex;flex-direction:column;flex:1}.meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:#758797;font-size:12px;margin-bottom:12px}.category{color:#9d702d;font-weight:750}
+    .card h3{font-size:19px;line-height:1.45;margin:0 0 12px}.card h3 a{color:#173d5b;text-decoration:none}.card h3 a:hover{color:#a57936}
+    .card-content p{color:#5a6e80;font-size:14px;line-height:1.7;margin:0 0 20px;flex:1}.read-link{color:#986b2a;font-size:14px;font-weight:800;text-decoration:none;margin-top:auto}.read-link:hover{text-decoration:underline}
+    .pagination{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:32px;font-weight:700}.pagination button{background:#fff;border:1px solid #c99b56;color:#173a58;padding:11px 17px;border-radius:9px;font:inherit;cursor:pointer}.pagination button:disabled{opacity:.45;cursor:not-allowed}
+    .empty{text-align:center;padding:50px 20px;background:#fff;border:1px solid #e1e8ee;border-radius:14px}.empty h2{font-size:22px}.empty p{color:#687b8d}
+    .contact{background:#102c49;color:#fff;padding:34px 0}.contact-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}.contact h2{font-size:23px;margin:0 0 8px}.contact p{margin:0;color:#d4e2ee}.contact a{background:#c99b56;color:#fff;padding:14px 22px;border-radius:9px;text-decoration:none;font-weight:800;white-space:nowrap}
+    @media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.container{width:calc(100% - 28px)}.hero{padding:30px 0 45px}.listing{padding:36px 0 48px}.grid{grid-template-columns:1fr;gap:18px}.cover-link{height:210px}.contact-inner{flex-direction:column;align-items:start}.contact a{width:100%;text-align:center}.pagination{gap:8px}.pagination button{padding:9px 11px}}
+  </style>
+</Base>
