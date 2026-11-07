@@ -1,8 +1,8 @@
 ---
 /**
- * Shared property detail UI for can-ho, tho-cu and biet-thu.
+ * Shared property detail UI for can-ho and nha-dat-tho-cu.
  * Usage: <PropertyDetail property={entry.data} kind="can-ho"><Content /></PropertyDetail>
- * kind: 'can-ho' | 'tho-cu' | 'biet-thu'
+ * kind: 'can-ho' | 'nha-dat-tho-cu'
  */
 interface Property {
   title: string;
@@ -33,7 +33,7 @@ interface Property {
 }
 interface Props {
   property: Property;
-  kind?: 'can-ho' | 'tho-cu' | 'biet-thu';
+  kind?: 'can-ho' | 'nha-dat-tho-cu';
   phone?: string;
   zalo?: string;
 }
@@ -138,7 +138,7 @@ const uniqueId = `property-${Math.random().toString(36).slice(2, 10)}`;
   </div>
 
   <section class="property-info" aria-label="Thông tin chi tiết">
-    <h2>Thông tin chi tiết {kind === 'can-ho' ? 'căn hộ' : kind === 'tho-cu' ? 'nhà đất' : 'biệt thự / shophouse'}</h2>
+    <h2>Thông tin chi tiết {kind === 'can-ho' ? 'căn hộ' : 'nhà đất'}</h2>
     <div class="property-description is-collapsed" id={`${uniqueId}-description`}>
       {property.description && <p class="summary-description">{property.description}</p>}
       <div class="cms-body"><slot /></div>
