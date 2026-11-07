@@ -167,6 +167,7 @@ const schema = {
                     {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
                     <div class="card-body">
                       <h3>{item.data.title}</h3>
+                      <p class="property-action">{item.href === '#lien-he-du-an' ? 'Liên hệ tư vấn sản phẩm →' : 'Xem chi tiết bất động sản →'}</p>
                       <div class="card-info-row">
                         {item.data.price && <strong class="apartment-price">{item.data.price}</strong>}
                         {formatArea(item.data.area) && <span class="apartment-detail">{formatArea(item.data.area)}</span>}
