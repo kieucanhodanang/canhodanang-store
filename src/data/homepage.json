@@ -9,7 +9,7 @@
       "alt": "Banner quảng cáo bên trái"
     },
     "right": {
-      "enabled": true,
+      "enabled": false,
       "image": "/uploads/can-ho-capital-square.jpg",
       "link": "https://canhodanang.store/du-an/capital-square/",
       "alt": "Banner quảng cáo bên phải"
@@ -36,6 +36,7 @@
       "title": "Căn hộ cao cấp Đà Nẵng"
     }
   ],
+  "bannerVideo": "",
   "bannerImage": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
   "primaryButtonColor": "#D4A85E",
   "bannerDescription": "Khám phá thông tin căn hộ Đà Nẵng, các dự án nổi bật và lựa chọn bất động sản phù hợp nhu cầu an cư hoặc đầu tư.",
@@ -44,7 +45,6 @@
   "bannerPosition": "center",
   "slideInterval": 5,
   "bannerContentWidth": 1200,
-  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG",
-  "bannerVideo": "",
-  "bannerVideoPoster": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png"
+  "bannerVideoPoster": "/uploads/can-ho-da-nang-cap-nhat-moi-nhat.png",
+  "bannerEyebrow": "CHUYÊN TRANG CĂN HỘ ĐÀ NẴNG"
 }
