@@ -4,7 +4,7 @@ import PropertyDetail from '../../components/PropertyDetail.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const properties = await getCollection('tho-cu');
+  const properties = await getCollection('nha-dat-tho-cu');
   return properties
     .filter((entry) => entry.data.status !== 'draft')
     .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
