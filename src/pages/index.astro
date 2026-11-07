@@ -113,6 +113,16 @@ const khuVuc = [
   }
 ];
 
+const normalizeLandDistrict = (value: unknown) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase().replace(/^(quan|huyen)\s+/, '').trim();
+const landDistrictAreas = [
+  { name: 'Sơn Trà', description: 'Nhà phố và đất thổ cư khu vực ven biển, gần trung tâm.', image: homepage.areaImages?.sonTra || '' },
+  { name: 'Hải Châu', description: 'Nhà đất tại khu vực trung tâm, thuận tiện kinh doanh và sinh sống.', image: homepage.areaImages?.haiChau || '' },
+  { name: 'Thanh Khê', description: 'Khám phá nhà riêng và đất thổ cư khu vực Thanh Khê.', image: '' },
+].map(area => ({
+  ...area,
+  count: searchableListings.filter(item => item.type === 'nha-dat-tho-cu' && item.transaction === 'ban' && normalizeLandDistrict(item.district) === normalizeLandDistrict(area.name)).length,
+  href: '/nha-dat-tho-cu/',
+}));
 // Chọn tối đa 3 dự án công khai, được bật hiển thị trang chủ.
 // Dự án được ghim nổi bật ưu tiên trước; featuredOrder nhỏ lên trước.
 const duAn = projects
@@ -644,6 +654,36 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     </div>
   </section>
 
+  <!-- H2: NHA DAT THEO KHU VUC -->
+  <section class="section" id="nha-dat-theo-khu-vuc">
+    <div class="wrap">
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">KHÁM PHÁ NHÀ ĐẤT THEO KHU VỰC</span>
+          <h2>Nhà Đất Thổ Cư Theo Khu Vực Đà Nẵng</h2>
+          <p>Tìm nhà phố và đất thổ cư tại Sơn Trà, Hải Châu và Thanh Khê. Số lượng tin đang bán được cập nhật từ CMS.</p>
+        </div>
+        <a class="textlink" href="/nha-dat-tho-cu/">Xem tất cả nhà đất →</a>
+      </div>
+      <div class="cards">
+        {landDistrictAreas.map(area => (
+          <article class="card land-area-card">
+            <a href={area.href} class="land-area-visual" aria-label={`Xem nhà đất ${area.name}`}>
+              {area.image?.startsWith('/uploads/') ? <img src={area.image} alt={`Khu vực ${area.name}, Đà Nẵng`} loading="lazy" decoding="async" /> : <span class="land-area-placeholder" aria-hidden="true">⌖</span>}
+              <span class="land-area-tag">{area.count} tin đang bán</span>
+            </a>
+            <div class="cardbody">
+              <span class="location">⌖ {area.name}, Đà Nẵng</span>
+              <h3>Nhà Đất {area.name}</h3>
+              <p>{area.description}</p>
+              <a class="textlink" href={area.href}>Xem nhà đất →</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <!-- H2: CAN HO THEO KHU VUC -->
   <section class="section light" id="khu-vuc">
     <div class="wrap">
@@ -1013,4 +1053,13 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
 
   </style>
 
+  <style is:global>
+    .land-area-visual{display:block;position:relative;height:205px;overflow:hidden;background:linear-gradient(135deg,#cbdbe7,#7492a9);text-decoration:none}
+    .land-area-visual img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+    .land-area-visual:hover img{transform:scale(1.04)}
+    .land-area-placeholder{display:grid;place-items:center;height:100%;font-size:70px;color:#fff9}
+    .land-area-tag{position:absolute;left:14px;bottom:14px;padding:7px 11px;background:#102f4de8;color:#fff;font-size:12px;font-weight:700;border-radius:6px}
+    .land-area-card .cardbody{min-height:195px;display:flex;flex-direction:column}
+    .land-area-card .cardbody .textlink{margin-top:auto}
+  </style>
 </Base>
