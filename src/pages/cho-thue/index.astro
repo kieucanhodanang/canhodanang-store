@@ -7,7 +7,7 @@ const apartments = sortFeaturedFirst(
   (await getCollection('can-ho')).filter((item) =>
     item.data.status === 'published' &&
     item.data.listingStatus === 'available' &&
-    item.data.transaction === 'cho-thue'
+    ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction)
   )
 );
 const pageSize = 12;
