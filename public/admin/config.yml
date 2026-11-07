@@ -698,7 +698,17 @@ collections:
           name: alt
           widget: string
           required: false
-    - label: Danh sách slide banner trang chủ
+    - label: Video nền banner chính (MP4/WebM)
+      name: bannerVideo
+      widget: file
+      required: false
+      hint: Video ngắn 6–12 giây, nên dưới 5 MB. Để trống sẽ dùng ảnh dự phòng.
+    - label: Ảnh dự phòng cho video nền
+      name: bannerVideoPoster
+      widget: image
+      required: false
+      hint: Hiển thị khi video chưa chạy, bị lỗi hoặc trên điện thoại.
+    - label: Danh sách slide banner trang chủ (dữ liệu cũ, không còn chạy slideshow)
       name: bannerSlides
       widget: list
       required: false
