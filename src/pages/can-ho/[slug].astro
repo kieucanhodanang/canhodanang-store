@@ -54,6 +54,15 @@ const regionGuides: Record<string, { intro: string; highlights: string[]; advice
   }
 };
 const regionGuide = region ? regionGuides[region.slug] : undefined;
+const regionProjects = region ? await getCollection('du-an') : [];
+const regionProjectNames = new Map(regionProjects.map(project => [project.id, project.data.title]));
+const formatRegionArea = (area?: string, areaValue?: number) => {
+  const value = String(area || '').trim();
+  if (/(m²|m2|mét vuông)/i.test(value)) return value.replace(/m2\b/i, 'm²');
+  if (value && /^[\d.,]+$/.test(value)) return value + ' m²';
+  if (value) return value;
+  return typeof areaValue === 'number' && areaValue > 0 ? areaValue.toLocaleString('vi-VN') + ' m²' : '';
+};
 const regionSeoMetadata: Record<string, { title: string; description: string }> = {
   'son-tra': {
     title: 'Căn Hộ Sơn Trà Đà Nẵng | Mua Bán & Cho Thuê',
@@ -181,11 +190,17 @@ const schema = {
                     {item.data.featured && <span class="region-pin">Nổi bật</span>}
                   </a>
                   <div class="region-info">
-                    <p class="region-type">{item.data.transaction === 'ban' ? 'Căn hộ đang bán' : 'Căn hộ cho thuê'}</p>
+                    <div class="region-address">
+                      {item.data.project && regionProjectNames.has(item.data.project) && <strong>{regionProjectNames.get(item.data.project)}</strong>}
+                      {item.data.project && regionProjectNames.has(item.data.project) && (item.data.ward || item.data.address) && <span>, </span>}
+                      <span>{[item.data.address, item.data.ward].filter(Boolean).join(', ')}</span>
+                    </div>
                     <h2><a href={`/can-ho/${encodeURIComponent(item.id)}/`}>{item.data.title}</a></h2>
-                    <p class="region-location">{[item.data.address, item.data.ward, item.data.district].filter(Boolean).join(' · ')}</p>
-                    <p class="region-price">{item.data.price || 'Liên hệ'}</p>
-                    <p class="region-meta">{[item.data.area, item.data.bedrooms != null ? `${item.data.bedrooms} phòng ngủ` : ''].filter(Boolean).join(' · ')}</p>
+                    <div class="region-facts">
+                      <strong class="region-price">{item.data.price || 'Liên hệ'}</strong>
+                      {formatRegionArea(item.data.area, item.data.areaValue) && <span class="region-fact">{formatRegionArea(item.data.area, item.data.areaValue)}</span>}
+                      {item.data.bedrooms != null && <span class="region-fact">{item.data.bedrooms} PN</span>}
+                    </div>
                     <a class="region-detail" href={`/can-ho/${encodeURIComponent(item.id)}/`}>Xem chi tiết →</a>
                   </div>
                 </article>
@@ -272,18 +287,21 @@ const schema = {
     .region-lead { color:#587187; line-height:1.7; }
     .region-count { font-weight:700; margin:20px 0; }
     .region-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
-    .region-card { overflow:hidden; background:#fff; border:1px solid #e1e8ee; border-radius:12px; }
+    .region-card { display:flex;flex-direction:column;min-width:0;overflow:hidden;background:#fff;border:1px solid #e1e8ee;border-radius:16px;box-shadow:0 8px 24px #102b4508; }
     .region-card[hidden] { display:none!important; }
-    .region-image { display:block; position:relative; aspect-ratio:16/10; background:#e6edf4; }
-    .region-image img { width:100%; height:100%; object-fit:cover; display:block; }
-    .region-pin { position:absolute; top:10px; left:10px; background:#173f60; color:#fff; border-radius:5px; padding:5px 9px; font-size:12px; }
-    .region-info { padding:17px; }
-    .region-type { font-size:12px; color:#986e2f; font-weight:700; }
-    .region-info h2 { font-size:19px; line-height:1.45; margin:9px 0; }
-    .region-info h2 a { color:#19334d; text-decoration:none; }
-    .region-location,.region-meta { color:#65798b; font-size:13px; }
-    .region-price { color:#c42626; font-size:20px; font-weight:800; }
-    .region-detail { color:#1a5d8c; font-weight:700; }
+    .region-image { display:block;position:relative;aspect-ratio:16/10;background:#e6edf4;overflow:hidden; }
+    .region-image img { width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease; }
+    .region-card:hover .region-image img {transform:scale(1.035)}
+    .region-pin {position:absolute;top:10px;left:10px;background:#173f60;color:#fff;border-radius:5px;padding:5px 9px;font-size:12px}
+    .region-info {padding:20px 23px 23px;display:flex;flex-direction:column;flex:1;min-width:0}
+    .region-address {color:#587187;font-size:13px;line-height:1.6;min-height:21px}
+    .region-address strong {color:#21466a}
+    .region-info h2 {font-size:19px;line-height:1.45;margin:10px 0 20px;min-height:55px}
+    .region-info h2 a {color:#102f50;text-decoration:none}
+    .region-facts {display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-top:auto;margin-bottom:24px}
+    .region-price {color:#c42626;font-size:19px;font-weight:800;margin-right:12px}
+    .region-fact {color:#587187;font-size:13px;padding:0 11px;border-left:1px solid #d6e0e8;white-space:nowrap}
+    .region-detail {color:#ae7b32;font-size:14px;font-weight:700;text-decoration:none}
     .region-pagination { display:flex; justify-content:center; align-items:center; gap:16px; margin-top:30px; }
     .region-pagination button { padding:10px 16px; border:1px solid #cbd7e3; background:#fff; border-radius:8px; cursor:pointer; }
     .region-pagination button:disabled { opacity:.45; cursor:default; }
