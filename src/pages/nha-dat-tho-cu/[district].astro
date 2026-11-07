@@ -3,12 +3,12 @@ import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
 
-const districtAreas = [
-  { slug: 'son-tra', name: 'Sơn Trà' },
-  { slug: 'hai-chau', name: 'Hải Châu' },
-  { slug: 'thanh-khe', name: 'Thanh Khê' },
-];
 export function getStaticPaths() {
+  const districtAreas = [
+    { slug: 'son-tra', name: 'Sơn Trà' },
+    { slug: 'hai-chau', name: 'Hải Châu' },
+    { slug: 'thanh-khe', name: 'Thanh Khê' },
+  ];
   return districtAreas.map(area => ({ params: { district: area.slug }, props: { area } }));
 }
 const { area } = Astro.props;
