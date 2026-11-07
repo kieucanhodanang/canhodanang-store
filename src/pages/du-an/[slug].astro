@@ -27,6 +27,24 @@ const linkedProperties = groups.flatMap((entries, groupIndex) =>
     }))
 );
 const properties = linkedProperties;
+const isHaiVanBay = entry.id === 'vinhomes-hai-van-bay';
+const haiVanZones = [
+  { value: 'tinh-van', label: 'Tinh Vân' },
+  { value: 'bach-van', label: 'Bạch Vân' },
+  { value: 'dao-ngoc', label: 'Đảo Ngọc' },
+  { value: 'vinh-may', label: 'Vịnh Mây' },
+];
+const haiVanTypes = [
+  { value: 'biet-thu-don-lap', label: 'Biệt thự đơn lập' },
+  { value: 'biet-thu-song-lap', label: 'Biệt thự song lập' },
+  { value: 'biet-thu-lien-ke', label: 'Biệt thự liền kề' },
+  { value: 'shophouse', label: 'Shophouse' },
+  { value: 'can-ho-cao-tang', label: 'Căn hộ cao tầng' },
+  { value: 'resort', label: 'Resort' },
+];
+const haiVanLabel = (options: {value:string;label:string}[], value?: string | null) =>
+  options.find(option => option.value === value)?.label || '';
+
 const propertyCategory = (item: (typeof properties)[number]) => {
   const type = String('propertyType' in item.data ? item.data.propertyType || '' : '')
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -168,7 +186,63 @@ const schema = {
         </dl>
       </section>
 
-      {[
+      {isHaiVanBay && (
+        <section class="listings hai-van-products" id="san-pham-hai-van">
+          <h2>Khám phá 4 phân khu Vinhomes Hải Vân Bay</h2>
+          <div class="hai-van-zones">
+            {haiVanZones.map(zone => (
+              <button type="button" class="hai-van-zone" data-zone-choice={zone.value} aria-pressed="false">
+                <span class="hai-van-zone-name">{zone.label}</span>
+                <span class="hai-van-zone-count">{properties.filter(item => item.data.subdivision === zone.value).length} sản phẩm</span>
+              </button>
+            ))}
+          </div>
+          <h2 class="hai-van-list-title">Bất động sản tại Vinhomes Hải Vân Bay</h2>
+          <div class="hai-van-filters">
+            <label>Phân khu
+              <select id="hai-van-zone-filter" aria-label="Lọc theo phân khu">
+                <option value="">Tất cả phân khu</option>
+                {haiVanZones.map(zone => <option value={zone.value}>{zone.label}</option>)}
+              </select>
+            </label>
+            <label>Loại hình
+              <select id="hai-van-type-filter" aria-label="Lọc theo loại hình">
+                <option value="">Tất cả loại hình</option>
+                {haiVanTypes.map(type => <option value={type.value}>{type.label}</option>)}
+              </select>
+            </label>
+            <button type="button" id="hai-van-clear-filter" class="hai-van-reset">Xóa bộ lọc</button>
+          </div>
+          <p id="hai-van-result-count" class="hai-van-result" aria-live="polite"></p>
+          <div class="cards" id="hai-van-cards">
+            {properties.map(item => (
+              <a class="card property-card hai-van-card" href={item.href}
+                data-zone={item.data.subdivision || ''} data-type={item.data.projectPropertyType || ''}>
+                <div class="hai-van-image">
+                  {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
+                  <div class="hai-van-badges">
+                    {haiVanLabel(haiVanTypes, item.data.projectPropertyType) && <span class="hai-van-badge type">{haiVanLabel(haiVanTypes, item.data.projectPropertyType)}</span>}
+                    {haiVanLabel(haiVanZones, item.data.subdivision) && <span class="hai-van-badge zone">{haiVanLabel(haiVanZones, item.data.subdivision)}</span>}
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h3>{item.data.title}</h3>
+                  {item.data.productCode && <p class="hai-van-code">Mã: {item.data.productCode}</p>}
+                  <div class="card-info-row">
+                    {item.data.price && <strong class="apartment-price">{item.data.price}</strong>}
+                    {formatArea(item.data.area) && <span class="apartment-detail">{formatArea(item.data.area)}</span>}
+                    {item.data.bedrooms != null && <span class="apartment-detail">{item.data.bedrooms} PN</span>}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+          <p id="hai-van-no-results" class="empty" hidden>Chưa có bất động sản phù hợp với bộ lọc.</p>
+          <button type="button" class="project-read-more" id="hai-van-more" hidden>Xem thêm sản phẩm</button>
+        </section>
+      )}
+
+      {!isHaiVanBay && [
         { id: 'villa-sale', heading: `Biệt thự đang bán tại ${data.title}`, items: saleVillas },
         { id: 'shophouse-sale', heading: `Shophouse đang bán tại ${data.title}`, items: saleShophouses },
         { id: 'other-sale', heading: `Căn hộ và bất động sản khác đang bán tại ${data.title}`, items: saleOther },
@@ -266,6 +340,40 @@ const schema = {
         if (expanded) content.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
       });
       }
+      const haiVanCards = document.querySelectorAll('#hai-van-cards .hai-van-card');
+      const zoneFilter = document.getElementById('hai-van-zone-filter');
+      const typeFilter = document.getElementById('hai-van-type-filter');
+      if (zoneFilter && typeFilter) {
+        const more = document.getElementById('hai-van-more');
+        const count = document.getElementById('hai-van-result-count');
+        const empty = document.getElementById('hai-van-no-results');
+        let limit = window.matchMedia('(max-width: 767px)').matches ? 3 : 6;
+        const update = () => {
+          const matched = Array.from(haiVanCards).filter(card =>
+            (!zoneFilter.value || card.dataset.zone === zoneFilter.value) &&
+            (!typeFilter.value || card.dataset.type === typeFilter.value));
+          haiVanCards.forEach(card => { card.hidden = true; });
+          matched.slice(0, limit).forEach(card => { card.hidden = false; });
+          count.textContent = matched.length + ' sản phẩm phù hợp';
+          empty.hidden = matched.length !== 0;
+          more.hidden = matched.length <= limit;
+          document.querySelectorAll('[data-zone-choice]').forEach(button => {
+            button.setAttribute('aria-pressed', String(button.dataset.zoneChoice === zoneFilter.value));
+          });
+        };
+        zoneFilter.addEventListener('change', () => { limit = 6; update(); });
+        typeFilter.addEventListener('change', () => { limit = 6; update(); });
+        document.querySelectorAll('[data-zone-choice]').forEach(button => button.addEventListener('click', () => {
+          zoneFilter.value = zoneFilter.value === button.dataset.zoneChoice ? '' : button.dataset.zoneChoice;
+          limit = 6; update();
+          document.getElementById('hai-van-result-count').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }));
+        document.getElementById('hai-van-clear-filter').addEventListener('click', () => {
+          zoneFilter.value = ''; typeFilter.value = ''; limit = 6; update();
+        });
+        more.addEventListener('click', () => { limit += 6; update(); });
+        update();
+      }
       document.querySelectorAll('[data-property-list]').forEach(section => {
         const cards = Array.from(section.querySelectorAll('.property-card'));
         const more = section.querySelector('.property-more');
@@ -310,6 +418,24 @@ const schema = {
     .progress-item{margin-top:24px}
     .progress-item h3{font-size:18px}
     .progress-item iframe,.progress-item video{width:100%;aspect-ratio:16/9;border:0;border-radius:10px}
+    .hai-van-zones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 30px}
+    .hai-van-zone{border:1px solid #dbe5ed;background:#f6f9fc;border-radius:12px;min-height:100px;padding:16px 10px;display:flex;flex-direction:column;justify-content:center;gap:8px;cursor:pointer;color:#19334d}
+    .hai-van-zone[aria-pressed="true"]{border-color:#17679a;background:#eaf4fa}
+    .hai-van-zone-name{font-weight:750;font-size:17px}
+    .hai-van-zone-count{font-size:12px;color:#61788c}
+    .hai-van-list-title{margin-top:4px!important}
+    .hai-van-filters{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+    .hai-van-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;flex:1;min-width:180px}
+    .hai-van-filters select{width:100%;padding:11px;border:1px solid #d4e0e9;border-radius:8px;background:#fff;color:#19334d;font:inherit}
+    .hai-van-reset{border:1px solid #d4e0e9;border-radius:8px;background:#fff;padding:11px 14px;cursor:pointer}
+    .hai-van-result{font-size:13px;color:#62788b;margin:0 0 14px}
+    .hai-van-image{position:relative}
+    .hai-van-badges{position:absolute;top:10px;left:10px;right:10px;display:flex;flex-wrap:wrap;gap:5px}
+    .hai-van-badge{display:inline-block;padding:5px 8px;border-radius:5px;background:#fff;color:#183c55;font-size:11px;font-weight:750;box-shadow:0 1px 5px #0002}
+    .hai-van-badge.type{background:#193d5a;color:#fff}
+    .hai-van-code{font-size:12px;color:#62788b;margin:0}
+    #hai-van-no-results[hidden],#hai-van-more[hidden]{display:none!important}
+    @media(max-width:767px){.hai-van-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.hai-van-zone{min-height:80px}}
     .property-card[hidden]{display:none!important}
     .article-content.is-collapsed{max-height:320px;overflow:hidden;position:relative}
     .article-content.is-collapsed::after{content:"";position:absolute;left:0;right:0;bottom:0;height:65px;background:linear-gradient(transparent,#fff);pointer-events:none}
