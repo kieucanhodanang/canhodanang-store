@@ -3,7 +3,7 @@ title: Bán Nhà 3 Tầng Kiệt 60 Trưng Nữ Vương, Hải Châu – Lô Gó
   Giá 2,69 Tỷ
 description: Bán nhà 3 tầng kiệt 60 Trưng Nữ Vương, Hải Châu, Đà Nẵng. Lô góc 2
   mặt thoáng, diện tích 41m², full nội thất, vào ở ngay. Giá chỉ 2,69 tỷ.
-seoTitle: ban-nha-3-tang-kiet-60-trung-nu-vuong-hai-chau
+seoTitle: ""
 propertyType: nha-rieng
 transaction: ban
 listingStatus: available
@@ -23,6 +23,7 @@ bathrooms: 3
 direction: Đông Bắc
 gallery:
   - /uploads/nha-trung-nu-vuong.jpg
+  - /uploads/1790583926778_6438542809606141734_6438542809606141734_1d449d98c99d18ef9c7322c87e99e649.jpg
 ogImage: /uploads/1790583926778_6438542809606141734_6438542809606141734_1d449d98c99d18ef9c7322c87e99e649.jpg
 image: /uploads/nha-trung-nu-vuong.jpg
 imageAlt: nhà 3 tầng Trưng Nữ Vương ngay Cầu Rồng
