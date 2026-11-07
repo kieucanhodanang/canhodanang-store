@@ -25,6 +25,17 @@ const seoFields = {
 const propertyFields = {
   ...seoFields,
   project: optionalText,
+  // Phân loại riêng cho sản phẩm thuộc Vinhomes Hải Vân Bay.
+  subdivision: z.enum(['tinh-van', 'bach-van', 'dao-ngoc', 'vinh-may']).nullish(),
+  projectPropertyType: z.enum([
+    'biet-thu-don-lap',
+    'biet-thu-song-lap',
+    'biet-thu-lien-ke',
+    'shophouse',
+    'can-ho-cao-tang',
+    'resort',
+  ]).nullish(),
+  productCode: optionalText,
   transaction: z.enum(['ban', 'cho-thue', 'cho-thue-ngay']).default('ban'),
   listingStatus: z.enum(['available', 'closed', 'paused']).default('available'),
   price: optionalText,
