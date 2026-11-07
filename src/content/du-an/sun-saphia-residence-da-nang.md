@@ -14,6 +14,7 @@ unitCount: "782"
 handoverDate: 11/2028
 propertyTypes:
   - can-ho
+ogImage: /uploads/sun-saphia-residence-da-nang.jpeg
 image: /uploads/sun-saphia-residence-da-nang.jpeg
 imageAlt: Sun Saphia Residence
 logo: /uploads/logo-sun-group.jfif
