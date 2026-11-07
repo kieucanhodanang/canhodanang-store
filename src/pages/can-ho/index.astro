@@ -40,6 +40,23 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
           <label class="search-input"><span aria-hidden="true">⌕</span><input id="search-keyword" type="search" placeholder="Tìm tên dự án, khu vực, căn hộ..." aria-label="Từ khóa tìm kiếm căn hộ" autocomplete="off" /></label>
           <button type="submit">Tìm kiếm</button>
         </form>
+        <div class="quick-filters" aria-label="Bộ lọc nhanh căn hộ">
+          <label>Khu vực
+            <select id="quick-district"><option value="">Tất cả khu vực</option><option value="son tra">Sơn Trà</option><option value="ngu hanh son">Ngũ Hành Sơn</option><option value="hai chau">Hải Châu</option></select>
+          </label>
+          <label>Khoảng giá
+            <select id="quick-price"><option value="">Tất cả mức giá</option><option value="0-1000">Dưới 1 tỷ</option><option value="1000-2000">1 tỷ – 2 tỷ</option><option value="2000-3000">2 tỷ – 3 tỷ</option><option value="3000-5000">3 tỷ – 5 tỷ</option><option value="5000-7000">5 tỷ – 7 tỷ</option><option value="7000+">Trên 7 tỷ</option></select>
+          </label>
+          <label>Diện tích
+            <select id="quick-area"><option value="">Tất cả diện tích</option><option value="30-45">30m² – 45m²</option><option value="45-60">45m² – 60m²</option><option value="60-80">60m² – 80m²</option><option value="80+">Trên 80m²</option></select>
+          </label>
+          <label>Dự án
+            <select id="quick-project"><option value="">Tất cả dự án</option>{projects.map(item => <option value={item.id}>{item.data.title}</option>)}</select>
+          </label>
+          <label>Phòng ngủ
+            <select id="quick-bedrooms"><option value="">Tất cả phòng ngủ</option><option value="0">Studio</option><option value="1">1 phòng ngủ</option><option value="2">2 phòng ngủ</option><option value="3">3 phòng ngủ</option><option value="4+">4+ phòng ngủ</option></select>
+          </label>
+        </div>
         <div class="listing-layout">
           <div class="listing-primary">
             <div class="section-heading">
@@ -59,7 +76,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 const image = imageFor(d);
                 const href = `/can-ho/${item.id}/`;
                 return (
-                  <article class="listing-card" data-listing-index={index} data-keywords={[d.title,d.description,d.project,d.project ? projectNames.get(d.project) : '',d.district,d.ward,d.address,d.price,d.priceValue != null ? `${d.priceValue} triệu` : ''].filter(Boolean).join(' ').toLocaleLowerCase('vi')} data-district={(d.district || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-project={d.project || ''} hidden={index >= pageSize}>
+                  <article class="listing-card" data-listing-index={index} data-keywords={[d.title,d.description,d.project,d.project ? projectNames.get(d.project) : '',d.district,d.ward,d.address,d.price,d.priceValue != null ? `${d.priceValue} triệu` : ''].filter(Boolean).join(' ').toLocaleLowerCase('vi')} data-district={(d.district || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-project={d.project || ''} data-bedrooms={d.bedrooms ?? ''} hidden={index >= pageSize}>
                     <a class="listing-image" href={href} aria-label={`Xem căn hộ ${d.title}`}>
                       {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">CĂN HỘ ĐÀ NẴNG</div>}
                       {d.featured && <span class="pin-label">Nổi bật</span>}
@@ -115,6 +132,14 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 <label><input type="radio" name="area" value="45-60" /> 45m² – 60m²</label>
                 <label><input type="radio" name="area" value="60-80" /> 60m² – 80m²</label>
                 <label><input type="radio" name="area" value="80+" /> Trên 80m²</label>
+              </fieldset>
+              <fieldset><legend>Phòng ngủ</legend>
+                <label><input type="radio" name="bedrooms" value="" checked /> Tất cả phòng ngủ</label>
+                <label><input type="radio" name="bedrooms" value="0" /> Studio</label>
+                <label><input type="radio" name="bedrooms" value="1" /> 1 phòng ngủ</label>
+                <label><input type="radio" name="bedrooms" value="2" /> 2 phòng ngủ</label>
+                <label><input type="radio" name="bedrooms" value="3" /> 3 phòng ngủ</label>
+                <label><input type="radio" name="bedrooms" value="4+" /> 4+ phòng ngủ</label>
               </fieldset>
               <div class="project-filter"><label for="project-select">Dự án</label><select id="project-select"><option value="">Tất cả dự án</option>{projects.map(item => <option value={item.id}>{item.data.title}</option>)}</select></div>
             </div>
@@ -200,19 +225,38 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       if(scroll)grid.scrollIntoView({behavior:'smooth',block:'start'});
     };
     const apply = (resetPage=true) => {
-      const q=norm(keyword.value),district=chosen('district'),price=chosen('price'),area=chosen('area'),proj=project.value;
-      filtered=cards.filter(card => matchesKeyword(card,q) && (!district||clean(card.dataset.district).includes(district)) && within(card.dataset.price,price) && within(card.dataset.area,area) && (!proj||card.dataset.project===proj));
+      const q=norm(keyword.value),district=chosen('district'),price=chosen('price'),area=chosen('area'),bedrooms=chosen('bedrooms'),proj=project.value;
+      filtered=cards.filter(card => matchesKeyword(card,q) && (!district||clean(card.dataset.district).includes(district)) && within(card.dataset.price,price) && within(card.dataset.area,area) && (!bedrooms || (bedrooms === '4+' ? Number(card.dataset.bedrooms) >= 4 : card.dataset.bedrooms === bedrooms)) && (!proj||card.dataset.project===proj));
       if(resetPage){page=1;const url=new URL(location.href);url.searchParams.delete('page');history.replaceState(null,'',url);}
       render();
     };
     const go=n=>{page=n;const url=new URL(location.href);if(n===1)url.searchParams.delete('page');else url.searchParams.set('page',String(n));history.pushState(null,'',url);render(true);};
     form.addEventListener('submit',e=>{e.preventDefault();apply();});
-    filterBox.addEventListener('change',()=>apply());
-    document.getElementById('reset-filters').addEventListener('click',()=>{form.reset();filterBox.querySelectorAll('input[type=radio][value=""]').forEach(x=>x.checked=true);project.value='';apply();});
+    const quick = {
+      district: document.getElementById('quick-district'),
+      price: document.getElementById('quick-price'),
+      area: document.getElementById('quick-area'),
+      bedrooms: document.getElementById('quick-bedrooms'),
+      project: document.getElementById('quick-project')
+    };
+    const syncQuickFromSidebar = () => {
+      ['district','price','area','bedrooms'].forEach(name => { quick[name].value = chosen(name); });
+      quick.project.value = project.value;
+    };
+    const syncSidebarFromQuick = name => {
+      if (name === 'project') { project.value = quick.project.value; return; }
+      const selected = [...filterBox.querySelectorAll(`input[name="${name}"]`)].find(input => input.value === quick[name].value);
+      if (selected) selected.checked = true;
+    };
+    Object.entries(quick).forEach(([name,select]) => {
+      select.addEventListener('change', () => { syncSidebarFromQuick(name); apply(); });
+    });
+    filterBox.addEventListener('change',()=>{ syncQuickFromSidebar(); apply(); });
+    document.getElementById('reset-filters').addEventListener('click',()=>{form.reset();filterBox.querySelectorAll('input[type=radio][value=""]').forEach(x=>x.checked=true);project.value='';syncQuickFromSidebar();apply();});
     pagination.querySelector('[data-action="prev"]').addEventListener('click',()=>go(page-1));
     pagination.querySelector('[data-action="next"]').addEventListener('click',()=>go(page+1));
     addEventListener('popstate',()=>{page=readPage();render();});
-    page=readPage();apply(false);
+    syncQuickFromSidebar();page=readPage();apply(false);
   })();
 </script>
 
@@ -235,6 +279,12 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   .search-input{display:flex;align-items:center;gap:10px;flex:1;min-width:0;background:#f7f9fb;border:1px solid #cbd7e3;border-radius:9px;padding:0 14px}.search-input span{font-size:28px;color:#173a58}
   .search-input input{width:100%;height:45px;border:0;background:transparent;outline:0;font:inherit;min-width:0}
   .apartment-search button{border:0;border-radius:8px;background:#bd3c32;color:white;font:inherit;font-weight:700;padding:0 24px;cursor:pointer}
+  .quick-filters{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;background:#fff;border:1px solid #e1e7ed;border-radius:12px;padding:17px;margin:-10px 0 24px;box-shadow:0 4px 16px #102c4908}
+  .quick-filters label{display:flex;flex-direction:column;gap:7px;min-width:0;font-size:13px;font-weight:700;color:#173a58}
+  .quick-filters select{width:100%;min-width:0;height:43px;padding:0 10px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#243f55;font:inherit;font-weight:400;cursor:pointer}
+  .quick-filters select:focus-visible{outline:2px solid #2675ad;outline-offset:2px}
+  @media(max-width:760px){.quick-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px}}
+  @media(max-width:380px){.quick-filters{grid-template-columns:1fr}}
   .listing-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(250px,3fr);gap:24px;align-items:start}.listing-primary{min-width:0}
   .region-shortcuts{display:flex;flex-wrap:wrap;gap:10px;margin:-6px 0 22px}.region-shortcuts a{border:1px solid #d6e1eb;border-radius:8px;padding:9px 12px;background:#fff;color:#174b73;text-decoration:none;font-size:13px;font-weight:700}.region-shortcuts a:hover{background:#eaf2f8}
   .filter-box{background:white;border:1px solid #e1e7ed;border-radius:13px;padding:20px;position:sticky;top:85px}
