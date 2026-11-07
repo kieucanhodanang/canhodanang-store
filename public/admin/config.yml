@@ -424,91 +424,6 @@ collections:
   - *id013
   - *id014
   - *id015
-- name: biet-thu
-  label: Biệt thự & Shophouse
-  label_singular: Biệt thự & Shophouse
-  folder: src/content/biet-thu
-  create: true
-  extension: md
-  format: frontmatter
-  slug: '{{slug}}'
-  identifier_field: title
-  fields:
-  - *id002
-  - *id003
-  - *id004
-  - label: Loại hình
-    name: propertyType
-    widget: select
-    options:
-    - label: Biệt thự
-      value: biet-thu
-    - label: Shophouse
-      value: shophouse
-    default: biet-thu
-  - *id016
-  - *id017
-  - *id018
-  - label: Quận / Khu vực
-    name: district
-    widget: select
-    options: *id019
-    required: false
-  - *id020
-  - label: Địa chỉ
-    name: address
-    widget: string
-    required: false
-  - *id021
-  - *id022
-  - label: Giá bán / cho thuê
-    name: price
-    widget: string
-    required: false
-  - *id023
-  - &id031
-    label: Mặt tiền (m)
-    name: frontage
-    widget: string
-    required: false
-    hint: 'Ví dụ: 5,5 m.'
-  - &id032
-    label: Đường vào (m)
-    name: roadWidth
-    widget: number
-    value_type: float
-    min: 0
-    required: false
-    hint: Chiều rộng đường vào tính bằng mét, ví dụ 5.5.
-  - *id024
-  - *id025
-  - &id033
-    label: Số tầng
-    name: floors
-    widget: number
-    value_type: int
-    min: 1
-    required: false
-    hint: Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng.
-  - *id026
-  - *id027
-  - &id034
-    label: Hướng
-    name: direction
-    widget: select
-    required: false
-    options: *id001
-  - *id005
-  - *id006
-  - *id007
-  - *id008
-  - *id009
-  - *id010
-  - *id011
-  - *id012
-  - *id013
-  - *id014
-  - *id015
 - name: tho-cu
   label: Nhà đất thổ cư
   label_singular: Nhà đất thổ cư
@@ -565,14 +480,34 @@ collections:
     widget: string
   - *id022
   - *id020
-  - *id031
-  - *id032
+  -     label: Mặt tiền (m)
+    name: frontage
+    widget: string
+    required: false
+    hint: 'Ví dụ: 5,5 m.'
+  -     label: Đường vào (m)
+    name: roadWidth
+    widget: number
+    value_type: float
+    min: 0
+    required: false
+    hint: Chiều rộng đường vào tính bằng mét, ví dụ 5.5.
   - *id024
   - *id025
-  - *id033
+  -     label: Số tầng
+    name: floors
+    widget: number
+    value_type: int
+    min: 1
+    required: false
+    hint: Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng.
   - *id026
   - *id027
-  - *id034
+  -     label: Hướng
+    name: direction
+    widget: select
+    required: false
+    options: *id001
   - *id005
   - *id006
   - *id007
