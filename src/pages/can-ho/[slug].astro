@@ -35,6 +35,25 @@ const regionApartments = region
         === region.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()
     ))
   : [];
+// Nội dung giới thiệu riêng theo khu vực; tránh thông tin giá và nguồn cung chưa kiểm chứng.
+const regionGuides: Record<string, { intro: string; highlights: string[]; advice: string }> = {
+  'son-tra': {
+    intro: 'Sơn Trà là khu vực đáng cân nhắc khi tìm căn hộ tại Đà Nẵng nhờ khả năng kết nối với các trục đường ven biển và khu vực trung tâm. Tùy vị trí từng dự án, khoảng cách đến bãi biển, tiện ích và tuyến đường di chuyển có thể khác nhau.',
+    highlights: ['Kiểm tra khoảng cách thực tế từ căn hộ đến biển và các tuyến đường chính.', 'So sánh hướng nhìn, tầng căn hộ, phí quản lý và tiện ích nội khu.', 'Xác minh tình trạng pháp lý, thời hạn sở hữu và điều kiện chuyển nhượng của từng căn.'],
+    advice: 'Nếu mua để ở, hãy ưu tiên sự thuận tiện khi đi làm và sinh hoạt hằng ngày. Nếu cân nhắc khai thác cho thuê, cần kiểm tra quy định vận hành của tòa nhà và nhu cầu thuê thực tế.'
+  },
+  'ngu-hanh-son': {
+    intro: 'Ngũ Hành Sơn có nhiều lựa chọn vị trí khác nhau, từ khu vực gần biển đến các tuyến kết nối về trung tâm Đà Nẵng. Khi xem căn hộ, người mua nên đánh giá dự án và địa chỉ cụ thể thay vì chỉ dựa vào tên quận.',
+    highlights: ['Đối chiếu vị trí dự án với nhu cầu di chuyển, trường học và dịch vụ thiết yếu.', 'Kiểm tra diện tích sử dụng, hướng ban công, chất lượng bàn giao và phí vận hành.', 'So sánh giá chào bán hoặc cho thuê giữa các căn có điều kiện tương đương.'],
+    advice: 'Với căn hộ để ở lâu dài, hãy khảo sát khu vực vào nhiều thời điểm trong ngày. Với mục đích đầu tư, nên tính cả chi phí hoàn thiện, thời gian trống phòng và các khoản phí phát sinh.'
+  },
+  'hai-chau': {
+    intro: 'Hải Châu phù hợp để tìm hiểu khi ưu tiên sinh hoạt và làm việc tại khu vực trung tâm Đà Nẵng. Mỗi tòa nhà có đặc điểm riêng về giao thông, chỗ đỗ xe, tiện ích và mức độ thuận tiện trong giờ cao điểm.',
+    highlights: ['Khảo sát giao thông, bãi đỗ xe và lối tiếp cận tòa nhà.', 'Xem kỹ diện tích thực tế, tình trạng nội thất, phí dịch vụ và quy định cư trú.', 'Kiểm tra hồ sơ pháp lý, thông tin chủ sở hữu và điều kiện giao dịch trước khi đặt cọc.'],
+    advice: 'Nên lập danh sách các tiêu chí bắt buộc như ngân sách, số phòng ngủ, thời gian di chuyển và tiện ích. Sau đó đối chiếu từng tin đăng để chọn căn hộ phù hợp.'
+  }
+};
+const regionGuide = region ? regionGuides[region.slug] : undefined;
 const regionSeoTitle = region ? `Căn Hộ ${region.name} Đà Nẵng | Mua Bán & Cho Thuê` : '';
 const regionSeoDescription = region ? `Danh sách căn hộ tại ${region.name}, Đà Nẵng đang bán và cho thuê. Cập nhật từ hệ thống bất động sản. Liên hệ 0869 437 415.` : '';
 
@@ -170,6 +189,17 @@ const schema = {
         ) : (
           <div class="region-empty">Hiện chưa có căn hộ còn giao dịch tại {region.name}. Vui lòng <a href="tel:0869437415">liên hệ 0869 437 415</a> để được tư vấn.</div>
         )}
+        {regionGuide && (
+          <section class="region-seo-content" aria-label={`Hướng dẫn tìm căn hộ ${region.name}`}>
+            <h2>Tìm hiểu căn hộ tại {region.name}, Đà Nẵng</h2>
+            <p>{regionGuide.intro}</p>
+            <h2>Những điều cần kiểm tra trước khi giao dịch</h2>
+            <ul>{regionGuide.highlights.map((highlight) => <li>{highlight}</li>)}</ul>
+            <h2>Kinh nghiệm chọn căn hộ phù hợp</h2>
+            <p>{regionGuide.advice}</p>
+            <p>Tham khảo thêm <a href="/can-ho/">danh sách căn hộ Đà Nẵng</a> hoặc liên hệ <a href="tel:0869437415">0869 437 415</a> để được tư vấn thông tin từng căn hộ.</p>
+          </section>
+        )}
         <p class="back-link"><a href="/can-ho/">← Xem tất cả căn hộ Đà Nẵng</a></p>
       </div>
     </section>
@@ -244,6 +274,15 @@ const schema = {
     .region-pagination button { padding:10px 16px; border:1px solid #cbd7e3; background:#fff; border-radius:8px; cursor:pointer; }
     .region-pagination button:disabled { opacity:.45; cursor:default; }
     .region-empty { padding:28px; background:#fff; border-radius:12px; }
+    .region-seo-content { margin-top:38px; padding:28px 30px; background:#fff; border:1px solid #e1e8ee; border-radius:12px; line-height:1.8; }
+    .region-seo-content h2 { font-size:clamp(19px,2.4vw,24px); line-height:1.4; margin:22px 0 10px; }
+    .region-seo-content h2:first-child { margin-top:0; }
+    .region-seo-content p { margin:0 0 14px; color:#425b70; }
+    .region-seo-content ul { padding-left:22px; margin:0 0 16px; color:#425b70; }
+    .region-seo-content li { margin:6px 0; }
+    .region-seo-content a { color:#1a5d8c; }
+    @media(max-width:600px) { .region-seo-content { padding:20px 17px; } }
+
     @media(max-width:900px) { .region-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @media(max-width:600px) { .region-grid { grid-template-columns:1fr; } }
     .property-page { background:#f5f8fb; color:#19334d; padding:30px 0 65px; }
