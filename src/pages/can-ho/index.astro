@@ -59,7 +59,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 const image = imageFor(d);
                 const href = `/can-ho/${item.id}/`;
                 return (
-                  <article class="listing-card" data-listing-index={index} data-keywords={[d.title,d.description,d.project ? projectNames.get(d.project) : '',d.district,d.ward,d.address].filter(Boolean).join(' ').toLocaleLowerCase('vi')} data-district={(d.district || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-project={d.project || ''} hidden={index >= pageSize}>
+                  <article class="listing-card" data-listing-index={index} data-keywords={[d.title,d.description,d.project ? projectNames.get(d.project) : '',d.district,d.ward,d.address,d.price,d.priceValue != null ? `${d.priceValue} triệu` : ''].filter(Boolean).join(' ').toLocaleLowerCase('vi')} data-district={(d.district || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-project={d.project || ''} hidden={index >= pageSize}>
                     <a class="listing-image" href={href} aria-label={`Xem căn hộ ${d.title}`}>
                       {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">CĂN HỘ ĐÀ NẴNG</div>}
                       {d.featured && <span class="pin-label">Nổi bật</span>}
@@ -141,6 +141,20 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
     const project = document.getElementById('project-select');
     const filterBox = document.querySelector('.filter-box');
     const norm = value => (value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi,'d').toLowerCase().trim();
+    const matchesKeyword = (card, q) => {
+      if (!q) return true;
+      const haystack = norm(card.dataset.keywords);
+      if (haystack.includes(q)) return true;
+      // Nhận cả cách viết 3,5 tỷ / 3.5 tỷ và 3500 triệu.
+      const priceMillion = Number(card.dataset.price);
+      if (!Number.isFinite(priceMillion) || card.dataset.price === '') return false;
+      const priceQuery = q.match(/^([\d.,]+)\s*(ty|ti|trieu|tr)$/);
+      if (!priceQuery) return false;
+      const number = Number(priceQuery[1].replace(',', '.'));
+      if (!Number.isFinite(number)) return false;
+      const wantedMillion = ['ty', 'ti'].includes(priceQuery[2]) ? number * 1000 : number;
+      return Math.abs(priceMillion - wantedMillion) < 0.01;
+    };
     const chosen = name => filterBox.querySelector(`input[name="${name}"]:checked`)?.value || '';
     const within = (value, range) => {
       if (!range) return true;
@@ -180,7 +194,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
     };
     const apply = (resetPage=true) => {
       const q=norm(keyword.value),district=chosen('district'),price=chosen('price'),area=chosen('area'),proj=project.value;
-      filtered=cards.filter(card => (!q||norm(card.dataset.keywords).includes(q)) && (!district||card.dataset.district===district) && within(card.dataset.price,price) && within(card.dataset.area,area) && (!proj||card.dataset.project===proj));
+      filtered=cards.filter(card => matchesKeyword(card,q) && (!district||card.dataset.district===district) && within(card.dataset.price,price) && within(card.dataset.area,area) && (!proj||card.dataset.project===proj));
       if(resetPage){page=1;const url=new URL(location.href);url.searchParams.delete('page');history.replaceState(null,'',url);}
       render();
     };
