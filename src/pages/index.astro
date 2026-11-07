@@ -115,13 +115,26 @@ const khuVuc = [
 
 const normalizeLandDistrict = (value: unknown) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase().replace(/^(quan|huyen)\s+/, '').trim();
 const landDistrictAreas = [
-  { name: 'Sơn Trà', description: 'Nhà phố và đất thổ cư khu vực ven biển, gần trung tâm.', image: homepage.areaImages?.sonTra || '' },
-  { name: 'Hải Châu', description: 'Nhà đất tại khu vực trung tâm, thuận tiện kinh doanh và sinh sống.', image: homepage.areaImages?.haiChau || '' },
-  { name: 'Thanh Khê', description: 'Khám phá nhà riêng và đất thổ cư khu vực Thanh Khê.', image: '' },
+  { name: 'Sơn Trà', description: 'Nhà phố và đất thổ cư khu vực ven biển, gần trung tâm.', image: homepage.landAreaImages?.sonTra || '' },
+  { name: 'Hải Châu', description: 'Nhà đất tại khu vực trung tâm, thuận tiện kinh doanh và sinh sống.', image: homepage.landAreaImages?.haiChau || '' },
+  { name: 'Thanh Khê', description: 'Khám phá nhà riêng và đất thổ cư khu vực Thanh Khê.', image: homepage.landAreaImages?.thanhKhe || '' },
 ].map(area => ({
   ...area,
   count: searchableListings.filter(item => item.type === 'nha-dat-tho-cu' && item.transaction === 'ban' && normalizeLandDistrict(item.district) === normalizeLandDistrict(area.name)).length,
   href: '/nha-dat-tho-cu/' + ({ 'Sơn Trà': 'son-tra', 'Hải Châu': 'hai-chau', 'Thanh Khê': 'thanh-khe' }[area.name] || '') + '/',
+}));
+const rentalDistrictAreas = [
+  { name: 'Sơn Trà', slug: 'son-tra', image: homepage.rentalAreaImages?.sonTra || '' },
+  { name: 'Hải Châu', slug: 'hai-chau', image: homepage.rentalAreaImages?.haiChau || '' },
+  { name: 'Thanh Khê', slug: 'thanh-khe', image: homepage.rentalAreaImages?.thanhKhe || '' },
+  { name: 'Ngũ Hành Sơn', slug: 'ngu-hanh-son', image: homepage.rentalAreaImages?.nguHanhSon || '' },
+  { name: 'Liên Chiểu', slug: 'lien-chieu', image: homepage.rentalAreaImages?.lienChieu || '' },
+  { name: 'Cẩm Lệ', slug: 'cam-le', image: homepage.rentalAreaImages?.camLe || '' },
+].map(area => ({
+  ...area,
+  href: `/cho-thue/${area.slug}/`,
+  count: searchableListings.filter(item => ['cho-thue','cho-thue-ngay'].includes(item.transaction)
+    && normalizeLandDistrict(item.district) === normalizeLandDistrict(area.name)).length,
 }));
 // Chọn tối đa 3 dự án công khai, được bật hiển thị trang chủ.
 // Dự án được ghim nổi bật ưu tiên trước; featuredOrder nhỏ lên trước.
@@ -677,6 +690,36 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               <h3>Nhà Đất {area.name}</h3>
               <p>{area.description}</p>
               <a class="textlink" href={area.href}>Xem nhà đất →</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- H2: CHO THUE THEO KHU VUC -->
+  <section class="section light" id="cho-thue-theo-khu-vuc">
+    <div class="wrap">
+      <div class="sectionhead">
+        <div>
+          <span class="eyebrow">CĂN HỘ & NHÀ ĐẤT CHO THUÊ</span>
+          <h2>Cho Thuê Bất Động Sản Theo Khu Vực Đà Nẵng</h2>
+          <p>Khám phá căn hộ và nhà đất cho thuê theo từng khu vực, với dữ liệu cập nhật từ CMS.</p>
+        </div>
+        <a class="textlink" href="/cho-thue/">Xem tất cả cho thuê →</a>
+      </div>
+      <div class="cards">
+        {rentalDistrictAreas.map(area => (
+          <article class="card land-area-card">
+            <a href={area.href} class="land-area-visual" aria-label={`Xem bất động sản cho thuê ${area.name}`}>
+              {area.image?.startsWith('/uploads/') ? <img src={area.image} alt={`Cho thuê tại ${area.name}, Đà Nẵng`} loading="lazy" decoding="async" /> : <span class="land-area-placeholder" aria-hidden="true">⌖</span>}
+              <span class="land-area-tag">{area.count} tin cho thuê</span>
+            </a>
+            <div class="cardbody">
+              <span class="location">⌖ {area.name}, Đà Nẵng</span>
+              <h3>Cho Thuê {area.name}</h3>
+              <p>Căn hộ và nhà đất cho thuê tại khu vực {area.name}, Đà Nẵng.</p>
+              <a class="textlink" href={area.href}>Xem bất động sản cho thuê →</a>
             </div>
           </article>
         ))}
