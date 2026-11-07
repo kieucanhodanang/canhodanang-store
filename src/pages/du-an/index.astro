@@ -7,7 +7,7 @@ const projects = sortFeaturedFirst(
   (await getCollection('du-an')).filter((item) => item.data.status === 'published')
 );
 
-const description = 'Danh sách dự án bất động sản Đà Nẵng: thông tin dự án căn hộ, biệt thự, shophouse và các sản phẩm đang được giới thiệu.';
+const description = 'Khám phá dự án bất động sản Đà Nẵng: căn hộ, biệt thự, shophouse. Xem vị trí, thông tin dự án và các sản phẩm liên quan đang được giới thiệu.';
 const plainText = (value) => typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
 const summary = (data) => {
   const text = plainText(data.summary) || plainText(data.description);
@@ -22,7 +22,7 @@ const imageFor = (data) => {
 };
 ---
 
-<Base title="Dự Án Bất Động Sản Đà Nẵng | Căn Hộ Đà Nẵng" description={description}>
+<Base title="Dự Án Bất Động Sản Đà Nẵng | Căn Hộ, Biệt Thự" description={description}>
   <main>
     <section class="project-hero">
       <div class="project-container">
