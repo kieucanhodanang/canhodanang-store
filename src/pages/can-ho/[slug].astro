@@ -68,11 +68,10 @@ const typeLabel = data.transaction === 'cho-thue-ngay'
   ? 'Cho thuê theo ngày'
   : isRent ? 'Cho thuê dài hạn' : 'Bán căn hộ';
 
-const projectNames = (await getCollection('du-an')).reduce((map, item) => {
-  map.set(item.id, item.data.title);
-  return map;
-}, new Map<string, string>());
-const projectName = data.project ? projectNames.get(data.project) || data.project : '';
+const linkedProject = !region && data.project
+  ? (await getCollection('du-an')).find(item => item.id === data.project && item.data.status === 'published')
+  : undefined;
+const projectName = linkedProject?.data.title || (data.project || '');
 
 const seoTitle = region ? regionSeoTitle : (data.seoTitle || data.title);
 const seoDescription = region ? regionSeoDescription : (data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`);
@@ -227,6 +226,7 @@ const schema = {
         <Content />
       </PropertyDetail>
 
+      {linkedProject && <aside class="linked-project"><h2>Dự án liên quan</h2><a href={`/du-an/${linkedProject.id}/`}>{linkedProject.data.title} →</a><p>{linkedProject.data.location}</p></aside>}
       <p class="back-link"><a href="/can-ho/">← Xem các căn hộ khác</a></p>
     </div>
   </main>
@@ -296,6 +296,7 @@ const schema = {
     .project-name { color:#62788b; margin:5px 0 0; line-height:1.5; }
     .status { background:#e5f5ec; color:#14663a; border-radius:30px; padding:8px 14px; font-size:13px; font-weight:700; white-space:nowrap; }
     .status.inactive { background:#f2e9e6; color:#8c3d32; }
+    .linked-project{margin-top:24px;padding:22px;background:#fff;border:1px solid #e3eaf0;border-radius:12px}.linked-project h2{font-size:20px;margin:0 0 10px}.linked-project a{color:#1a5d8c;font-weight:700}.linked-project p{color:#62788b;margin:8px 0 0}
     .back-link { margin-top:28px; }
     @media(max-width:767px) {
       .property-wrap { padding:0 14px; }
