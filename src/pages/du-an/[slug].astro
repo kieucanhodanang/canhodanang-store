@@ -77,7 +77,12 @@ const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const toAbsolute = (value: string) => new URL(value, siteUrl).href;
 const images = [...new Set([data.image, ...(data.gallery ?? [])]
   .filter((value): value is string => typeof value === 'string' && value.trim().length > 0))].map(toAbsolute);
-const description = data.description || `Thông tin dự án ${data.title} tại ${data.location}. Liên hệ 0869 437 415 để được tư vấn.`;
+const description = data.description || `Thông tin dự án ${data.title}${data.location ? ` tại ${data.location}` : ''}. Liên hệ 0869 437 415 để được tư vấn.`;
+// SEO động dùng chung: ưu tiên thông tin CMS, nếu trống thì tạo từ dữ liệu dự án.
+const projectSeo = data as typeof data & { seoDescription?: string };
+const seoTitle = data.seoTitle?.trim() || `${data.title}${data.location ? ` | ${data.location}` : ' | Đà Nẵng'}`;
+const seoDescription = projectSeo.seoDescription?.trim()
+  || `Khám phá dự án ${data.title}${data.location ? ` tại ${data.location}` : ' tại Đà Nẵng'}. Xem vị trí, thông tin dự án và sản phẩm liên quan. Liên hệ 0869 437 415.`;
 const formatArea = (area: string | number | undefined) => {
   if (area === undefined || area === null || String(area).trim() === '') return '';
   const value = String(area).trim();
@@ -107,7 +112,7 @@ const schema = {
   ],
 };
 ---
-<Base title={data.seoTitle || data.title} description={description} image={data.image || undefined} imageAlt={data.imageAlt || data.title}>
+<Base title={seoTitle} description={seoDescription} image={data.image || undefined} imageAlt={data.imageAlt || data.title}>
   <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
   <main class="project-page">
     <div class="wrap">
