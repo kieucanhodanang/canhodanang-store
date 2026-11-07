@@ -10,6 +10,13 @@ description: Capital Square Đà Nẵng là tổ hợp căn hộ cao cấp và t
 seoTitle: Capital Square Đà Nẵng – Vị trí, mặt bằng, căn hộ
 developer: BRG Group
 location: Trần Hưng Đạo – Nguyễn Công Trứ – Ngô Quyền, phường An Hải, Đà Nẵng
+district: Sơn Trà
+totalArea: 6,14 ha
+towerCount: "14"
+unitCount: "3391"
+handoverDate: Quỹ I 2027
+buildingDensity: 34%
+progressItems: []
 propertyTypes:
   - can-ho
   - shophouse
@@ -24,8 +31,8 @@ date: 2026-11-05T11:12:00
 updatedAt: 2026-11-05T11:12:00
 status: published
 showOnHome: true
-featured: false
-featuredOrder: 4
+featured: true
+featuredOrder: 1
 ---
 # Capital Square Đà Nẵng – Tổng quan dự án căn hộ ven sông Hàn
 
