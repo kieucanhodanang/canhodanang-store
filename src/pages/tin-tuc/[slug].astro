@@ -19,9 +19,9 @@ const relatedArticles = articles.sort((a, b) => {
   return score(b) - score(a) || b.data.date.getTime() - a.data.date.getTime();
 }).slice(0, 6);
 const isLandArticle = data.category === 'tho-cu';
+const linkedProject = data.project ? projects.find(item => item.id === data.project && item.data.status === 'published') : undefined;
 const consultantHeading = isLandArticle ? 'Mua nhà Đà Nẵng' : (linkedProject?.data.title || 'Bất động sản Đà Nẵng');
 const featuredProjects = [...projects].sort((a, b) => Number(b.id === data.project) - Number(a.id === data.project)).slice(0, 8);
-const linkedProject = data.project ? projects.find(item => item.id === data.project && item.data.status === 'published') : undefined;
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const seoTitle = data.seoTitle?.trim() || data.title;
