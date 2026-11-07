@@ -278,7 +278,6 @@ collections:
     - 'Chỉ dùng chữ thường không dấu, số và dấu gạch ngang. Ví dụ: capital-square'
     hint: 'Ví dụ: capital-square. Không nhập /du-an/ hoặc .md. Sau khi xuất bản không nên đổi slug vì sẽ đổi URL.'
   - *id003
-  - *id004
   - label: Chủ đầu tư
     name: developer
     widget: string
