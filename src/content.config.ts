@@ -124,7 +124,6 @@ const baiViet = defineCollection({
 export const collections = {
   'can-ho': canHo,
   'du-an': duAn,
-  'tho-cu': thoCu,
   'nha-dat-tho-cu': thoCu,
   'bai-viet': baiViet,
 };
