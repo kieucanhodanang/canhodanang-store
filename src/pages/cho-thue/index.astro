@@ -3,17 +3,18 @@ import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
 
+const [apartmentEntries, landEntries] = await Promise.all([getCollection('can-ho'), getCollection('nha-dat-tho-cu')]);
 const apartments = sortFeaturedFirst(
-  (await getCollection('can-ho')).filter((item) =>
-    item.data.status === 'published' &&
-    item.data.listingStatus === 'available' &&
-    ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction)
-  )
+  [...apartmentEntries.map(item => ({ ...item, rentalType: 'can-ho' })),
+   ...landEntries.map(item => ({ ...item, rentalType: 'nha-dat-tho-cu' }))]
+  .filter(item => item.data.status === 'published'
+    && item.data.listingStatus === 'available'
+    && ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
 );
 const pageSize = 12;
 const pagination = paginateListings(apartments, 1, pageSize);
 const totalPages = pagination.totalPages;
-const description = 'Tìm căn hộ cho thuê Đà Nẵng theo giá thuê, diện tích, số phòng ngủ và vị trí. Xem danh sách căn hộ thuê dài hạn hoặc theo ngày đang có sẵn.';
+const description = 'Tìm căn hộ và nhà đất cho thuê Đà Nẵng theo giá thuê, diện tích, số phòng ngủ và vị trí. Danh sách cập nhật từ CMS.';
 const plain = (value: unknown) => typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
 const formatArea = (value: string | null | undefined) => plain(value) || 'Liên hệ';
 const imageFor = (data: { image?: string | null; gallery?: string[] | null }) => {
@@ -21,22 +22,22 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   return candidates.find((value) => typeof value === 'string' && (value.startsWith('/') || value.startsWith('https://'))) || '';
 };
 ---
-<Base title="Cho Thuê Căn Hộ Đà Nẵng | Giá Thuê & Vị Trí" description={description}>
+<Base title="Cho Thuê Căn Hộ & Nhà Đất Đà Nẵng | Giá & Vị Trí" description={description}>
   <main>
     <section class="listing-hero">
       <div class="listing-container">
-        <nav class="breadcrumb" aria-label="Đường dẫn"><a href="/">Trang chủ</a><span aria-hidden="true">/</span><span>Căn hộ cho thuê</span></nav>
-        <p class="eyebrow">CHO THUÊ CĂN HỘ ĐÀ NẴNG</p>
-        <h1>Căn Hộ Cho Thuê Đà Nẵng</h1>
-        <p>Tìm căn hộ cho thuê theo dự án, giá thuê, diện tích và số phòng ngủ. Căn hộ được ghim ưu tiên hiển thị trước, tiếp theo là tin đăng mới nhất.</p>
+        <nav class="breadcrumb" aria-label="Đường dẫn"><a href="/">Trang chủ</a><span aria-hidden="true">/</span><span>Bất động sản cho thuê</span></nav>
+        <p class="eyebrow">CHO THUÊ BẤT ĐỘNG SẢN ĐÀ NẴNG</p>
+        <h1>Căn Hộ & Nhà Đất Cho Thuê Đà Nẵng</h1>
+        <p>Tìm căn hộ và nhà đất cho thuê theo khu vực, giá thuê và diện tích. Tin nổi bật được ưu tiên hiển thị trước.</p>
       </div>
     </section>
 
-    <section class="listing-section" aria-label="Danh sách căn hộ cho thuê">
+    <section class="listing-section" aria-label="Danh sách bất động sản cho thuê">
       <div class="listing-container">
         <div class="section-heading">
-          <div><p class="eyebrow">DANH SÁCH CĂN HỘ</p><h2>Căn hộ đang cho thuê</h2></div>
-          <span class="count">{apartments.length} căn hộ</span>
+          <div><p class="eyebrow">DANH SÁCH CHO THUÊ</p><h2>Bất động sản đang cho thuê</h2></div>
+          <span class="count">{apartments.length} bất động sản</span>
         </div>
         {apartments.length ? (
           <>
@@ -44,11 +45,11 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
               {apartments.map((item, index) => {
                 const d = item.data;
                 const image = imageFor(d);
-                const href = `/can-ho/${item.id}/`;
+                const href = `/${item.rentalType}/${item.id}/`;
                 return (
                   <article class="listing-card" data-listing-index={index} hidden={index >= pageSize}>
-                    <a class="listing-image" href={href} aria-label={`Xem căn hộ ${d.title}`}>
-                      {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">CĂN HỘ ĐÀ NẴNG</div>}
+                    <a class="listing-image" href={href} aria-label={`Xem ${d.title}`}>
+                      {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">BẤT ĐỘNG SẢN ĐÀ NẴNG</div>}
                       {d.featured && <span class="pin-label">Nổi bật</span>}
                     </a>
                     <div class="listing-body">
@@ -73,14 +74,14 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 <button type="button" data-action="next" aria-label="Trang sau">Sau ›</button>
               </nav>
             )}
-            <p class="page-summary" id="rental-page-summary" aria-live="polite">Hiển thị {Math.min(pageSize, apartments.length)} / {apartments.length} căn hộ</p>
+            <p class="page-summary" id="rental-page-summary" aria-live="polite">Hiển thị {Math.min(pageSize, apartments.length)} / {apartments.length} bất động sản</p>
           </>
         ) : (
           <div class="empty-state"><h2>Đang cập nhật căn hộ</h2><p>Hiện chưa có căn hộ cho thuê phù hợp. Anh/chị có thể liên hệ để được tư vấn.</p></div>
         )}
       </div>
     </section>
-    <section class="listing-contact"><div class="listing-container contact-inner"><div><h2>Cần thuê căn hộ tại Đà Nẵng?</h2><p>Liên hệ để được tư vấn căn hộ cho thuê phù hợp nhu cầu và ngân sách.</p></div><a href="tel:0869437415">Gọi 0869 437 415</a></div></section>
+    <section class="listing-contact"><div class="listing-container contact-inner"><div><h2>Cần thuê căn hộ hoặc nhà đất tại Đà Nẵng?</h2><p>Liên hệ để được tư vấn bất động sản cho thuê phù hợp nhu cầu và ngân sách.</p></div><a href="tel:0869437415">Gọi 0869 437 415</a></div></section>
   </main>
 </Base>
 
@@ -113,7 +114,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       }
       pagination.querySelector('[data-action="prev"]').disabled = currentPage === 1;
       pagination.querySelector('[data-action="next"]').disabled = currentPage === totalPages;
-      summary.textContent = `Hiển thị ${start + 1}–${Math.min(start + pageSize, cards.length)} / ${cards.length} căn hộ`;
+      summary.textContent = `Hiển thị ${start + 1}–${Math.min(start + pageSize, cards.length)} / ${cards.length} bất động sản`;
       if (scroll) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
     const go = (page) => {
