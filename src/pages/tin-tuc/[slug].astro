@@ -16,12 +16,13 @@ const projects = await getCollection('du-an');
 const linkedProject = data.project ? projects.find(item => item.id === data.project && item.data.status === 'published') : undefined;
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
-const description = data.description || `Tin tức bất động sản Đà Nẵng: ${data.title}`;
+const seoTitle = data.seoTitle?.trim() || data.title;
+const description = data.description?.trim() || `Tin tức bất động sản Đà Nẵng: ${data.title}`;
 const image = data.ogImage || data.image || undefined;
 const dateText = data.date instanceof Date && !Number.isNaN(data.date.getTime())
   ? data.date.toISOString() : undefined;
 const updatedText = data.updatedAt instanceof Date && !Number.isNaN(data.updatedAt.getTime())
-  ? data.updatedAt.toISOString() : undefined;
+  ? data.updatedAt.toISOString() : dateText;
 const schema = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -48,7 +49,7 @@ const schema = {
   ],
 };
 ---
-<Base title={data.seoTitle || data.title} description={description} image={image} imageAlt={data.imageAlt || data.title} type="article">
+<Base title={seoTitle} description={description} image={image} imageAlt={data.imageAlt || data.title} type="article">
   <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
   <main class="news-page">
     <article class="news-wrap">
