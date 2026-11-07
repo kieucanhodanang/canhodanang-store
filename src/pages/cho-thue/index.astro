@@ -13,7 +13,7 @@ const apartments = sortFeaturedFirst(
 const pageSize = 12;
 const pagination = paginateListings(apartments, 1, pageSize);
 const totalPages = pagination.totalPages;
-const description = 'Danh sách căn hộ cho thuê tại Đà Nẵng, cập nhật giá thuê, diện tích, phòng ngủ và vị trí. Ưu tiên căn hộ nổi bật và tin đăng mới nhất.';
+const description = 'Tìm căn hộ cho thuê Đà Nẵng theo giá thuê, diện tích, số phòng ngủ và vị trí. Xem danh sách căn hộ thuê dài hạn hoặc theo ngày đang có sẵn.';
 const plain = (value: unknown) => typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
 const formatArea = (value: string | null | undefined) => plain(value) || 'Liên hệ';
 const imageFor = (data: { image?: string | null; gallery?: string[] | null }) => {
@@ -21,7 +21,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   return candidates.find((value) => typeof value === 'string' && (value.startsWith('/') || value.startsWith('https://'))) || '';
 };
 ---
-<Base title="Căn Hộ Cho Thuê Đà Nẵng | Căn Hộ Đà Nẵng" description={description}>
+<Base title="Cho Thuê Căn Hộ Đà Nẵng | Giá Thuê & Vị Trí" description={description}>
   <main>
     <section class="listing-hero">
       <div class="listing-container">
