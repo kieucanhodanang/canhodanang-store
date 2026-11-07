@@ -105,7 +105,7 @@ const thoCu = defineCollection({
     area: z.string(),
     frontage: optionalText,
     floors: optionalNumber,
-    roadWidth: optionalText,
+    roadWidth: z.union([z.string(), z.number()]).transform(String).nullish(),
     interior: optionalText,
     bathrooms: optionalNumber,
   }),
