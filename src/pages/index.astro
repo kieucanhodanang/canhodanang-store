@@ -743,7 +743,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         </div>
 
         <a class="textlink"
-          href="/du-an/vinhomes-hai-van-bay/">
+          href={projects.some(item => item.id === "vinhomes-hai-van-bay") ? "/du-an/vinhomes-hai-van-bay/" : "/du-an/"}>
           Tìm hiểu Hải Vân Bay →
         </a>
       </div>
