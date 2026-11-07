@@ -59,7 +59,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 const image = imageFor(d);
                 const href = `/can-ho/${item.id}/`;
                 return (
-                  <article class="listing-card" data-listing-index={index} data-keywords={[d.title,d.description,d.project ? projectNames.get(d.project) : '',d.district,d.ward,d.address,d.price,d.priceValue != null ? `${d.priceValue} triệu` : ''].filter(Boolean).join(' ').toLocaleLowerCase('vi')} data-district={(d.district || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-project={d.project || ''} hidden={index >= pageSize}>
+                  <article class="listing-card" data-listing-index={index} data-keywords={[d.title,d.description,d.project,d.project ? projectNames.get(d.project) : '',d.district,d.ward,d.address,d.price,d.priceValue != null ? `${d.priceValue} triệu` : ''].filter(Boolean).join(' ').toLocaleLowerCase('vi')} data-district={(d.district || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().trim()} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-project={d.project || ''} hidden={index >= pageSize}>
                     <a class="listing-image" href={href} aria-label={`Xem căn hộ ${d.title}`}>
                       {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">CĂN HỘ ĐÀ NẴNG</div>}
                       {d.featured && <span class="pin-label">Nổi bật</span>}
@@ -141,19 +141,25 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
     const project = document.getElementById('project-select');
     const filterBox = document.querySelector('.filter-box');
     const norm = value => (value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi,'d').toLowerCase().trim();
-    const matchesKeyword = (card, q) => {
-      if (!q) return true;
-      const haystack = norm(card.dataset.keywords);
-      if (haystack.includes(q)) return true;
-      // Nhận cả cách viết 3,5 tỷ / 3.5 tỷ và 3500 triệu.
-      const priceMillion = Number(card.dataset.price);
-      if (!Number.isFinite(priceMillion) || card.dataset.price === '') return false;
-      const priceQuery = q.match(/^([\d.,]+)\s*(ty|ti|trieu|tr)$/);
-      if (!priceQuery) return false;
-      const number = Number(priceQuery[1].replace(',', '.'));
-      if (!Number.isFinite(number)) return false;
-      const wantedMillion = ['ty', 'ti'].includes(priceQuery[2]) ? number * 1000 : number;
-      return Math.abs(priceMillion - wantedMillion) < 0.01;
+    // Tìm không phân biệt dấu, dấu gạch nối, khoảng trắng và cách ghi giá.
+    const clean = value => norm(value).replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+    const parsePrice = query => {
+      const q = norm(query).replace(/\s+/g, ' ').trim();
+      const match = q.match(/^(?:gia\s*)?(\d+(?:[.,]\d+)?)\s*(ty|ti|trieu|tr|trieu dong)$/);
+      if (!match) return null;
+      const amount = Number(match[1].replace(',', '.'));
+      return Number.isFinite(amount) ? amount * (['ty','ti'].includes(match[2]) ? 1000 : 1) : null;
+    };
+    const matchesKeyword = (card, rawQuery) => {
+      if (!rawQuery) return true;
+      const query = clean(rawQuery);
+      const haystack = clean(card.dataset.keywords || '');
+      if (query && haystack.includes(query)) return true;
+      // Cho phép nhập nhiều từ rời: ví dụ 'can ho capital square'.
+      if (query && query.split(' ').every(word => haystack.split(' ').includes(word))) return true;
+      const wanted = parsePrice(rawQuery);
+      const actual = card.dataset.price === '' ? NaN : Number(card.dataset.price);
+      return wanted !== null && Number.isFinite(actual) && Math.abs(wanted - actual) < 0.01;
     };
     const chosen = name => filterBox.querySelector(`input[name="${name}"]:checked`)?.value || '';
     const within = (value, range) => {
@@ -190,11 +196,12 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       count.textContent=`${filtered.length} căn hộ`;
       summary.textContent=filtered.length?`Hiển thị ${start+1}–${Math.min(start+size,filtered.length)} / ${filtered.length} căn hộ`:'Không có căn hộ phù hợp';
       empty.hidden=filtered.length!==0;
+      if (!filtered.length) empty.textContent = 'Không tìm thấy căn hộ phù hợp. Hãy bấm Xóa lọc để thử lại, hoặc kiểm tra thông tin dự án/phường đã được nhập trong CMS.';
       if(scroll)grid.scrollIntoView({behavior:'smooth',block:'start'});
     };
     const apply = (resetPage=true) => {
       const q=norm(keyword.value),district=chosen('district'),price=chosen('price'),area=chosen('area'),proj=project.value;
-      filtered=cards.filter(card => matchesKeyword(card,q) && (!district||card.dataset.district===district) && within(card.dataset.price,price) && within(card.dataset.area,area) && (!proj||card.dataset.project===proj));
+      filtered=cards.filter(card => matchesKeyword(card,q) && (!district||clean(card.dataset.district).includes(district)) && within(card.dataset.price,price) && within(card.dataset.area,area) && (!proj||card.dataset.project===proj));
       if(resetPage){page=1;const url=new URL(location.href);url.searchParams.delete('page');history.replaceState(null,'',url);}
       render();
     };
