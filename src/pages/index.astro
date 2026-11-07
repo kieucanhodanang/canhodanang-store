@@ -154,21 +154,26 @@ const homeRentApartments = homeApartments.filter(item => ['cho-thue', 'cho-thue-
 const homeSaleLand = homeLand.filter(item => item.data.transaction === 'ban')
   .sort(homePriority).slice(0, 6);
 const cleanProjectName = (name) => String(name || '').trim().replace(/\s*[-–|,]\s*(?:TP\.?\s*)?Đà\s*Nẵng\s*$/i, '').replace(/\s+Đà\s*Nẵng\s*$/i, '').trim();
-const shortAddress = (address, ward) => {
+const shortAddress = (address, district) => {
   const parts = String(address || '').split(',').map(v => v.trim()).filter(Boolean);
+  // Chỉ lấy đường thực sự; không lấy tên tháp hoặc tên tòa nhà làm đường.
   const street = parts.find(v => /(?:^|\s)(?:đường|phố|đại lộ|đ\.|street)\s+[\p{L}\d]/iu)
-    || parts.find(v => /^(?:\d+[\w/-]*\s+)[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v)) || '';
-  const wardName = String(ward || '').trim() || parts.find(v => /^(phường|xã|p\.)\s/i.test(v)) || '';
-  return [street, wardName].filter(Boolean).join(', ');
+    || parts.find(v => /^\d+[\w/-]*\s+[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v)) || '';
+  const districtName = String(district || '').trim() || parts.find(v => /^(quận|huyện|q\.)\s/i.test(v)) || '';
+  return [street, districtName].filter(Boolean).join(', ');
+};
+const formatHomeArea = (area) => {
+  const value = String(area ?? '').trim();
+  return value && !/m²|m2|mét vuông/i.test(value) ? `${value} m²` : value;
 };
 const homeCards = (items, type) => items.map(item => ({
   title: item.data.title,
   image: item.data.image || '',
   imageAlt: item.data.imageAlt || item.data.title,
   price: item.data.price || 'Liên hệ',
-  area: item.data.area || '',
+  area: formatHomeArea(item.data.area || item.data.areaValue || ''),
   bedrooms: item.data.bedrooms,
-  place: type === 'can-ho' ? shortAddress(item.data.address, item.data.ward) : (item.data.district || item.data.address || 'Đà Nẵng'),
+  place: type === 'can-ho' ? shortAddress(item.data.address, item.data.district) : (item.data.district || item.data.address || 'Đà Nẵng'),
   projectName: cleanProjectName(projectNames.get(item.data.project || '') || ''),
   href: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
   pinned: Boolean(item.data.featured),
@@ -442,10 +447,10 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const parts = String(item.address || '').split(',').map(v=>v.trim()).filter(Boolean);
            const street = parts.find(v=>/(?:^|\s)(?:đường|phố|đại lộ|đ\.|street)\s+[\p{L}\d]/iu)
              || parts.find(v=>/^(?:\d+[\w/-]*\s+)[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v)) || '';
-           const ward = item.ward || parts.find(v=>/^(phường|xã|p\.)\s/i.test(v)) || '';
-           const place = item.type === 'can-ho' ? [street,ward].filter(Boolean).join(', ') : ([item.district,item.ward].filter(Boolean).join(' · ') || item.address || 'Đà Nẵng');
+           const district = item.district || parts.find(v=>/^(quận|huyện|q\.)\s/i.test(v)) || '';
+           const place = item.type === 'can-ho' ? [street,district].filter(Boolean).join(', ') : ([item.district,item.ward].filter(Boolean).join(' · ') || item.address || 'Đà Nẵng');
            const projectLine = item.type === 'can-ho' && item.projectName ? `<strong class="result-project">${escapeHTML(String(item.projectName).replace(/\s*[-–|,]\s*(?:TP\.?\s*)?Đà\s*Nẵng\s*$/i, '').replace(/\s+Đà\s*Nẵng\s*$/i, '').trim())}</strong>` : '';
-           const locationLine = place ? `<span class="result-place">⌖ ${escapeHTML(place)}</span>` : '';
+           const locationLine = place ? `<span class="result-place">${projectLine ? ", " : ""}${escapeHTML(place)}</span>` : '';
            // Ngày đăng thực tế từ CMS, không dùng ngày hiện tại khi thiếu dữ liệu.
            const publishedDate = Number(item.publishedAt) > 0 && Number.isFinite(Number(item.publishedAt))
              ? new Date(Number(item.publishedAt)) : null;
@@ -455,7 +460,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const dateBadge = publishedLabel
              ? `<time class="result-posted-date" datetime="${publishedDate.toISOString().slice(0, 10)}">Đăng: ${escapeHTML(publishedLabel)}</time>`
              : '';
-           card.innerHTML = `<a class="result-photo" href="${escapeHTML(item.url)}" aria-label="Xem ${escapeHTML(item.title)}">${image}</a><div class="result-card-main"><div class="result-card-top"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span>${dateBadge}</div><h3><a href="${escapeHTML(item.url)}">${escapeHTML(item.title)}</a></h3>${projectLine}${locationLine}<div class="result-meta">${escapeHTML(details || 'Xem thông tin chi tiết')}</div><div class="result-card-bottom"><strong class="result-price">${escapeHTML(shownPrice)}</strong><a class="result-detail-link" href="${escapeHTML(item.url)}">Xem chi tiết →</a></div></div>`;
+           card.innerHTML = `<a class="result-photo" href="${escapeHTML(item.url)}" aria-label="Xem ${escapeHTML(item.title)}">${image}</a><div class="result-card-main"><div class="result-card-top"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span>${dateBadge}</div><h3><a href="${escapeHTML(item.url)}">${escapeHTML(item.title)}</a></h3><div class="result-project-location">${projectLine}${locationLine}</div><div class="result-meta">${escapeHTML(details || 'Xem thông tin chi tiết')}</div><div class="result-card-bottom"><strong class="result-price">${escapeHTML(shownPrice)}</strong><a class="result-detail-link" href="${escapeHTML(item.url)}">Xem chi tiết →</a></div></div>`;
            list.append(card);
          });
          if (totalPages > 1) {
@@ -575,9 +580,12 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
             </a>
             <div class="cardbody home-listing-body">
-              {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
-              {item.place && <span class="location">⌖ {item.place}</span>}
-              <h3><a href={item.href}>{item.title}</a></h3>
+              <div class="home-listing-address">
+                {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
+                {item.projectName && item.place && <span class="address-comma">, </span>}
+                {item.place && <span class="location">{item.place}</span>}
+              </div>
+              <h3 class="home-listing-title"><a href={item.href}>{item.title}</a></h3>
               <div class="home-listing-facts">
                 <strong class="home-listing-price">{item.price}</strong>
                 {item.area && <span class="home-listing-fact">{item.area}</span>}
@@ -610,9 +618,12 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
             </a>
             <div class="cardbody home-listing-body">
-              {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
-              {item.place && <span class="location">⌖ {item.place}</span>}
-              <h3><a href={item.href}>{item.title}</a></h3>
+              <div class="home-listing-address">
+                {item.projectName && <strong class="home-listing-project">{item.projectName}</strong>}
+                {item.projectName && item.place && <span class="address-comma">, </span>}
+                {item.place && <span class="location">{item.place}</span>}
+              </div>
+              <h3 class="home-listing-title"><a href={item.href}>{item.title}</a></h3>
               <div class="home-listing-facts">
                 <strong class="home-listing-price">{item.price}</strong>
                 {item.area && <span class="home-listing-fact">{item.area}</span>}
@@ -974,6 +985,40 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       #can-ho-ban .home-listing-fact,#can-ho-thue .home-listing-fact{font-size:11px}
       #can-ho-ban .home-listing-fact:not(:first-child),#can-ho-thue .home-listing-fact:not(:first-child){padding-left:6px}
     }
+
+    /* Thẻ căn hộ: dự án + đường/quận cùng hàng, tiêu đề cố định 2 dòng. */
+    #can-ho-ban .home-listing-topline,#can-ho-thue .home-listing-topline,
+    .search-results-list :global(.result-project-location){display:flex;align-items:center;gap:8px;min-width:0;width:100%;overflow:hidden}
+    #can-ho-ban .home-listing-topline .home-listing-project,#can-ho-thue .home-listing-topline .home-listing-project,
+    .search-results-list :global(.result-project){display:block;flex:0 1 auto;min-width:0;max-width:52%;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+    #can-ho-ban .home-listing-topline .location,#can-ho-thue .home-listing-topline .location,
+    .search-results-list :global(.result-project-location .result-place){display:block;flex:1 1 auto;min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+    #can-ho-ban .home-listing-title,#can-ho-thue .home-listing-title{line-height:1.45;min-height:2.9em;max-height:2.9em;overflow:hidden;margin:10px 0 8px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
+    #can-ho-ban .home-listing-facts,#can-ho-thue .home-listing-facts{justify-content:flex-start;gap:8px;overflow:hidden}
+    #can-ho-ban .home-listing-facts .home-listing-price,#can-ho-thue .home-listing-facts .home-listing-price{font-size:16px}
+    #can-ho-ban .home-listing-fact,#can-ho-thue .home-listing-fact{font-size:12px;white-space:nowrap}
+    @media(max-width:767px){
+      #can-ho-ban .home-listing-photo,#can-ho-thue .home-listing-photo{width:32%;min-width:95px}
+      #can-ho-ban .home-listing-body,#can-ho-thue .home-listing-body{padding:9px;min-width:0}
+      #can-ho-ban .home-listing-topline,#can-ho-thue .home-listing-topline{gap:5px}
+      #can-ho-ban .home-listing-topline .home-listing-project,#can-ho-thue .home-listing-topline .home-listing-project{font-size:11px;max-width:49%}
+      #can-ho-ban .home-listing-topline .location,#can-ho-thue .home-listing-topline .location{font-size:10px}
+      #can-ho-ban .home-listing-title,#can-ho-thue .home-listing-title{font-size:14px;margin:6px 0}
+      #can-ho-ban .home-listing-facts,#can-ho-thue .home-listing-facts{gap:4px}
+      #can-ho-ban .home-listing-facts .home-listing-price,#can-ho-thue .home-listing-facts .home-listing-price{font-size:13px}
+      #can-ho-ban .home-listing-fact,#can-ho-thue .home-listing-fact{font-size:10px}
+      #can-ho-ban .home-listing-fact:not(:first-child),#can-ho-thue .home-listing-fact:not(:first-child){padding-left:4px}
+    }
+
+    /* Một địa chỉ liên tục: tên dự án, đường, quận; dự án nhấn nhẹ hơn tiêu đề. */
+    #can-ho-ban .home-listing-address,#can-ho-thue .home-listing-address{display:block;width:100%;min-width:0;font-size:12px;line-height:1.5;color:#718395;overflow-wrap:anywhere;min-height:1.5em}
+    #can-ho-ban .home-listing-address .home-listing-project,#can-ho-thue .home-listing-address .home-listing-project{display:inline;max-width:none;white-space:normal;overflow:visible;text-overflow:clip;font-size:inherit;font-weight:600;color:#385875;margin:0}
+    #can-ho-ban .home-listing-address .location,#can-ho-thue .home-listing-address .location{display:inline;max-width:none;white-space:normal;overflow:visible;text-overflow:clip;font-size:inherit;font-weight:400;color:#718395}
+    #can-ho-ban .home-listing-address .address-comma,#can-ho-thue .home-listing-address .address-comma{display:inline;color:#718395}
+    @media(max-width:767px){#can-ho-ban .home-listing-address,#can-ho-thue .home-listing-address{font-size:11px}}
+    .search-results-list :global(.result-project-location){display:block;min-width:0;width:100%;font-size:12px;line-height:1.5;color:#718395;white-space:normal;overflow-wrap:anywhere}
+    .search-results-list :global(.result-project-location .result-project){display:inline;max-width:none;white-space:normal;overflow:visible;text-overflow:clip;font-size:inherit;font-weight:600;color:#385875}
+    .search-results-list :global(.result-project-location .result-place){display:inline;max-width:none;white-space:normal;overflow:visible;text-overflow:clip;font-size:inherit;color:#718395}
     @media(prefers-reduced-motion:reduce){.hero-slide{transition:none;}}
   </style>
 
