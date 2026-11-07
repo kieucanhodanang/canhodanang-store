@@ -47,7 +47,7 @@ const projectNames = new Map(projects.map((item) => [item.id, item.data.title]))
 const listingCollections = await Promise.all([
   getCollection('can-ho'), getCollection('nha-dat-tho-cu'),
 ]);
-const listingTypes = ['can-ho', 'tho-cu'];
+const listingTypes = ['can-ho', 'nha-dat-tho-cu'];
 const searchableListings = listingCollections.flatMap((entries, index) =>
   entries.filter((item) => item.data.status === 'published' && item.data.listingStatus === 'available')
     .map((item) => {
@@ -69,7 +69,7 @@ const searchableListings = listingCollections.flatMap((entries, index) =>
         district: d.district || '',
         ward: d.ward || '',
         address: d.address || '',
-        url: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
+        url: `/${type}/${item.id}/`,
         type,
         propertyType: d.propertyType || type,
         transaction,
@@ -184,12 +184,12 @@ const homeCards = (items, type) => items.map(item => ({
   bedrooms: item.data.bedrooms,
   place: type === 'can-ho' ? shortAddress(item.data.address, item.data.district) : (item.data.district || item.data.address || 'Đà Nẵng'),
   projectName: cleanProjectName(projectNames.get(item.data.project || '') || ''),
-  href: `/${type === 'tho-cu' ? 'nha-dat-tho-cu' : type}/${item.id}/`,
+  href: `/${type}/${item.id}/`,
   pinned: Boolean(item.data.featured),
 }));
 const saleCards = homeCards(homeSaleApartments, 'can-ho');
 const rentCards = homeCards(homeRentApartments, 'can-ho');
-const landCards = homeCards(homeSaleLand, 'tho-cu');
+const landCards = homeCards(homeSaleLand, 'nha-dat-tho-cu');
 
 const seoTitle = 'Căn Hộ Đà Nẵng | Mua Bán, Cho Thuê & Dự Án Nổi Bật';
 const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, dự án nổi bật và thông tin thị trường. Liên hệ tư vấn 0869 437 415.';
