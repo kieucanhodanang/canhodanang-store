@@ -34,7 +34,9 @@ if (!slides.length) slides.push({
 const slideSeconds = clamp(homepage.slideInterval, 3, 12, 5);
 const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft')
   .sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
-const slideData = JSON.stringify(slides).replace(/</g, '\\u003c');
+const heroVideo = typeof homepage.bannerVideo === 'string' && /^\/uploads\/[\w./%-]+\.(mp4|webm)$/i.test(homepage.bannerVideo) ? homepage.bannerVideo : '';
+const heroPoster = homepage.bannerVideoPoster?.startsWith('/uploads/') ? homepage.bannerVideoPoster : (slides[0]?.image || bannerImage);
+const heroMobilePoster = slides[0]?.mobileImage || heroPoster;
 const latestNews = (await getCollection('bai-viet'))
   .filter(item => item.data.status === 'published')
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -194,13 +196,9 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
 <Base title={seoTitle} description={seoDescription}>
   <section class="hero cms-hero" data-interval={slideSeconds} aria-label="Giới thiệu bất động sản Đà Nẵng"
     style={`--cms-hero-height:${bannerHeight}px;--cms-title-size:${titleSize}px;--cms-content-width:${contentWidth}px;--cms-text-align:${textAlign};--cms-image-position:${imagePosition};--cms-button-color:${buttonColor};--cms-overlay:${overlay};`}>
-    <div class="hero-slides" aria-hidden="true">
-      {slides.map((slide, i) => (
-        <picture class:list={['hero-slide', { active: i === 0 }]} data-slide={i}>
-          {slide.mobileImage && <source media="(max-width:767px)" srcset={slide.mobileImage} />}
-          {slide.image ? <img src={slide.image} alt="" loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} /> : <span class="hero-fallback"></span>}
-        </picture>
-      ))}
+    <div class="hero-media" aria-hidden="true">
+      <picture class="hero-poster">{heroMobilePoster && <source media="(max-width:767px)" srcset={heroMobilePoster} />}{heroPoster ? <img src={heroPoster} alt="" loading="eager" fetchpriority="high" /> : <span class="hero-fallback"></span>}</picture>
+      {heroVideo && <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster={heroPoster || undefined}><source src={heroVideo} type={heroVideo.endsWith('.webm') ? 'video/webm' : 'video/mp4'} /></video>}
     </div>
     <div class="hero-overlay"></div>
     <div class="wrap cms-hero-content">
@@ -215,14 +213,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         </div>
         <div class="hero-search-input"><input id="hero-keyword" type="search" aria-label="Từ khóa tìm kiếm" placeholder="Tìm tên dự án, khu vực, căn hộ..." autocomplete="off" /><button type="submit">Tìm kiếm</button></div>
       </form>
-      {slides.length > 1 && <div class="hero-pagination" aria-label="Chọn ảnh banner">
-        {slides.map((_,i) => <button type="button" class:list={['hero-dot', { active:i===0 }]} data-slide-to={i} aria-label={`Xem slide ${i+1}`} aria-current={i===0 ? 'true' : undefined}></button>)}
-      </div>}
     </div>
-    {slides.length > 1 && <div class="hero-arrows">
-      <button type="button" id="slide-prev" aria-label="Ảnh trước"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
-      <button type="button" id="slide-next" aria-label="Ảnh tiếp theo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button>
-    </div>}
   </section>
 
   <section class="results-section" id="tim-kiem" hidden aria-label="Kết quả tìm kiếm bất động sản">
@@ -289,35 +280,13 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       <p class="results-note">Kết quả được cập nhật từ các tin đăng công khai và còn giao dịch trong CMS sau mỗi lần xuất bản website. Giá và diện tích cần được nhập ở trường số để lọc bằng thanh trượt.</p>
     </div>
   </section>
-  <script type="application/json" id="hero-slides-data" set:html={slideData} />
   <script type="application/json" id="cms-search-data" set:html={searchData} />
   <script is:inline>
     (() => {
-      const dataNode = document.getElementById('hero-slides-data');
-      const slides = dataNode ? JSON.parse(dataNode.textContent || '[]') : [];
-      const pictures = Array.from(document.querySelectorAll('.hero-slide'));
-      const dots = Array.from(document.querySelectorAll('.hero-dot'));
-      let current = 0;
-      const show = (index) => {
-        if (!slides.length) return;
-        current = (index + slides.length) % slides.length;
-        pictures.forEach((node,i) => node.classList.toggle('active',i===current));
-        dots.forEach((node,i) => { node.classList.toggle('active',i===current); if(i===current) node.setAttribute('aria-current','true'); else node.removeAttribute('aria-current'); });
-        const s = slides[current];
-        document.getElementById('slide-eyebrow').textContent = s.eyebrow || '';
-        document.getElementById('slide-title').textContent = s.title || '';
-        document.getElementById('slide-description').textContent = s.description || '';
-      };
-      document.getElementById('slide-prev')?.addEventListener('click',()=>show(current-1));
-      document.getElementById('slide-next')?.addEventListener('click',()=>show(current+1));
-      dots.forEach((dot,i)=>dot.addEventListener('click',()=>show(i)));
-      const hero = document.querySelector('.cms-hero');
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const seconds = Number(hero?.dataset.interval) || 5;
-      if (slides.length>1 && !reduceMotion) {
-        let timer = setInterval(()=>{ if(!document.hidden) show(current+1); }, seconds*1000);
-        hero?.addEventListener('mouseenter',()=>clearInterval(timer));
-        hero?.addEventListener('mouseleave',()=>{ clearInterval(timer); timer=setInterval(()=>{if(!document.hidden)show(current+1)},seconds*1000); });
+      const video = document.querySelector('.hero-video');
+      if (video) {
+        if (matchMedia('(max-width:767px), (prefers-reduced-motion:reduce)').matches) { video.pause(); video.style.display = 'none'; }
+        else { video.addEventListener('playing', () => video.classList.add('is-playing')); video.addEventListener('error', () => { video.style.display = 'none'; }); video.play().catch(() => { video.style.display = 'none'; }); }
       }
       const searchDataNode = document.getElementById('cms-search-data');
       const items = searchDataNode ? JSON.parse(searchDataNode.textContent || '[]') : [];
@@ -777,10 +746,10 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         </a>
       </div>
       {latestNews.length > 0 && (
-        <div class="grid">
+        <div class="grid home-news-grid">
           {latestNews.map(item => (
-            <article class="card">
-              {item.data.image && <a href={`/tin-tuc/${item.id}/`} aria-label={`Đọc ${item.data.title}`}><img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" /></a>}
+            <article class="card home-news-card">
+              {item.data.image && <a class="home-news-photo" href={`/tin-tuc/${item.id}/`} aria-label={`Đọc ${item.data.title}`}><img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" decoding="async" /></a>}
               <div class="cardbody">
                 <h3><a href={`/tin-tuc/${item.id}/`}>{item.data.title}</a></h3>
                 {item.data.description && <p>{item.data.description}</p>}
@@ -814,6 +783,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
 
   <style>
 
+    .home-news-card{display:flex;flex-direction:column}.home-news-photo{display:block;aspect-ratio:16/9;overflow:hidden;background:#e4edf3}.home-news-photo img{display:block;width:100%;height:100%;object-fit:cover}.home-news-card .cardbody{flex:1;display:flex;flex-direction:column}.home-news-card .cardbody h3,.home-news-card .cardbody p{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}.home-news-card .cardbody h3{-webkit-line-clamp:2;line-clamp:2}.home-news-card .cardbody p{-webkit-line-clamp:3;line-clamp:3}.home-news-card .cardbody .textlink{margin-top:auto}
     .home-listing-grid {grid-template-columns:repeat(3,minmax(0,1fr));}
     .home-listing-card {min-width:0;overflow:hidden;}
     .home-listing-photo {position:relative;display:block;aspect-ratio:16/10;background:#e4edf3;overflow:hidden;}
@@ -839,12 +809,11 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .home-project-visual img {display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:cover;}
     .home-project-visual .tag {position:relative;z-index:1;}
     .cms-hero { height:var(--cms-hero-height);min-height:0;position:relative;display:flex;align-items:center;isolation:isolate;overflow:hidden;box-sizing:border-box;background:#102c49; }
-    .hero-slides {position:absolute;inset:0;z-index:0;pointer-events:none;}
-    .hero-overlay {position:absolute;inset:0;z-index:1;pointer-events:none;}
-    .hero-slide {position:absolute;inset:0;display:block;width:100%;height:100%;opacity:0;transition:opacity .7s ease;}
-    .hero-slide.active {opacity:1;}
-    .hero-slide img,.hero-fallback {display:block;width:100%;height:100%;object-fit:cover;object-position:center var(--cms-image-position);}
-    .hero-fallback {background:linear-gradient(125deg,#102c49,#19496a);}
+    .hero-media,.hero-poster{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;overflow:hidden;pointer-events:none}
+    .hero-poster img,.hero-fallback,.hero-video{display:block;width:100%;height:100%;object-fit:cover;object-position:center var(--cms-image-position)}
+    .hero-video{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .4s ease}.hero-video.is-playing{opacity:1}
+    .hero-fallback{background:linear-gradient(125deg,#102c49,#19496a)}
+    @media(max-width:767px),(prefers-reduced-motion:reduce){.hero-video{display:none!important}}
     .hero-overlay {background:rgba(8,27,47,var(--cms-overlay));}
     .cms-hero-content {width:100%;max-width:var(--cms-content-width);text-align:var(--cms-text-align);position:relative;z-index:2;padding-block:70px;}
     .cms-hero h1 {font-size:var(--cms-title-size);line-height:1.16;overflow-wrap:break-word;text-align:center;margin-inline:auto;}
@@ -1038,7 +1007,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .search-results-list :global(.result-project-location){display:block;min-width:0;width:100%;font-size:12px;line-height:1.5;color:#718395;white-space:normal;overflow-wrap:anywhere}
     .search-results-list :global(.result-project-location .result-project){display:inline;max-width:none;white-space:normal;overflow:visible;text-overflow:clip;font-size:inherit;font-weight:600;color:#385875}
     .search-results-list :global(.result-project-location .result-place){display:inline;max-width:none;white-space:normal;overflow:visible;text-overflow:clip;font-size:inherit;color:#718395}
-    @media(prefers-reduced-motion:reduce){.hero-slide{transition:none;}}
+
   </style>
 
 </Base>
