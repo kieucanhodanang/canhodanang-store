@@ -178,8 +178,12 @@ const homeApartments = (await getCollection('can-ho')).filter(isHomeListing);
 const homeLand = (await getCollection('nha-dat-tho-cu')).filter(isHomeListing);
 const homeSaleApartments = homeApartments.filter(item => item.data.transaction === 'ban')
   .sort(homePriority).slice(0, 6);
-const homeRentApartments = homeApartments.filter(item => ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
-  .sort(homePriority).slice(0, 6);
+const homeRentListings = [
+  ...homeApartments.filter(item => ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
+    .map(item => ({ ...item, rentalType: 'can-ho' })),
+  ...homeLand.filter(item => ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
+    .map(item => ({ ...item, rentalType: 'nha-dat-tho-cu' })),
+].sort(homePriority).slice(0, 6);
 const homeSaleLand = homeLand.filter(item => item.data.transaction === 'ban')
   .sort(homePriority).slice(0, 6);
 const cleanProjectName = (name) => String(name || '').trim().replace(/\s*[-–|,]\s*(?:TP\.?\s*)?Đà\s*Nẵng\s*$/i, '').replace(/\s+Đà\s*Nẵng\s*$/i, '').trim();
@@ -208,7 +212,7 @@ const homeCards = (items, type) => items.map(item => ({
   pinned: Boolean(item.data.featured),
 }));
 const saleCards = homeCards(homeSaleApartments, 'can-ho');
-const rentCards = homeCards(homeRentApartments, 'can-ho');
+const rentCards = homeRentListings.flatMap(item => homeCards([item], item.rentalType));
 const landCards = homeCards(homeSaleLand, 'nha-dat-tho-cu');
 
 const seoTitle = 'Căn Hộ Đà Nẵng | Mua Bán, Cho Thuê & Dự Án Nổi Bật';
