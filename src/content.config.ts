@@ -52,7 +52,7 @@ const canHo = defineCollection({
     ...propertyFields,
     // Nhóm khu vực phục vụ trang danh mục SEO và bộ lọc.
     // Giữ optional để bài đăng cũ vẫn build bình thường.
-    areaSlug: z.enum(['son-tra', 'ngu-hanh-son', 'hoa-xuan']).nullish(),
+    areaSlug: z.enum(['son-tra', 'ngu-hanh-son', 'hai-chau']).nullish(),
     price: z.string(),
     area: z.string(),
     address: z.string(),
