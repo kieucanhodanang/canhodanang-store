@@ -45,7 +45,7 @@ const latestNews = (await getCollection('bai-viet'))
 // Chỉ công khai các sản phẩm còn giao dịch; không đưa bài dự án vào danh sách hàng bán.
 const projectNames = new Map(projects.map((item) => [item.id, item.data.title]));
 const listingCollections = await Promise.all([
-  getCollection('can-ho'), getCollection('tho-cu'),
+  getCollection('can-ho'), getCollection('nha-dat-tho-cu'),
 ]);
 const listingTypes = ['can-ho', 'tho-cu'];
 const searchableListings = listingCollections.flatMap((entries, index) =>
@@ -155,7 +155,7 @@ const homePriority = (a, b) => {
 const isHomeListing = (item) => item.data.status !== 'draft'
   && item.data.listingStatus === 'available' && item.data.showOnHome !== false;
 const homeApartments = (await getCollection('can-ho')).filter(isHomeListing);
-const homeLand = (await getCollection('tho-cu')).filter(isHomeListing);
+const homeLand = (await getCollection('nha-dat-tho-cu')).filter(isHomeListing);
 const homeSaleApartments = homeApartments.filter(item => item.data.transaction === 'ban')
   .sort(homePriority).slice(0, 6);
 const homeRentApartments = homeApartments.filter(item => ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
