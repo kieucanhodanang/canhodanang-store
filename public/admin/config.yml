@@ -626,6 +626,35 @@ collections:
         name: thanhKhe
         widget: image
         required: false
+    - label: Ảnh đại diện cho thuê theo khu vực (căn hộ và nhà đất)
+      name: rentalAreaImages
+      widget: object
+      required: false
+      fields:
+      - label: Ảnh cho thuê Sơn Trà
+        name: sonTra
+        widget: image
+        required: false
+      - label: Ảnh cho thuê Hải Châu
+        name: haiChau
+        widget: image
+        required: false
+      - label: Ảnh cho thuê Thanh Khê
+        name: thanhKhe
+        widget: image
+        required: false
+      - label: Ảnh cho thuê Ngũ Hành Sơn
+        name: nguHanhSon
+        widget: image
+        required: false
+      - label: Ảnh cho thuê Liên Chiểu
+        name: lienChieu
+        widget: image
+        required: false
+      - label: Ảnh cho thuê Cẩm Lệ
+        name: camLe
+        widget: image
+        required: false
     - label: Banner quảng cáo cố định hai bên (desktop)
       name: floatingBanners
       widget: object
