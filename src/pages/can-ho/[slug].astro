@@ -102,7 +102,7 @@ const relatedApartments = !region && entry
       && item.data.listingStatus === 'available'
       && item.data.transaction === data.transaction
       && ((data.project && item.data.project === data.project)
-        || (data.district && normalizeRelatedDistrict(item.data.district) === normalizeRelatedDistrict(data.district))))
+        || (data.district && normalizeRelatedDistrict(item.data.district) === normalizeRelatedDistrict(data.district)))
       .sort((a, b) => Number(Boolean(data.project && b.data.project === data.project)) - Number(Boolean(data.project && a.data.project === data.project)))
       .slice(0, 6)
   : [];
