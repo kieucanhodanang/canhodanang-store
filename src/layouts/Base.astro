@@ -210,12 +210,6 @@ const structuredData = {
                   </a>
                 ))}
               </div>
-              {logoProjects.length > 3 && (
-                <div class="footer-carousel-actions">
-                  <button type="button" data-slide-prev aria-label="Xem logo dự án trước">‹</button>
-                  <button type="button" data-slide-next aria-label="Xem logo dự án tiếp theo">›</button>
-                </div>
-              )}
             </div>
           ) : (
             <p class="footer-empty">Logo dự án sẽ hiển thị khi được cập nhật trong mục Dự án.</p>
@@ -346,28 +340,37 @@ const structuredData = {
         const carousel = document.querySelector('[data-footer-carousel]');
         if (!carousel) return;
         const track = carousel.querySelector('.footer-logo-track');
-        const items = [...track.querySelectorAll('.footer-logo-item')];
-        if (items.length <= 3) return;
-        let current = 0;
+        const originals = [...track.querySelectorAll('.footer-logo-item')];
+        if (originals.length <= 1) return;
+        originals.forEach(item => {
+          const clone = item.cloneNode(true);
+          clone.setAttribute('aria-hidden', 'true');
+          clone.tabIndex = -1;
+          track.appendChild(clone);
+        });
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const move = (delta) => {
-          current = (current + delta + items.length) % items.length;
-          const item = items[current];
-          track.scrollTo({ left: item.offsetLeft - track.offsetLeft, behavior: reduceMotion ? 'instant' : 'smooth' });
+        let index = 0;
+        let timer;
+        const step = () => {
+          index++;
+          const target = track.children[index];
+          if (!target) return;
+          track.scrollTo({ left: target.offsetLeft - track.offsetLeft, behavior: 'smooth' });
+          if (index === originals.length) {
+            window.setTimeout(() => {
+              track.scrollTo({ left: 0, behavior: 'instant' });
+              index = 0;
+            }, 800);
+          }
         };
-        carousel.querySelector('[data-slide-prev]')?.addEventListener('click', () => move(-1));
-        carousel.querySelector('[data-slide-next]')?.addEventListener('click', () => move(1));
-        if (!reduceMotion) {
-          let timer;
-          const start = () => { if (!timer) timer = window.setInterval(() => move(1), 4000); };
-          const stop = () => { window.clearInterval(timer); timer = undefined; };
-          carousel.addEventListener('mouseenter', stop);
-          carousel.addEventListener('mouseleave', start);
-          carousel.addEventListener('focusin', stop);
-          carousel.addEventListener('focusout', start);
-          document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
-          start();
-        }
+        const stop = () => { window.clearInterval(timer); timer = undefined; };
+        const start = () => { if (!timer && !reduceMotion && !document.hidden) timer = window.setInterval(step, 5000); };
+        carousel.addEventListener('mouseenter', stop);
+        carousel.addEventListener('mouseleave', start);
+        carousel.addEventListener('focusin', stop);
+        carousel.addEventListener('focusout', start);
+        document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+        start();
       })();
     </script>
 
@@ -437,7 +440,7 @@ const structuredData = {
       .site-footer { background:#10243a; color:#e8eef5; padding:38px 0; }
       .footer-layout { display:grid; grid-template-columns:minmax(0,3fr) minmax(0,2fr); gap:36px; }
       .site-footer h2 { color:#d4a85e; font-size:15px; letter-spacing:.035em; margin:0 0 20px; }
-      .footer-logo-track { display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
+      .footer-logo-track { display:flex; gap:12px; overflow-x:auto; scroll-snap-type:none; scrollbar-width:none; }
       .footer-logo-track::-webkit-scrollbar { display:none; }
       .footer-logo-item {
         flex:0 0 calc((100% - 24px)/3); height:108px; box-sizing:border-box; background:#fff;
@@ -445,11 +448,6 @@ const structuredData = {
         scroll-snap-align:start;
       }
       .footer-logo-item img { display:block; width:100%; height:100%; object-fit:contain; }
-      .footer-carousel-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:10px; }
-      .footer-carousel-actions button {
-        border:1px solid #728398; border-radius:7px; background:transparent; color:#fff;
-        min-width:36px; min-height:36px; font-size:24px; cursor:pointer;
-      }
       .footer-contact p { margin:0 0 12px; overflow-wrap:anywhere; }
       .footer-contact a { color:inherit; }
       .footer-contact-name { font-weight:700; }
