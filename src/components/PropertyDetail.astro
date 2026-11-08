@@ -30,6 +30,10 @@ interface Property {
   transaction?: 'ban' | 'cho-thue' | 'cho-thue-ngay';
   listingStatus?: 'available' | 'closed' | 'paused';
   propertyType?: string | null;
+  project?: string | null;
+  subdivision?: string | null;
+  projectPropertyType?: string | null;
+  productCode?: string | null;
 }
 interface Props {
   property: Property;
@@ -67,6 +71,19 @@ const specs = [
     : { label: 'Số tầng', value: typeof property.floors === 'number' ? `${property.floors} tầng` : 'Đang cập nhật' },
 ];
 // Chỉ hiển thị thông số thực sự có dữ liệu trong CMS.
+const isHaiVanBay = property.project === 'vinhomes-hai-van-bay';
+const subdivisionNames: Record<string, string> = {
+  'tinh-van': 'Tinh Vân', 'bach-van': 'Bạch Vân',
+  'dao-ngoc': 'Đảo Ngọc', 'vinh-may': 'Vịnh Mây',
+};
+const projectTypeNames: Record<string, string> = {
+  'biet-thu-don-lap': 'Biệt thự đơn lập',
+  'biet-thu-song-lap': 'Biệt thự song lập',
+  'biet-thu-lien-ke': 'Biệt thự liền kề',
+  'shophouse': 'Shophouse',
+  'can-ho-cao-tang': 'Căn hộ cao tầng',
+  'resort': 'Resort',
+};
 const details = [
   { icon: 'tag', label: isSale ? 'Giá bán' : 'Giá thuê', value: property.price },
   { icon: 'area', label: areaLabel, value: formattedArea },
@@ -79,7 +96,12 @@ const details = [
   { icon: 'road', label: 'Đường vào', value: kind !== 'can-ho' ? property.roadWidth : null },
   { icon: 'legal', label: 'Pháp lý', value: property.legal },
   { icon: 'furniture', label: 'Nội thất', value: property.interior ?? property.furniture },
-  { icon: 'home', label: 'Loại hình', value: property.propertyType },
+  ...(isHaiVanBay ? [
+    { icon: 'home', label: 'Dự án', value: 'Vinhomes Hải Vân Bay' },
+    { icon: 'location', label: 'Phân khu', value: property.subdivision ? subdivisionNames[property.subdivision] || property.subdivision : null },
+    { icon: 'home', label: 'Loại hình', value: property.projectPropertyType ? projectTypeNames[property.projectPropertyType] || property.projectPropertyType : null },
+    { icon: 'tag', label: 'Mã sản phẩm', value: property.productCode },
+  ] : [{ icon: 'home', label: 'Loại hình', value: property.propertyType }]),
   { icon: 'location', label: 'Địa chỉ', value: property.address },
   { icon: 'location', label: 'Phường / xã', value: property.ward },
   { icon: 'location', label: 'Khu vực', value: property.district },
