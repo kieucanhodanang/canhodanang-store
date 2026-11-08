@@ -6,6 +6,28 @@ description: Vinhomes Hải Vân Bay Đà Nẵng quy mô 512,2 ha. Cập nhật 
   khu, biệt thự, shophouse, giá bán, mặt bằng, pháp lý và tiến độ mới nhất.
 developer: Công ty Cổ phần Vinpearl
 location: Khu vực Làng Vân, phường Hải Vân, TP. Đà Nẵng
+totalArea: 512,2
+unitCount: "5792"
+handoverDate: Quỹ IV 2029
+buildingDensity: 19,8
+floorPlanText: Mặt bằng tổng thể và cơ cấu các loại hình BĐS
+floorPlanImages:
+  - /uploads/vinhomes-hai-van-bay-masterplan-infographic.png
+progressItems:
+  - title: Tiến độ phân khu Bạch Vân tháng 11/2026
+    image: /uploads/tien-do-bach-van-thang-11-2026.webp
+    description: Bạch Vân đang thi công tích cực, nhiều dãy nhà thấp tầng đã lên kết
+      cấu khoảng 4 tầng và tiếp tục hoàn thiện mặt ngoài.
+  - title: Tiến độ phân khu Đảo Ngọc tháng 11/2026
+    description: Đảo Ngọc đang tập trung san nền, phân lô và triển khai hạ tầng giao
+      thông ven biển. Các tuyến đường nội khu và không gian cảnh quan đang từng
+      bước được định hình.
+    image: /uploads/tien-do-dao-ngoc-thang-11-2026.webp
+  - title: Tiến độ phân khu Vịnh Mây tháng 11/2026
+    description: Vịnh Mây ghi nhận nhiều hạng mục nhà thấp tầng đã hoàn thiện phần
+      thô, một số tuyến đường nội khu đã trải nhựa. Nhà mẫu đã cất nóc và đang
+      trong giai đoạn hoàn thiện nội thất.
+    image: /uploads/tien-do-vinh-may-thang-11-2026.webp
 haiVanZoneImages:
   tinhVan: /uploads/khu-tinh-van-cua-hai-van-bay.webp
   bachVan: /uploads/khu-bach-van-cua-hai-van-bay.webp
@@ -24,7 +46,7 @@ distributionStatus: dang-phan-phoi
 showLogoInFooter: true
 showInMenu: true
 date: 2026-11-07T12:34:00
-updatedAt: 2026-11-08T09:08:00
+updatedAt: 2026-11-08T09:54:00
 status: published
 showOnHome: true
 featured: true
