@@ -294,7 +294,18 @@ const schema = {
       <section class="description">
         <h2>Mặt bằng dự án {data.title}</h2>
         {extra.floorPlanText && <p class="section-copy">{extra.floorPlanText}</p>}
-        {extra.floorPlanImages?.length ? <div class="floor-plan-gallery">{extra.floorPlanImages.filter(Boolean).map((image, index) => <img src={image} alt={`Mặt bằng ${data.title} - ảnh ${index+1}`} loading="lazy" />)}</div> : <p class="empty">Thông tin mặt bằng đang được cập nhật.</p>}
+        {extra.floorPlanImages?.length ? <>
+          <div class="floor-plan-gallery">{extra.floorPlanImages.filter(Boolean).map((image, index) => (
+            <button class="floor-plan-open" type="button" data-floor-plan-src={image} data-floor-plan-alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} aria-label={`Phóng to mặt bằng ${data.title} - ảnh ${index + 1}`}>
+              <img src={image} alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} loading="lazy" />
+              <span class="floor-plan-zoom">⛶ Phóng to ảnh</span>
+            </button>
+          ))}</div>
+          <dialog class="floor-plan-dialog" aria-label="Xem mặt bằng dự án phóng to">
+            <button type="button" class="floor-plan-close" aria-label="Đóng ảnh phóng to">×</button>
+            <img class="floor-plan-full-image" alt="" />
+          </dialog>
+        </> : <p class="empty">Thông tin mặt bằng đang được cập nhật.</p>}
       </section>
 
       <section class="description">
@@ -352,6 +363,18 @@ const schema = {
         button.querySelector('.project-read-more-label').textContent = expanded ? 'Xem thêm' : 'Thu gọn';
         if (expanded) content.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
       });
+      }
+      const floorPlanDialog = document.querySelector('.floor-plan-dialog');
+      if (floorPlanDialog) {
+        const fullImage = floorPlanDialog.querySelector('.floor-plan-full-image');
+        document.querySelectorAll('.floor-plan-open').forEach(button => button.addEventListener('click', () => {
+          fullImage.src = button.dataset.floorPlanSrc;
+          fullImage.alt = button.dataset.floorPlanAlt || 'Mặt bằng dự án';
+          floorPlanDialog.showModal();
+        }));
+        floorPlanDialog.querySelector('.floor-plan-close').addEventListener('click', () => floorPlanDialog.close());
+        floorPlanDialog.addEventListener('click', event => { if (event.target === floorPlanDialog) floorPlanDialog.close(); });
+        floorPlanDialog.addEventListener('close', () => { fullImage.removeAttribute('src'); });
       }
       const haiVanCards = document.querySelectorAll('#hai-van-cards .hai-van-card');
       const zoneFilter = document.getElementById('hai-van-zone-filter');
@@ -425,7 +448,15 @@ const schema = {
     .spec-item{border:1px solid #e8eef3;border-radius:10px;padding:12px 14px}
     .spec-item dt{font-size:13px;color:#62788b;margin-bottom:5px}
     .spec-item dd{font-size:15px;font-weight:650;margin:0}
-    .floor-plan-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .floor-plan-gallery{display:grid;grid-template-columns:1fr;gap:14px}
+    .floor-plan-open{display:block;width:100%;padding:0;border:0;background:#eef3f7;border-radius:10px;overflow:hidden;position:relative;cursor:zoom-in;text-align:left}
+    .floor-plan-open img{display:block;width:100%;height:clamp(260px,40vw,470px);object-fit:cover;object-position:center}
+    .floor-plan-zoom{position:absolute;right:14px;bottom:14px;background:rgba(16,42,64,.9);color:white;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:700}
+    .floor-plan-dialog{border:0;border-radius:12px;padding:52px 12px 12px;background:#fff;max-width:96vw;max-height:96vh;box-shadow:0 20px 70px #0006}
+    .floor-plan-dialog::backdrop{background:rgba(4,18,31,.88)}
+    .floor-plan-full-image{display:block;max-width:calc(96vw - 24px);max-height:calc(96vh - 70px);width:auto;height:auto;object-fit:contain;margin:auto}
+    .floor-plan-close{position:absolute;top:6px;right:12px;border:0;background:transparent;font-size:34px;line-height:1;cursor:pointer;color:#19334d}
+    @media(max-width:767px){.floor-plan-open img{height:260px}.floor-plan-zoom{right:10px;bottom:10px;font-size:12px;padding:8px 10px}}
     .floor-plan-gallery img,.progress-item img{width:100%;height:auto;border-radius:10px}
     .section-copy,.progress-item p{line-height:1.8}
     .progress-item{margin-top:24px}
