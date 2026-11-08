@@ -28,6 +28,16 @@ const linkedProperties = groups.flatMap((entries, groupIndex) =>
 );
 const properties = linkedProperties;
 const isHaiVanBay = entry.id === 'vinhomes-hai-van-bay';
+const haiVanZoneImages = data.haiVanZoneImages;
+const haiVanZoneImage = (zone: string): string | undefined => {
+  const key = ({
+    'tinh-van': 'tinhVan',
+    'bach-van': 'bachVan',
+    'dao-ngoc': 'daoNgoc',
+    'vinh-may': 'vinhMay',
+  } as Record<string, keyof NonNullable<typeof haiVanZoneImages>>)[zone];
+  return key ? haiVanZoneImages?.[key] ?? undefined : undefined;
+};
 const haiVanZones = [
   { value: 'tinh-van', label: 'Tinh Vân' },
   { value: 'bach-van', label: 'Bạch Vân' },
@@ -191,9 +201,12 @@ const schema = {
           <h2>Khám phá 4 phân khu Vinhomes Hải Vân Bay</h2>
           <div class="hai-van-zones">
             {haiVanZones.map(zone => (
-              <button type="button" class="hai-van-zone" data-zone-choice={zone.value} aria-pressed="false">
-                <span class="hai-van-zone-name">{zone.label}</span>
-                <span class="hai-van-zone-count">{properties.filter(item => item.data.subdivision === zone.value).length} sản phẩm</span>
+              <button type="button" class:list={['hai-van-zone', { 'has-image': Boolean(haiVanZoneImage(zone.value)) }]} data-zone-choice={zone.value} aria-pressed="false">
+                {haiVanZoneImage(zone.value) && <img class="hai-van-zone-image" src={haiVanZoneImage(zone.value)} alt={`Phân khu ${zone.label} - Vinhomes Hải Vân Bay`} loading="lazy" />}
+                <span class="hai-van-zone-info">
+                  <span class="hai-van-zone-name">{zone.label}</span>
+                  <span class="hai-van-zone-count">{properties.filter(item => item.data.subdivision === zone.value).length} sản phẩm</span>
+                </span>
               </button>
             ))}
           </div>
@@ -420,6 +433,15 @@ const schema = {
     .progress-item iframe,.progress-item video{width:100%;aspect-ratio:16/9;border:0;border-radius:10px}
     .hai-van-zones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 30px}
     .hai-van-zone{border:1px solid #dbe5ed;background:#f6f9fc;border-radius:12px;min-height:100px;padding:16px 10px;display:flex;flex-direction:column;justify-content:center;gap:8px;cursor:pointer;color:#19334d}
+    .hai-van-zone.has-image{padding:0;overflow:hidden;position:relative;min-height:170px;background:#193d5a;color:#fff}
+    .hai-van-zone-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .25s}
+    .hai-van-zone.has-image:hover .hai-van-zone-image{transform:scale(1.04)}
+    .hai-van-zone.has-image::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,30,50,.85),rgba(8,30,50,.06) 75%);pointer-events:none}
+    .hai-van-zone-info{display:flex;flex-direction:column;gap:8px;position:relative;z-index:1}
+    .hai-van-zone.has-image .hai-van-zone-info{margin-top:auto;width:100%;padding:15px;text-align:left}
+    .hai-van-zone.has-image .hai-van-zone-name{color:#fff}
+    .hai-van-zone.has-image .hai-van-zone-count{color:#e3ebf3}
+    .hai-van-zone.has-image[aria-pressed="true"]{outline:3px solid #17679a;outline-offset:2px}
     .hai-van-zone[aria-pressed="true"]{border-color:#17679a;background:#eaf4fa}
     .hai-van-zone-name{font-weight:750;font-size:17px}
     .hai-van-zone-count{font-size:12px;color:#61788c}
