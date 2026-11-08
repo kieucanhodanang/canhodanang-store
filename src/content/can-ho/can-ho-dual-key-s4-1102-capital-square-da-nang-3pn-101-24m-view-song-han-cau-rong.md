@@ -29,8 +29,8 @@ gallery:
 ogImage: /uploads/can-ho-s4.1102-capital-square-view-song-han.png
 image: /uploads/can-ho-s4.1102-capital-square-gia-ban-t11-2026.png
 imageAlt: căn hộ dualkey trực diện sông Hàn Capital Square 3 phòng ngủ
-date: 2026-11-04T16:17:00
-updatedAt: 2026-11-08T11:29:00
+date: 2026-11-08T14:16:00
+updatedAt: 2026-11-08T14:16:00
 status: published
 showOnHome: true
 featured: true
