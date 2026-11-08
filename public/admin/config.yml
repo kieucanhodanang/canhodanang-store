@@ -393,6 +393,29 @@ collections:
       widget: file
       required: false
       hint: Chỉ dùng video dung lượng nhỏ; ưu tiên YouTube để tránh tăng dung lượng GitHub và Cloudflare.
+  - label: Ảnh đại diện 4 phân khu Vinhomes Hải Vân Bay
+    name: haiVanZoneImages
+    widget: object
+    required: false
+    collapsed: true
+    hint: Chỉ sử dụng cho dự án Vinhomes Hải Vân Bay. Tải ảnh ngang WebP/JPG để hiển thị trên 4 thẻ phân khu.
+    fields:
+    - label: Ảnh phân khu Tinh Vân
+      name: tinhVan
+      widget: image
+      required: false
+    - label: Ảnh phân khu Bạch Vân
+      name: bachVan
+      widget: image
+      required: false
+    - label: Ảnh phân khu Đảo Ngọc
+      name: daoNgoc
+      widget: image
+      required: false
+    - label: Ảnh phân khu Vịnh Mây
+      name: vinhMay
+      widget: image
+      required: false
   - label: Loại hình trong dự án
     name: propertyTypes
     widget: select
