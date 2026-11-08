@@ -10,7 +10,8 @@ const properties = sortFeaturedFirst(
     entry.data.transaction === 'ban'
   )
 );
-const { totalItems, totalPages } = paginateListings(properties, 1, 12);
+const { totalItems } = paginateListings(properties, 1, 12);
+const areas = [...new Set(properties.map(item => item.data.district || item.data.ward).filter(Boolean))].sort((a,b) => a.localeCompare(b,'vi'));
 const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị trí, diện tích và giá chào bán. Xem thông tin pháp lý từng bất động sản, liên hệ 0869 437 415 để tư vấn.';
 ---
 <Base title="Mua Bán Nhà Đất Thổ Cư Đà Nẵng | Giá & Vị Trí" description={description}>
@@ -21,15 +22,25 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
         <h1>Nhà đất thổ cư Đà Nẵng</h1>
         <p>Thông tin nhà đất đang bán, cập nhật từ hệ thống quản lý bất động sản.</p>
       </header>
+      <form class="property-search" id="property-search" role="search">
+        <label class="search-keyword"><span aria-hidden="true">⌕</span><input type="search" id="search-keyword" placeholder="Tìm nhà đất, đường, khu vực..." aria-label="Tìm kiếm nhà đất thổ cư" autocomplete="off" /></label>
+        <button type="submit">Tìm kiếm</button>
+      </form>
+      <div class="quick-filters" aria-label="Bộ lọc nhà đất">
+        <label>Khu vực<select id="search-area"><option value="">Tất cả khu vực</option>{areas.map(area => <option value={area}>{area}</option>)}</select></label>
+        <label>Khoảng giá<select id="search-price"><option value="">Tất cả mức giá</option><option value="0-3000">Dưới 3 tỷ</option><option value="3000-5000">3 – 5 tỷ</option><option value="5000-7000">5 – 7 tỷ</option><option value="7000-10000">7 – 10 tỷ</option><option value="10000+">Trên 10 tỷ</option></select></label>
+        <label>Diện tích<select id="search-size"><option value="">Tất cả diện tích</option><option value="0-60">Dưới 60 m²</option><option value="60-100">60 – 100 m²</option><option value="100-150">100 – 150 m²</option><option value="150+">Trên 150 m²</option></select></label>
+        <button class="clear-search" type="button" id="clear-search">Xóa lọc</button>
+      </div>
       {totalItems > 0 ? (
         <>
-          <p class="result-count">Có <strong>{totalItems}</strong> bất động sản đang bán</p>
+          <p class="result-count" id="result-count" aria-live="polite">Có <strong>{totalItems}</strong> bất động sản đang bán</p>
           <div class="property-grid" id="property-grid">
             {properties.map((entry, index) => {
               const data = entry.data;
               const location = [data.ward, data.district].filter(Boolean).join(' · ') || data.address;
               return (
-                <article class="property-card" data-page={Math.floor(index / 12) + 1} hidden={index >= 12}>
+                <article class="property-card" data-keywords={[data.title,data.description,data.address,data.district,data.ward].filter(Boolean).join(' ')} data-district={data.district || ''} data-ward={data.ward || ''} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} hidden={index >= 12}>
                   <a href={`/nha-dat-tho-cu/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
                     <img src={data.image} alt={data.imageAlt || data.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
                     {data.featured && <span class="featured-tag">Nổi bật</span>}
@@ -50,13 +61,12 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
               );
             })}
           </div>
-          {totalPages > 1 && (
-            <nav class="pagination" id="pagination" aria-label="Phân trang nhà đất" data-total-pages={totalPages}>
-              <button type="button" data-action="previous" disabled>‹ Trước</button>
-              <span id="page-status" aria-live="polite">Trang 1 / {totalPages}</span>
-              <button type="button" data-action="next">Sau ›</button>
-            </nav>
-          )}
+          <nav class="pagination" id="pagination" aria-label="Phân trang nhà đất" hidden>
+            <button type="button" data-action="previous">‹ Trước</button>
+            <span id="page-status" aria-live="polite"></span>
+            <button type="button" data-action="next">Sau ›</button>
+          </nav>
+          <p class="empty-filter" id="empty-filter" hidden>Không tìm thấy nhà đất phù hợp. Hãy thử thay đổi bộ lọc.</p>
         </>
       ) : (
         <div class="empty-state"><h2>Đang cập nhật nhà đất</h2><p>Hiện chưa có bất động sản đang bán phù hợp. Anh/chị vui lòng quay lại sau hoặc liên hệ để được tư vấn.</p><a href="tel:0869437415">Gọi 0869 437 415</a></div>
@@ -64,25 +74,63 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     </div>
   </main>
   <script>
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('#property-grid .property-card'));
+    const form = document.querySelector<HTMLFormElement>('#property-search');
+    const keyword = document.querySelector<HTMLInputElement>('#search-keyword');
+    const area = document.querySelector<HTMLSelectElement>('#search-area');
+    const price = document.querySelector<HTMLSelectElement>('#search-price');
+    const size = document.querySelector<HTMLSelectElement>('#search-size');
     const pagination = document.querySelector<HTMLElement>('#pagination');
-    if (pagination) {
-      const cards = Array.from(document.querySelectorAll<HTMLElement>('#property-grid .property-card'));
-      const total = Number(pagination.dataset.totalPages || '1');
-      const previous = pagination.querySelector<HTMLButtonElement>('[data-action="previous"]');
-      const next = pagination.querySelector<HTMLButtonElement>('[data-action="next"]');
-      const status = pagination.querySelector<HTMLElement>('#page-status');
-      let current = 1;
-      const showPage = (page: number) => {
-        current = Math.max(1, Math.min(total, page));
-        cards.forEach((card) => { card.hidden = Number(card.dataset.page) !== current; });
-        if (previous) previous.disabled = current === 1;
-        if (next) next.disabled = current === total;
-        if (status) status.textContent = `Trang ${current} / ${total}`;
-        document.querySelector('.heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      };
-      previous?.addEventListener('click', () => showPage(current - 1));
-      next?.addEventListener('click', () => showPage(current + 1));
-    }
+    const previous = pagination?.querySelector<HTMLButtonElement>('[data-action="previous"]');
+    const next = pagination?.querySelector<HTMLButtonElement>('[data-action="next"]');
+    const status = document.querySelector<HTMLElement>('#page-status');
+    const count = document.querySelector<HTMLElement>('#result-count');
+    const empty = document.querySelector<HTMLElement>('#empty-filter');
+    const normalize = (value: string) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().trim();
+    const inRange = (raw: string | undefined, range: string) => {
+      if (!range) return true;
+      if (raw === undefined || raw === '') return false;
+      const value = Number(raw);
+      if (!Number.isFinite(value)) return false;
+      if (range.endsWith('+')) return value >= Number(range.slice(0,-1));
+      const [min,max] = range.split('-').map(Number);
+      return value >= min && value <= max;
+    };
+    let current = 1;
+    const render = (reset = true) => {
+      if (reset) current = 1;
+      const tokens = normalize(keyword?.value || '').split(/\s+/).filter(Boolean);
+      const selectedArea = normalize(area?.value || '');
+      const matches = cards.filter(card => {
+        const searchable = normalize(card.dataset.keywords || '');
+        if (tokens.some(token => !searchable.includes(token))) return false;
+        if (selectedArea && !normalize([card.dataset.district,card.dataset.ward].join(' ')).includes(selectedArea)) return false;
+        return inRange(card.dataset.price,price?.value || '') && inRange(card.dataset.area,size?.value || '');
+      });
+      const pages = Math.max(1,Math.ceil(matches.length / 12));
+      current = Math.min(current,pages);
+      const visible = new Set(matches.slice((current-1)*12,current*12));
+      cards.forEach(card => { card.hidden = !visible.has(card); });
+      if (count) count.textContent = `Có ${matches.length} bất động sản đang bán`;
+      if (empty) empty.hidden = matches.length > 0;
+      if (pagination) pagination.hidden = pages <= 1;
+      if (status) status.textContent = `Trang ${current} / ${pages}`;
+      if (previous) previous.disabled = current === 1;
+      if (next) next.disabled = current === pages;
+    };
+    form?.addEventListener('submit', event => { event.preventDefault(); keyword?.blur(); render(); });
+    [area,price,size].forEach(el => el?.addEventListener('change', () => render()));
+    document.querySelector('#clear-search')?.addEventListener('click', () => {
+      if (keyword) keyword.value = '';
+      if (area) area.value = '';
+      if (price) price.value = '';
+      if (size) size.value = '';
+      render();
+    });
+    const go = (delta: number) => { current += delta; render(false); document.querySelector('.heading')?.scrollIntoView({behavior:'smooth',block:'start'}); };
+    previous?.addEventListener('click', () => go(-1));
+    next?.addEventListener('click', () => go(1));
+    render();
   </script>
   <style>
     .listing-page{background:#f5f8fb;color:#19334d;min-height:65vh;padding:28px 0 70px}
@@ -91,7 +139,17 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     .breadcrumbs a{color:#1a5d8c;text-decoration:none}
     .heading{margin-bottom:24px}
     .heading h1{font-size:clamp(27px,3vw,38px);line-height:1.25;margin:0 0 10px;color:#173c5b}
-    .heading p{color:#63788a;margin:0;line-height:1.6}
+    .heading p{color:#63788a;margin:0;line-height:1.7;max-width:760px;overflow-wrap:break-word}
+    .property-search{display:flex;gap:10px;margin:0 0 14px;background:#fff;padding:12px;border:1px solid #e2eaf0;border-radius:12px}
+    .search-keyword{flex:1;display:flex;align-items:center;gap:9px;min-width:0;border:1px solid #cbd7e3;border-radius:9px;padding:0 12px;color:#789}
+    .search-keyword input{flex:1;min-width:0;width:100%;height:44px;border:0;outline:none;font-size:16px;background:transparent;color:#19334d}
+    .property-search>button{border:0;border-radius:9px;padding:0 22px;background:#174f76;color:#fff;font-size:15px;cursor:pointer}
+    .quick-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;align-items:end;gap:12px;margin-bottom:22px}
+    .quick-filters label{display:grid;gap:7px;font-size:13px;font-weight:600;color:#36536a;min-width:0}
+    .quick-filters select{width:100%;min-width:0;height:44px;padding:0 10px;border:1px solid #cbd7e3;border-radius:9px;background:#fff;color:#19334d;font-size:16px}
+    .clear-search{height:44px;padding:0 15px;border:1px solid #cbd7e3;border-radius:9px;background:#fff;color:#174f76;cursor:pointer}
+    .pagination[hidden],.empty-filter[hidden]{display:none}
+    .empty-filter{padding:25px;background:#fff;border:1px dashed #cbd7e3;border-radius:12px;color:#60758a}
     .result-count{font-size:14px;color:#60758a;margin:0 0 18px}
     .property-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
     .property-card{background:#fff;border:1px solid #e6ebf0;border-radius:14px;overflow:hidden;box-shadow:0 5px 18px rgba(26,60,90,.055);display:flex;flex-direction:column;min-width:0}
@@ -118,7 +176,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     .empty-state h2{margin:0 0 10px;font-size:23px}
     .empty-state p{color:#60758a;line-height:1.6}
     .empty-state a{color:#1b648f;font-weight:700}
-    @media(max-width:900px){.property-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
-    @media(max-width:600px){.container{padding:0 14px}.property-grid{grid-template-columns:1fr;gap:15px}.card-content{padding:15px}.listing-page{padding-top:20px}.pagination{gap:10px}.pagination button{padding:9px 12px}}
+    @media(max-width:900px){.quick-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.property-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
+    @media(max-width:600px){.quick-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.clear-search{grid-column:1/-1}.property-search>button{padding:0 12px}.container{padding:0 14px}.property-grid{grid-template-columns:1fr;gap:15px}.card-content{padding:15px}.listing-page{padding-top:20px}.pagination{gap:10px}.pagination button{padding:9px 12px}}
   </style>
 </Base>
