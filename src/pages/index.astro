@@ -354,6 +354,36 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       let priceTouched = false;
       let areaTouched = false;
       const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase().trim();
+      // Tìm theo từng từ thay vì yêu cầu nguyên cụm liên tiếp.
+      // CMS lưu priceValue bằng TRIỆU; dữ liệu item.price đã đổi sang TỶ cho tin bán.
+      const parseSearch = (raw) => {
+        let remaining = normalize(raw).replace(/[,](?=\d)/g, '.');
+        let requestedBedrooms = null;
+        remaining = remaining.replace(/\b(\d+)\s*(?:phong\s*ngu|pn|bedrooms?)\b/g, (_, count) => {
+          requestedBedrooms = Number(count);
+          return ' ';
+        });
+        let priceRange = null;
+        // Cụm có đơn vị rõ ràng: 4 tỷ, 4.5 tỷ, 12 triệu.
+        remaining = remaining.replace(/\b(\d+(?:\.\d+)?)\s*(ty|ti|trieu)(?:\s*dong)?\b/g, (whole, amount, unit) => {
+          const value = Number(amount);
+          if (Number.isFinite(value)) {
+            const priceInMode = mode === 'cho-thue' ? (unit === 'trieu' ? value : value * 1000) : (unit === 'trieu' ? value / 1000 : value);
+            priceRange = [Math.max(0, priceInMode - (mode === 'cho-thue' ? 1 : 1)), priceInMode + 1];
+          }
+          return ' ';
+        });
+        // Chỉ một con số đơn lẻ: khách tìm căn bán theo TỶ, thuê theo TRIỆU/tháng.
+        if (!priceRange && /^\s*\d+(?:\.\d+)?\s*$/.test(remaining)) {
+          const value = Number(remaining.trim());
+          if (value > 0) {
+            priceRange = [Math.max(0, value - 1), value + 1];
+            remaining = '';
+          }
+        }
+        const tokens = remaining.split(/\s+/).filter(Boolean);
+        return { tokens, priceRange, requestedBedrooms };
+      };
       const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
       const format = (n) => Number(n.toFixed(1)).toLocaleString('vi-VN');
       const priceLimit = () => mode === 'cho-thue' ? 50 : 20;
@@ -389,18 +419,23 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       };
       const render = (resetPage = true) => {
         if (resetPage) currentPage = 1;
-        const q = normalize(filterKeyword.value);
+        const search = parseSearch(filterKeyword.value);
         const minP = Number(priceMin.value), maxP = Number(priceMax.value);
         const minA = Number(areaMin.value), maxA = Number(areaMax.value);
         const matched = items.filter(item => {
           if (mode === 'cho-thue' && !['cho-thue','cho-thue-ngay'].includes(item.transaction)) return false;
           if (mode === 'nha-dat-tho-cu' && (item.type === 'can-ho' || item.transaction !== 'ban')) return false;
           if (mode === 'can-ho' && (item.type !== 'can-ho' || item.transaction !== 'ban')) return false;
-          if (q && !normalize([item.title,item.description,item.projectName,item.district,item.ward,item.address].join(' ')).includes(q)) return false;
+          const searchableText = normalize([item.title,item.description,item.projectName,item.district,item.ward,item.address,
+            item.type === 'can-ho' ? 'can ho chung cu' : 'nha dat tho cu',
+            item.bedrooms === null ? '' : `${item.bedrooms} phong ngu ${item.bedrooms} pn`].join(' '));
+          if (search.tokens.some(token => !searchableText.includes(token))) return false;
+          if (search.requestedBedrooms !== null && item.bedrooms !== search.requestedBedrooms) return false;
           if (project.value && item.project !== project.value) return false;
           if (bedrooms.value && (item.bedrooms === null || (bedrooms.value === '4' ? item.bedrooms < 4 : item.bedrooms !== Number(bedrooms.value)))) return false;
           if (direction.value && normalize(item.direction) !== normalize(direction.value)) return false;
           const p = mode === 'cho-thue' ? item.rent : item.price;
+          if (search.priceRange && (p === null || p < search.priceRange[0] || p > search.priceRange[1])) return false;
           if (priceTouched && (p === null || p < minP || (maxP < priceLimit() && p > maxP))) return false;
           if (areaTouched && (item.area === null || item.area < minA || (maxA < 125 && item.area > maxA))) return false;
           return true;
@@ -490,6 +525,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         filterKeyword.value = keyword.value;
         syncQuick();
         section.hidden = false;
+        keyword.blur();
         render();
         section.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
       });
@@ -922,6 +958,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .hero-search-tabs input:focus-visible+span {outline:3px solid #dfac57;outline-offset:2px;}
     .hero-search-input {display:flex;gap:9px;}
     .hero-search-input input {min-width:0;flex:1;border:1px solid #c9d5e0;border-radius:9px;padding:14px;font:inherit;}
+    /* iOS Safari không tự zoom khi ô nhập có font >= 16px. */
+    .hero-search-input input,.home-quick-filters input,.filter-field input {font-size:16px;}
     .hero-search-input button {border:0;background:#bd914a;color:#fff;border-radius:9px;padding:12px 23px;font:inherit;font-weight:700;cursor:pointer;}
     .results-section {padding:48px 0;background:#f5f8fb;color:#19334d;scroll-margin-top:15px;}
     .results-section[hidden] {display:none!important;}
@@ -1005,7 +1043,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
              .hero-search {margin-top:20px;padding:10px;}
        .hero-search-tabs span {padding:9px 11px;font-size:12px;}
        .hero-search-input button {padding:10px 12px;font-size:13px;}
-       .hero-search-input input {padding:11px;font-size:14px;}
+       .hero-search-input input {padding:11px;font-size:16px;}
        .filter-grid,.range-grid {grid-template-columns:1fr;gap:14px;}
        .filter-panel {padding:15px;}
        .range-grid {gap:25px;}
@@ -1028,7 +1066,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     }
     .home-quick-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 16px;padding:15px;background:#fff;border:1px solid #dce5ee;border-radius:13px;min-width:0}
     .home-quick-filters label{display:grid;gap:6px;min-width:0;font-size:13px;font-weight:700;color:#173a58}
-    .home-quick-filters input,.home-quick-filters select{width:100%;min-width:0;max-width:100%;height:43px;padding:0 10px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#19334d;font:inherit;font-weight:400;box-sizing:border-box}
+    .home-quick-filters input,.home-quick-filters select{width:100%;min-width:0;max-width:100%;height:43px;padding:0 10px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#19334d;font-size:16px;font-weight:400;box-sizing:border-box}
     .results-sidebar>.filter-panel{min-width:0;padding:16px}
     .results-sidebar>.filter-panel .filter-grid,.results-sidebar>.filter-panel .range-grid{grid-template-columns:minmax(0,1fr);gap:13px}
     .results-sidebar>.filter-panel .range-grid{margin-top:18px}
