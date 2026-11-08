@@ -23,10 +23,12 @@ interior: Liền tường
 gallery:
   - /uploads/view-song-han-cua-capital-square.png
   - /uploads/can-ho-s4.1102-capital-square-gia-ban-t11-2026.png
-  - /uploads/can-ho-view-song-han-capital-square-toa-s4-hudson-place.png
-ogImage: /uploads/hudson-place_-han-river-views-3.png
-image: /uploads/hudson-place_-han-river-views-3.png
-imageAlt: căn hộ view trực diện sông Hàn Capital Square 3 phòng ngủ
+  - /uploads/can-ho-s4.1102-capital-square-view-song-han.png
+  - /uploads/capital-square-danang-garden-retreat-6.png
+  - /uploads/capital-square-danang-garden-retreat-6.png
+ogImage: /uploads/can-ho-s4.1102-capital-square-view-song-han.png
+image: /uploads/can-ho-s4.1102-capital-square-gia-ban-t11-2026.png
+imageAlt: căn hộ dualkey trực diện sông Hàn Capital Square 3 phòng ngủ
 date: 2026-11-04T16:17:00
 updatedAt: 2026-11-08T11:29:00
 status: published
