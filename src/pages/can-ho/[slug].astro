@@ -56,6 +56,11 @@ const regionGuides: Record<string, { intro: string; highlights: string[]; advice
 const regionGuide = region ? regionGuides[region.slug] : undefined;
 const regionProjects = region ? await getCollection('du-an') : [];
 const regionProjectNames = new Map(regionProjects.map(project => [project.id, project.data.title]));
+const formatRegionPostedDate = (value: unknown) => {
+  if (!value) return '';
+  const date = value instanceof Date ? value : new Date(String(value));
+  return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('vi-VN', {day:'2-digit',month:'2-digit',year:'numeric'}).format(date);
+};
 const formatRegionArea = (area?: string, areaValue?: number) => {
   const value = String(area || '').trim();
   if (/(m²|m2|mét vuông)/i.test(value)) return value.replace(/m2\b/i, 'm²');
@@ -234,7 +239,10 @@ const schema = {
                       {formatRegionArea(item.data.area, item.data.areaValue) && <span class="region-fact">{formatRegionArea(item.data.area, item.data.areaValue)}</span>}
                       {item.data.bedrooms != null && <span class="region-fact">{item.data.bedrooms} PN</span>}
                     </div>
-                    <a class="region-detail" href={`/can-ho/${encodeURIComponent(item.id)}/`}>Xem chi tiết →</a>
+                    <div class="region-action-row">
+                      <a class="region-detail" href={`/can-ho/${encodeURIComponent(item.id)}/`}>Xem chi tiết →</a>
+                      {formatRegionPostedDate(item.data.date) && <time class="region-posted-date">Ngày đăng: {formatRegionPostedDate(item.data.date)}</time>}
+                    </div>
                   </div>
                 </article>
               ))}
@@ -352,7 +360,7 @@ const schema = {
     .region-page h1 { font-size:clamp(27px,4vw,38px); margin:16px 0 12px; }
     .region-lead { color:#587187; line-height:1.7; }
     .region-count { font-weight:700; margin:20px 0; }
-    .region-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+    .region-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
     .region-card { display:flex;flex-direction:column;min-width:0;overflow:hidden;background:#fff;border:1px solid #e1e8ee;border-radius:16px;box-shadow:0 8px 24px #102b4508; }
     .region-card[hidden] { display:none!important; }
     .region-image { display:block;position:relative;aspect-ratio:16/10;background:#e6edf4;overflow:hidden; }
@@ -366,7 +374,9 @@ const schema = {
     .region-info h2 a {color:#102f50;text-decoration:none}
     .region-facts {display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-top:auto;margin-bottom:24px}
     .region-price {color:#c42626;font-size:19px;font-weight:800;margin-right:12px}
-    .region-fact {color:#587187;font-size:13px;padding:0 11px;border-left:1px solid #d6e0e8;white-space:nowrap}
+    .region-fact {color:#415d74;font-size:16px;font-weight:700;padding:0 11px;border-left:1px solid #d6e0e8;white-space:nowrap}
+    .region-action-row {display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .region-posted-date {font-size:12px;color:#657b8d;white-space:nowrap}
     .region-detail {color:#ae7b32;font-size:14px;font-weight:700;text-decoration:none}
     .region-pagination { display:flex; justify-content:center; align-items:center; gap:16px; margin-top:30px; }
     .region-pagination button { padding:10px 16px; border:1px solid #cbd7e3; background:#fff; border-radius:8px; cursor:pointer; }
