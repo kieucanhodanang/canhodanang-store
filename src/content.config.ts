@@ -90,6 +90,13 @@ const duAn = defineCollection({
       videoFile: optionalText,
     })).nullish(),
     propertyTypes: z.array(z.string()).nullish(),
+    // Ảnh đại diện riêng cho 4 phân khu Vinhomes Hải Vân Bay.
+    haiVanZoneImages: z.object({
+      tinhVan: optionalText,
+      bachVan: optionalText,
+      daoNgoc: optionalText,
+      vinhMay: optionalText,
+    }).nullish(),
     gallery: z.array(z.string()).nullish(),
     logo: optionalText,
     logoAlt: optionalText,
