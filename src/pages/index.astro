@@ -133,7 +133,7 @@ const rentalDistrictAreas = [
   count: searchableListings.filter(item => ['cho-thue','cho-thue-ngay'].includes(item.transaction)
     && normalizeLandDistrict(item.district) === normalizeLandDistrict(area.name)).length,
 }));
-// Chọn tối đa 3 dự án công khai, được bật hiển thị trang chủ.
+// Chọn tối đa 6 dự án công khai, được bật hiển thị trang chủ.
 // Dự án được ghim nổi bật ưu tiên trước; featuredOrder nhỏ lên trước.
 const duAn = projects
   .filter((item) => item.data.showOnHome !== false)
@@ -144,7 +144,7 @@ const duAn = projects
     const orderB = Number(b.data.featuredOrder) || 999999;
     return orderA - orderB || a.data.title.localeCompare(b.data.title, 'vi');
   })
-  .slice(0, 3)
+  .slice(0, 6)
   .map((item) => {
     const d = item.data;
     const rawImage = [d.image, d.coverImage, d.thumbnail]
