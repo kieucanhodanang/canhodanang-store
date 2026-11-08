@@ -41,13 +41,16 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
       <div class="listing-layout"><div class="listing-primary">
       {totalItems > 0 ? (
         <>
-          <p class="result-count" id="result-count" aria-live="polite">Có <strong>{totalItems}</strong> bất động sản đang bán</p>
+          <div class="result-toolbar">
+            <p class="result-count" id="result-count" aria-live="polite">Có <strong>{totalItems}</strong> bất động sản đang bán</p>
+            <label for="sort-listings">Sắp xếp <select id="sort-listings"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label>
+          </div>
           <div class="property-grid" id="property-grid">
             {properties.map((entry, index) => {
               const data = entry.data;
               const location = [data.ward, data.district].filter(Boolean).join(' · ') || data.address;
               return (
-                <article class="property-card" data-keywords={[data.title,data.description,data.address,data.district,data.ward].filter(Boolean).join(' ')} data-district={data.district || ''} data-ward={data.ward || ''} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-type={data.propertyType || ''} data-bedrooms={data.bedrooms ?? ''} hidden={index >= 12}>
+                <article class="property-card" data-keywords={[data.title,data.description,data.address,data.district,data.ward].filter(Boolean).join(' ')} data-district={data.district || ''} data-ward={data.ward || ''} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-type={data.propertyType || ''} data-bedrooms={data.bedrooms ?? ''} data-date={data.date instanceof Date ? data.date.getTime() : 0} data-featured={data.featured ? '1' : '0'} hidden={index >= 12}>
                   <a href={`/nha-dat-tho-cu/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
                     <img src={data.image} alt={data.imageAlt || data.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
                     {data.featured && <span class="featured-tag">Nổi bật</span>}
@@ -125,6 +128,10 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     const sidebar = document.querySelector<HTMLElement>('.filter-box');
     const sidebarArea = document.querySelector<HTMLSelectElement>('#sidebar-area');
     const selected = (name: string) => sidebar?.querySelector<HTMLInputElement>(`input[name="${name}"]:checked`)?.value || '';
+    const sort = document.querySelector<HTMLSelectElement>('#sort-listings');
+    const grid = document.querySelector<HTMLElement>('#property-grid');
+    const originalOrder = new Map(cards.map((card,index) => [card,index]));
+    const numeric = (card: HTMLElement,key: string) => { const v=card.dataset[key as keyof DOMStringMap];return v === undefined || v === '' ? null : Number(v); };
     const pagination = document.querySelector<HTMLElement>('#pagination');
     const previous = pagination?.querySelector<HTMLButtonElement>('[data-action="previous"]');
     const next = pagination?.querySelector<HTMLButtonElement>('[data-action="next"]');
@@ -159,6 +166,19 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
         if (selectedBedrooms && (selectedBedrooms === '4+' ? Number(card.dataset.bedrooms) < 4 : card.dataset.bedrooms !== selectedBedrooms)) return false;
         return inRange(card.dataset.price,selectedPrice) && inRange(card.dataset.area,selectedSize);
       });
+      const sortMode = sort?.value || 'default';
+      matches.sort((a,b) => {
+        const av = numeric(a,sortMode === 'area-desc' ? 'area' : 'price');
+        const bv = numeric(b,sortMode === 'area-desc' ? 'area' : 'price');
+        if (sortMode === 'price-asc' || sortMode === 'price-desc' || sortMode === 'area-desc') {
+          if (av === null && bv !== null) return 1;
+          if (bv === null && av !== null) return -1;
+          if (av !== null && bv !== null && av !== bv) return sortMode === 'price-asc' ? av-bv : bv-av;
+        }
+        if (sortMode === 'newest') return (numeric(b,'date') || 0) - (numeric(a,'date') || 0) || (originalOrder.get(a)!-originalOrder.get(b)!);
+        return originalOrder.get(a)!-originalOrder.get(b)!;
+      });
+      if (grid) matches.forEach(card => grid.appendChild(card));
       const pages = Math.max(1,Math.ceil(matches.length / 12));
       current = Math.min(current,pages);
       const visible = new Set(matches.slice((current-1)*12,current*12));
@@ -170,6 +190,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
       if (previous) previous.disabled = current === 1;
       if (next) next.disabled = current === pages;
     };
+    sort?.addEventListener('change', () => render());
     form?.addEventListener('submit', event => { event.preventDefault(); keyword?.blur(); render(); });
     [area,price,size,type,bedrooms,sidebarArea].forEach(el => el?.addEventListener('change', () => render()));
     sidebar?.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach(el => el.addEventListener('change', () => {
@@ -227,6 +248,10 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     .clear-search{display:block;margin:-10px 0 20px auto;border:0;background:transparent;color:#a77630;font-weight:700;cursor:pointer}
     .listing-sidebar{min-width:0}
     @media(max-width:760px){.listing-sidebar{display:none}.listing-layout{grid-template-columns:1fr}}
+    .result-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 18px}
+    .result-toolbar .result-count{margin:0}
+    .result-toolbar label{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:#36536a}
+    .result-toolbar select{min-height:40px;max-width:100%;padding:0 9px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#19334d;font-size:16px}
     .result-count{font-size:14px;color:#60758a;margin:0 0 18px}
     .property-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
     .property-card{background:#fff;border:1px solid #e6ebf0;border-radius:14px;overflow:hidden;box-shadow:0 5px 18px rgba(26,60,90,.055);display:flex;flex-direction:column;min-width:0}

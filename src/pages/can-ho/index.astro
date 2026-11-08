@@ -188,6 +188,16 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       const actual = card.dataset.price === '' ? NaN : Number(card.dataset.price);
       return wanted !== null && Number.isFinite(actual) && Math.abs(wanted - actual) < 0.01;
     };
+    // Danh sách dự án phụ thuộc khu vực của các căn hộ đang đăng bán.
+    const updateProjectOptions = () => {
+      const district = chosen('district');
+      const allowed = new Set(cards.filter(card => !district || clean(card.dataset.district).includes(district)).map(card => card.dataset.project).filter(Boolean));
+      [project, document.getElementById('quick-project')].forEach(select => {
+        [...select.options].forEach(option => { if (option.value) option.hidden = !allowed.has(option.value); });
+        if (select.value && !allowed.has(select.value)) select.value = '';
+      });
+      if (project.value !== document.getElementById('quick-project').value) document.getElementById('quick-project').value = project.value;
+    };
     const chosen = name => filterBox.querySelector(`input[name="${name}"]:checked`)?.value || '';
     const within = (value, range) => {
       if (!range) return true;
@@ -251,14 +261,14 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       if (selected) selected.checked = true;
     };
     Object.entries(quick).forEach(([name,select]) => {
-      select.addEventListener('change', () => { syncSidebarFromQuick(name); apply(); });
+      select.addEventListener('change', () => { syncSidebarFromQuick(name); if(name === 'district') updateProjectOptions(); apply(); });
     });
-    filterBox.addEventListener('change',()=>{ syncQuickFromSidebar(); apply(); });
-    document.getElementById('reset-filters').addEventListener('click',()=>{form.reset();filterBox.querySelectorAll('input[type=radio][value=""]').forEach(x=>x.checked=true);project.value='';syncQuickFromSidebar();apply();});
+    filterBox.addEventListener('change',()=>{ updateProjectOptions(); syncQuickFromSidebar(); apply(); });
+    document.getElementById('reset-filters').addEventListener('click',()=>{form.reset();filterBox.querySelectorAll('input[type=radio][value=""]').forEach(x=>x.checked=true);project.value='';updateProjectOptions();syncQuickFromSidebar();apply();});
     pagination.querySelector('[data-action="prev"]').addEventListener('click',()=>go(page-1));
     pagination.querySelector('[data-action="next"]').addEventListener('click',()=>go(page+1));
     addEventListener('popstate',()=>{page=readPage();render();});
-    syncQuickFromSidebar();page=readPage();apply(false);
+    syncQuickFromSidebar();updateProjectOptions();page=readPage();apply(false);
   })();
 </script>
 
