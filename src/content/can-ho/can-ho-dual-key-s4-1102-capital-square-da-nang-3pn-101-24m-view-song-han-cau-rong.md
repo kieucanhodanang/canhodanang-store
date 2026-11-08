@@ -1,0 +1,114 @@
+---
+title: Căn Hộ Dual-Key S4.1102 Capital Square Đà Nẵng – 3PN, 101.24m², View Sông
+  Hàn Cầu Rồng
+description: Căn hộ S4.1102 Hudson Place, Capital Square Đà Nẵng, 3 phòng ngủ,
+  101,24m², ban công hướng Nam, view sông Hàn – cầu Rồng. Giá từ 8,306 tỷ.
+project: capital-square
+transaction: ban
+listingStatus: available
+price: 8,306 tỷ
+priceValue: 8306
+area: 101,24
+areaValue: 102
+bedrooms: 3
+bathrooms: 2
+areaSlug: son-tra
+district: Sơn Trà
+ward: An Hải
+address: Trần Hưng Đạo, Ngô Quyền, Nguyễn Công Trữ
+legal: Sở Hữu Lâu Dài
+direction: Nam
+balconyDirection: Nam
+interior: Liền tường
+gallery:
+  - /uploads/view-song-han-cua-capital-square.png
+  - /uploads/can-ho-s4.1102-capital-square-gia-ban-t11-2026.png
+  - /uploads/can-ho-view-song-han-capital-square-toa-s4-hudson-place.png
+ogImage: /uploads/hudson-place_-han-river-views-3.png
+image: /uploads/hudson-place_-han-river-views-3.png
+imageAlt: căn hộ view trực diện sông Hàn Capital Square 3 phòng ngủ
+date: 2026-11-04T16:17:00
+updatedAt: 2026-11-08T11:29:00
+status: published
+showOnHome: true
+featured: true
+---
+Căn hộ S4.1102 thuộc phân khu Hudson Place, dự án Capital Square Đà Nẵng, là lựa chọn đáng chú ý dành cho khách hàng tìm kiếm căn hộ 3 phòng ngủ tại khu vực ven sông Hàn.
+
+Sở hữu diện tích 101,24m², ban công hướng Nam cùng tầm nhìn hướng sông Hàn, cầu Rồng và khu vực trình diễn pháo hoa quốc tế DIFF, căn hộ mang đến không gian sống lý tưởng cho gia đình yêu thích vị trí trung tâm và cảnh quan thành phố.
+
+## Thông tin căn hộ S4.1102 Capital Square
+
+* **Dự án:** Capital Square Đà Nẵng
+* **Phân khu:** Hudson Place
+* **Mã căn hộ:** S4.1102
+* **Diện tích:** 101,24m²
+* **Thiết kế:** 3 phòng ngủ
+* **Hướng ban công:** Nam
+* **Tầm nhìn:** Sông Hàn – cầu Rồng – khu vực pháo hoa DIFF
+* **Giá vay theo bảng hàng:** 9,907 tỷ đồng
+* **Giá thanh toán tiến độ:** 9,195 tỷ đồng
+* **Giá thanh toán sớm:** 8,306 tỷ đồng
+
+Các mức giá được cập nhật theo tài liệu bán hàng cung cấp, có thể thay đổi tùy thời điểm, phương thức thanh toán và chính sách áp dụng.
+
+## Vị trí căn hộ – Tầm nhìn hướng sông Hàn và cầu Rồng
+
+Điểm nổi bật của căn S4.1102 chính là vị trí trong phân khu Hudson Place với hướng nhìn về phía sông Hàn.
+
+Theo sơ đồ vị trí căn hộ, từ khu vực ban công hướng Nam, căn hộ có lợi thế tầm nhìn hướng về những biểu tượng nổi bật của Đà Nẵng:
+
+* **Sông Hàn:** Không gian cảnh quan ven sông, tạo cảm giác thoáng đãng.
+* **Cầu Rồng:** Công trình biểu tượng của thành phố, nổi bật vào ban đêm.
+* **Pháo hoa DIFF:** Hướng nhìn về khu vực diễn ra Lễ hội Pháo hoa Quốc tế Đà Nẵng.
+* **Cảnh quan đô thị:** Hệ thống cầu, đường ven sông và nhịp sống trung tâm thành phố.
+
+Tầm nhìn thực tế có thể thay đổi theo vị trí quan sát, thiết kế ban công và các công trình xung quanh.
+
+## Thiết kế 3 phòng ngủ – Diện tích 101,24m²
+
+Với diện tích 91,29m², căn hộ S4.1102 phù hợp với các gia đình cần không gian sinh hoạt rộng rãi, có thể bố trí phòng ngủ cho bố mẹ, con cái hoặc phòng làm việc riêng.
+
+Thiết kế 3 phòng ngủ đáp ứng nhu cầu sinh hoạt của gia đình nhiều thế hệ, đồng thời phù hợp với khách hàng đang tìm kiếm căn hộ có diện tích lớn tại trung tâm Đà Nẵng.
+
+Ban công hướng Nam là một lợi thế đáng cân nhắc, giúp căn hộ có khả năng đón gió và ánh sáng tự nhiên tùy theo điều kiện thực tế.
+
+## Tiện ích nội khu Capital Square Đà Nẵng
+
+Bên cạnh vị trí ven sông Hàn, cư dân Capital Square còn được giới thiệu hệ thống tiện ích nội khu đa dạng, phục vụ nhu cầu nghỉ ngơi, giải trí và sinh hoạt hằng ngày.
+
+### Bể bơi
+
+Không gian bể bơi kết hợp cảnh quan xanh, mang đến khu vực thư giãn và vận động cho cư dân ngay trong khuôn viên dự án.
+
+### Sân golf mini
+
+Tiện ích sân golf mini tạo thêm lựa chọn vận động, giải trí và giao lưu dành cho cư dân yêu thích bộ môn golf.
+
+### Vườn thư giãn
+
+Không gian sân vườn với cây xanh, đường dạo bộ và khu vực nghỉ chân, góp phần tạo môi trường sống gần gũi thiên nhiên.
+
+### Khu vui chơi trẻ em
+
+Khu vui chơi được bố trí nhằm đáp ứng nhu cầu vận động và giải trí của trẻ nhỏ, mang lại thêm tiện ích cho các gia đình có con.
+
+## Chính sách bán hàng – 5 năm không lo lãi suất
+
+Theo tài liệu giới thiệu, căn hộ S4.1102 đang được quảng bá với chương trình **5 năm không lo lãi suất**.
+
+Khách hàng có thể tham khảo ba phương án giá:
+
+* **Phương án vay:** 9,907 tỷ đồng
+* **Phương án thanh toán theo tiến độ:** 9,195 tỷ đồng
+* **Phương án thanh toán sớm:** 8,306 tỷ đồng
+
+Chính sách hỗ trợ lãi suất, điều kiện vay, thời gian áp dụng và các nghĩa vụ tài chính cần được xác nhận theo văn bản chính thức của chủ đầu tư hoặc đơn vị phân phối tại thời điểm giao dịch.
+
+## Vì sao nên cân nhắc căn hộ S4.1102?
+
+Căn hộ hội tụ nhiều đặc điểm đáng chú ý: thiết kế 3 phòng ngủ, diện tích hơn 101m², ban công hướng Nam và vị trí trong phân khu Hudson Place.
+
+Đặc biệt, lợi thế tầm nhìn hướng sông Hàn, cầu Rồng và khu vực pháo hoa DIFF giúp căn hộ trở thành lựa chọn đáng tham khảo cho khách hàng ưu tiên cảnh quan khi tìm mua bất động sản tại Đà Nẵng.
+
+**Liên hệ 0869 437 415** để nhận bảng giá mới nhất, mặt bằng căn S4.1102, chính sách thanh toán và lịch tư vấn trực tiếp.
