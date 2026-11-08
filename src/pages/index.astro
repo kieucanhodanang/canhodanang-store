@@ -473,7 +473,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
          const pageItems = matched.slice((currentPage - 1) * pageSize, currentPage * pageSize);
          pageItems.forEach(item => {
            const card = document.createElement('article'); card.className = 'result-card';
-           const details = [item.area !== null ? `${format(item.area)} m²` : item.areaText, item.bedrooms !== null ? `${item.bedrooms} phòng ngủ` : '', item.direction ? `Hướng ${item.direction}` : ''].filter(Boolean).join(' · ');
+           const details = [item.area !== null ? `${format(item.area)} m²` : formatHomeArea(item.areaText), item.bedrooms !== null ? `${item.bedrooms} phòng ngủ` : '', item.direction ? `Hướng ${item.direction}` : ''].filter(Boolean).join(' · ');
            // Giá nhập dạng văn bản trong CMS được ưu tiên để không ghi nhầm đơn vị thuê ngày/tháng.
            const priceValue = mode === 'cho-thue' ? item.rent : item.price;
            const shownPrice = item.priceText || (priceValue === null ? 'Liên hệ báo giá' : `${format(priceValue)} ${priceUnit()}`);
@@ -1090,7 +1090,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     /* Giá, diện tích và phòng ngủ trên cùng một dòng ở thẻ căn hộ. */
     #can-ho-ban .home-listing-facts,#can-ho-thue .home-listing-facts{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;min-width:0;width:100%;margin:9px 0;white-space:nowrap}
     #can-ho-ban .home-listing-facts .home-listing-price,#can-ho-thue .home-listing-facts .home-listing-price{display:inline;margin:0;flex:0 0 auto;font-size:clamp(14px,1.5vw,19px)}
-    .home-listing-fact{font-size:13px;color:#536b81;min-width:0}
+    .home-listing-fact{font-size:15px;font-weight:700;color:#415d74;min-width:0}
     .home-listing-fact:not(:first-child){border-left:1px solid #d6e0e9;padding-left:10px}
     @media(max-width:767px){
       #can-ho-ban .home-listing-facts,#can-ho-thue .home-listing-facts{gap:6px;margin:6px 0}
@@ -1133,7 +1133,12 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .search-results-list :global(.result-project-location .result-project){display:inline;max-width:none;white-space:normal;overflow:visible;text-overflow:clip;font-size:inherit;font-weight:600;color:#385875}
     .search-results-list :global(.result-project-location .result-place){display:inline;max-width:none;white-space:normal;overflow:visible;text-overflow:clip;font-size:inherit;color:#718395}
 
-  </style>
+    /* Ưu tiên giá, diện tích và phòng ngủ: không thu nhỏ thông tin chính trên mobile. */
+  #can-ho-ban .home-listing-fact,#can-ho-thue .home-listing-fact{font-size:15px;font-weight:700;white-space:nowrap}
+  #can-ho-ban .home-listing-facts .home-listing-price,#can-ho-thue .home-listing-facts .home-listing-price{font-size:17px}
+  #can-ho-ban .home-listing-facts,#can-ho-thue .home-listing-facts{flex-wrap:wrap;overflow:visible;gap:8px}
+  @media(max-width:600px){#can-ho-ban .home-listing-fact,#can-ho-thue .home-listing-fact{font-size:14px}}
+</style>
 
   <style is:global>
     .land-area-visual{display:block;position:relative;height:205px;overflow:hidden;background:linear-gradient(135deg,#cbdbe7,#7492a9);text-decoration:none}
@@ -1145,3 +1150,4 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .land-area-card .cardbody .textlink{margin-top:auto}
   </style>
 </Base>
+

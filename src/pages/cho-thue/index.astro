@@ -16,7 +16,10 @@ const pagination = paginateListings(apartments, 1, pageSize);
 const totalPages = pagination.totalPages;
 const description = 'Tìm căn hộ và nhà đất cho thuê Đà Nẵng theo giá thuê, diện tích, số phòng ngủ và vị trí. Danh sách cập nhật từ CMS.';
 const plain = (value: unknown) => typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
-const formatArea = (value: string | null | undefined) => plain(value) || 'Liên hệ';
+const formatArea = (value: string | null | undefined, fallback?: number | null) => {
+  const raw = plain(value) || (fallback != null ? String(fallback) : '');
+  return raw ? (/m²|m2|mét vuông/i.test(raw) ? raw : `${raw} m²`) : 'Liên hệ';
+};
 const imageFor = (data: { image?: string | null; gallery?: string[] | null }) => {
   const candidates = [data.image, ...(data.gallery || [])];
   return candidates.find((value) => typeof value === 'string' && (value.startsWith('/') || value.startsWith('https://'))) || '';
@@ -56,9 +59,8 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                       <h3><a href={href}>{d.title}</a></h3>
                       <strong class="price">{plain(d.price) || 'Liên hệ giá thuê'}</strong>
                       <div class="facts">
-                        <span>Diện tích: {formatArea(d.area)}</span>
+                        <span>Diện tích: {formatArea(d.area, d.areaValue)}</span>
                         {d.bedrooms != null && <span>{d.bedrooms} phòng ngủ</span>}
-                        {d.bathrooms != null && <span>{d.bathrooms} phòng tắm</span>}
                       </div>
                       {d.address && <p class="address">{d.address}</p>}
                       <a class="detail-link" href={href}>Xem chi tiết <span aria-hidden="true">→</span></a>
@@ -151,7 +153,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   .pin-label{position:absolute;top:12px;left:12px;background:#c99b56;color:#fff;padding:6px 10px;border-radius:6px;font-size:12px;font-weight:700}
   .listing-body{padding:23px;display:flex;flex-direction:column;flex:1}.listing-body h3{font-size:20px;line-height:1.4;margin:0 0 12px}
   .listing-body h3 a{color:#153d61;text-decoration:none}.listing-body h3 a:hover{color:#b58642}
-  .price{color:#c52d2d;font-size:20px;margin-bottom:13px}.facts{display:flex;gap:9px 15px;flex-wrap:wrap;font-size:13px;color:#415d74;margin-bottom:12px}
+  .price{color:#c52d2d;font-size:20px;margin-bottom:13px}.facts{display:flex;gap:9px 15px;flex-wrap:wrap;font-size:16px;font-weight:700;color:#415d74;margin-bottom:12px}
   .address{color:#657b8d;font-size:13px;line-height:1.6;margin:0 0 20px}.detail-link{margin-top:auto;color:#a77630;font-weight:800;text-decoration:none;font-size:14px}.detail-link:hover{text-decoration:underline}
   .pagination{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:35px;flex-wrap:wrap}.page-numbers{display:flex;gap:6px;flex-wrap:wrap}
   .pagination button{border:1px solid #ccd8e3;background:#fff;color:#173a58;border-radius:8px;min-width:40px;padding:10px 12px;font:inherit;font-weight:700;cursor:pointer}
