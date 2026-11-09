@@ -204,22 +204,42 @@ const schema = {
         <span aria-current="page">{data.title}</span>
       </nav>
 
-      <header class="heading">
-        <span class="eyebrow">THÔNG TIN DỰ ÁN</span>
-        <h1>{data.title}</h1>
-        {data.location && <p class="location">📍 {data.location}</p>}
-        <p class="intro">{description}</p>
-        {data.developer && <p class="developer">Chủ đầu tư: <strong>{data.developer}</strong></p>}
-      </header>
-
-      {data.image && <img class="cover" src={data.image} alt={data.imageAlt || data.title} loading="eager" />}
-      {data.gallery && data.gallery.length > 0 && (
-        <section class="gallery" aria-label="Hình ảnh dự án">
-          {data.gallery.filter(Boolean).map((image, index) => (
-            <img src={image} alt={`${data.title} - hình ${index + 1}`} loading="lazy" />
-          ))}
-        </section>
-      )}
+      <section class="project-hero" aria-label="Tổng quan dự án">
+        <div class="project-hero-info">
+          <span class="eyebrow">THÔNG TIN DỰ ÁN</span>
+          <h1>{data.title}</h1>
+          <dl class="project-hero-facts">
+            <div><dt>Tên gọi dự án</dt><dd>{data.title}</dd></div>
+            {data.developer && <div><dt>Chủ đầu tư</dt><dd>{data.developer}</dd></div>}
+            {data.location && <div><dt>Vị trí</dt><dd>{data.location}</dd></div>}
+            {extra.totalArea && <div><dt>Diện tích</dt><dd>{extra.totalArea}</dd></div>}
+            {extra.unitCount && <div><dt>Tổng căn hộ / biệt thự</dt><dd>{extra.unitCount}</dd></div>}
+            {(data as typeof data & {ownership?:string}).ownership && <div><dt>Hình thức sở hữu</dt><dd>{(data as typeof data & {ownership?:string}).ownership}</dd></div>}
+          </dl>
+          <a class="hero-quote" href="#lien-he-du-an">Nhận thông tin & báo giá <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="project-hero-media">
+          {[data.image, ...(data.gallery ?? [])].filter((v, i, arr): v is string => typeof v === 'string' && v.trim().length > 0 && arr.indexOf(v) === i).length > 0
+            ? <div class="project-hero-slides" data-project-slideshow aria-label="Hình ảnh dự án">
+                {[data.image, ...(data.gallery ?? [])].filter((v, i, arr): v is string => typeof v === 'string' && v.trim().length > 0 && arr.indexOf(v) === i).map((src, index) =>
+                  <img class:list={['project-hero-slide', { active: index === 0 }]} src={src} alt={`${data.title} - ảnh ${index + 1}`} loading={index === 0 ? 'eager' : 'lazy'} />
+                )}
+              </div>
+            : <div class="project-hero-no-image">Hình ảnh dự án đang cập nhật</div>}
+        </div>
+      </section>
+      <aside class="project-hero-contact" aria-label="Liên hệ tư vấn dự án">
+        <div class="project-hero-contact-copy">
+          <strong>Nhận bảng giá và thông tin mới nhất về {data.title}</strong>
+          <p>Tư vấn sản phẩm, mặt bằng và chính sách bán hàng.</p>
+          <div class="project-hero-contact-actions">
+            <a href="tel:0869437415">Gọi 0869 437 415</a>
+            <a href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Nhắn Zalo</a>
+            {(data as typeof data & {facebookUrl?:string}).facebookUrl?.startsWith('https://') && <a href={(data as typeof data & {facebookUrl?:string}).facebookUrl} target="_blank" rel="noopener noreferrer">Facebook</a>}
+          </div>
+        </div>
+        <img class="project-hero-advisor" src="/uploads/tu-van-vien-vest.jpg" alt="Tư vấn viên bất động sản" loading="lazy" />
+      </aside>
 
       <section class="description" aria-label="Giới thiệu và thông tin chi tiết dự án">
         <div class="article-content" id="project-detail-content">
@@ -394,6 +414,16 @@ const schema = {
   </main>
   <script is:inline>
     (() => {
+      document.querySelectorAll('[data-project-slideshow]').forEach(slideshow => {
+        const slides = Array.from(slideshow.querySelectorAll('.project-hero-slide'));
+        if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        let active = 0;
+        window.setInterval(() => {
+          slides[active].classList.remove('active');
+          active = (active + 1) % slides.length;
+          slides[active].classList.add('active');
+        }, 5000);
+      });
       const content = document.getElementById('project-detail-content');
       const button = document.getElementById('project-read-more');
       if (content && button && content.scrollHeight > 344) {
@@ -475,6 +505,28 @@ const schema = {
     .breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:28px}
     .breadcrumbs a{color:#1a5d8c;text-decoration:none}
     .breadcrumbs a:hover{text-decoration:underline}
+    .project-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#fff;border:1px solid #e5edf3;border-radius:16px;overflow:hidden;min-height:440px}
+    .project-hero-info{padding:clamp(24px,3.5vw,42px);display:flex;flex-direction:column;align-items:flex-start}
+    .project-hero-info h1{font-size:clamp(27px,3vw,38px);line-height:1.2;margin:12px 0 24px;letter-spacing:-.025em}
+    .project-hero-facts{display:grid;gap:15px;margin:0 0 26px;width:100%}
+    .project-hero-facts>div{display:grid;grid-template-columns:145px minmax(0,1fr);gap:10px;border-bottom:1px solid #edf1f5;padding-bottom:10px}
+    .project-hero-facts dt{font-weight:750;color:#203c56;font-size:14px}
+    .project-hero-facts dd{margin:0;font-size:14px;line-height:1.6;color:#435b70;overflow-wrap:anywhere}
+    .hero-quote{display:inline-flex;align-items:center;gap:10px;background:#17618c;color:#fff;text-decoration:none;border-radius:9px;padding:13px 18px;font-size:14px;font-weight:750;margin-top:auto}
+    .project-hero-media{position:relative;min-height:440px;background:#e8eef3}
+    .project-hero-slides{position:absolute;inset:0;overflow:hidden}
+    .project-hero-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity .7s ease}
+    .project-hero-slide.active{opacity:1}
+    .project-hero-no-image{height:100%;display:grid;place-items:center;color:#61788c;padding:20px}
+    .project-hero-contact{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;background:#fff;border:1px solid #e5edf3;border-radius:14px;padding:18px 24px;overflow:hidden}
+    .project-hero-contact-copy strong{font-size:18px;color:#19334d}
+    .project-hero-contact-copy p{font-size:14px;color:#63798c;margin:8px 0 16px}
+    .project-hero-contact-actions{display:flex;gap:9px;flex-wrap:wrap}
+    .project-hero-contact-actions a{background:#17618c;color:#fff;border-radius:8px;padding:11px 15px;text-decoration:none;font-weight:750;font-size:14px}
+    .project-hero-contact-actions a:nth-child(2){background:#167b55}
+    .project-hero-advisor{width:100px;height:100px;border-radius:50%;object-fit:cover;flex:none;border:3px solid #e7eef4}
+    @media(max-width:767px){.project-hero{grid-template-columns:1fr}.project-hero-info{padding:22px}.project-hero-facts>div{grid-template-columns:125px minmax(0,1fr)}.project-hero-media{min-height:290px}.project-hero-contact{padding:16px}.project-hero-advisor{width:68px;height:68px}}
+    @media(max-width:440px){.project-hero-contact{align-items:flex-start}.project-hero-advisor{width:55px;height:55px}.project-hero-facts>div{grid-template-columns:115px minmax(0,1fr)}}
     .heading{width:100%;max-width:none;margin:0 0 26px}
     .eyebrow{display:inline-block;font-size:12px;font-weight:750;letter-spacing:.1em;color:#956a2c}
     .heading h1{font-size:clamp(29px,3.5vw,42px);line-height:1.22;letter-spacing:-.025em;margin:10px 0 14px;font-weight:750}
