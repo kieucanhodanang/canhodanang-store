@@ -76,6 +76,33 @@ const extra = data as typeof data & {
   floorPlanText?: string; floorPlanImages?: string[];
   progressText?: string; progressItems?: { title?: string; image?: string; videoUrl?: string; videoFile?: string; description?: string }[];
 };
+// Hiển thị liên kết Markdown an toàn trong hai trường mô tả dự án từ CMS.
+const escapeHtml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const renderProjectText = (value?: string) => {
+  if (!value) return '';
+  const source = String(value).replace(/\r\n?/g, '\n');
+  const renderLine = (line: string) => {
+    const pattern = /\[([^\]\n]+)\]\(([^\s)]+)\)/g;
+    let html = '', cursor = 0;
+    for (const match of line.matchAll(pattern)) {
+      const index = match.index ?? 0;
+      html += escapeHtml(line.slice(cursor, index));
+      const label = escapeHtml(match[1]);
+      const url = match[2].trim();
+      if (/^(https?:\/\/|\/(?!\/))/.test(url)) {
+        html += `<a href="${escapeHtml(url)}">${label}</a>`;
+      } else {
+        html += escapeHtml(match[0]);
+      }
+      cursor = index + match[0].length;
+    }
+    return html + escapeHtml(line.slice(cursor));
+  };
+  return source.split(/\n\s*\n/).map(paragraph =>
+    `<p>${paragraph.split('\n').map(renderLine).join('<br />')}</p>`
+  ).join('');
+};
 const detailRows = [
   ['Tên gọi', data.title], ['Chủ đầu tư', data.developer],
   ['Diện tích', extra.totalArea], ['Vị trí', data.location],
@@ -293,7 +320,7 @@ const schema = {
 
       <section class="description">
         <h2>Mặt bằng dự án {data.title}</h2>
-        {extra.floorPlanText && <p class="section-copy">{extra.floorPlanText}</p>}
+        {extra.floorPlanText && <div class="section-copy project-markdown" set:html={renderProjectText(extra.floorPlanText)} />}
         {extra.floorPlanImages?.length ? <>
           <div class="floor-plan-gallery">{extra.floorPlanImages.filter(Boolean).map((image, index) => (
             <button class="floor-plan-open" type="button" data-floor-plan-src={image} data-floor-plan-alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} aria-label={`Phóng to mặt bằng ${data.title} - ảnh ${index + 1}`}>
@@ -310,7 +337,7 @@ const schema = {
 
       <section class="description">
         <h2>Tiến độ dự án {data.title}</h2>
-        {extra.progressText && <p class="section-copy">{extra.progressText}</p>}
+        {extra.progressText && <div class="section-copy project-markdown" set:html={renderProjectText(extra.progressText)} />}
         {extra.progressItems?.length ? extra.progressItems.map((item, index) => (
           <article class="progress-item">
             <h3>{item.title || `Cập nhật tiến độ ${data.title} - ${index + 1}`}</h3>
@@ -459,6 +486,8 @@ const schema = {
     @media(max-width:767px){.floor-plan-open img{height:260px}.floor-plan-zoom{right:10px;bottom:10px;font-size:12px;padding:8px 10px}}
     .floor-plan-gallery img,.progress-item img{width:100%;height:auto;border-radius:10px}
     .section-copy,.progress-item p{line-height:1.8}
+    .project-markdown :global(p){margin:0 0 12px;white-space:normal}
+    .project-markdown :global(a){color:#17628e;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
     .progress-item{margin-top:24px}
     .progress-item h3{font-size:18px}
     .progress-item iframe,.progress-item video{width:100%;aspect-ratio:16/9;border:0;border-radius:10px}
