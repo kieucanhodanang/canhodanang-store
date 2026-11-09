@@ -91,7 +91,7 @@ const renderProjectText = (value?: string) => {
   if (!value) return '';
   const source = String(value).replace(/\r\n?/g, '\n');
   const renderInline = (line: string) => {
-    const pattern = /(!?)\[([^\]\n]*)\]\(([^\s)]+)\)/g;
+    const pattern = /(!?)\[([^\]\n]*)\]\(([^\s)]+)(?:\s+\"([^\"\n]*)\")?\)/g;
     let html = '', cursor = 0;
     for (const match of line.matchAll(pattern)) {
       const index = match.index ?? 0;
@@ -100,7 +100,7 @@ const renderProjectText = (value?: string) => {
       const label = escapeHtml(match[2]);
       const url = safeProjectUrl(match[3], isImage);
       if (url && isImage) {
-        html += `<img src="${escapeHtml(url)}" alt="${label}" loading="lazy" decoding="async" />`;
+        html += `<img src="${escapeHtml(url)}" alt="${label}"${match[4] ? ` title="${escapeHtml(match[4])}"` : ''} loading="lazy" decoding="async" />`;
       } else if (url) {
         html += `<a href="${escapeHtml(url)}">${label}</a>`;
       } else {
