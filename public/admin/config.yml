@@ -335,6 +335,15 @@ collections:
   - label: Vị trí dự án
     name: location
     widget: string
+  - label: Hình thức sở hữu
+    name: ownership
+    widget: select
+    required: false
+    options:
+    - Sở hữu lâu dài
+    - Sở hữu 50 năm
+    - Khác / Theo pháp lý dự án
+    hint: Chọn theo hồ sơ pháp lý chính thức của dự án. Để trống nếu chưa xác minh.
   - label: Quận / Khu vực dự án
     name: district
     widget: select
