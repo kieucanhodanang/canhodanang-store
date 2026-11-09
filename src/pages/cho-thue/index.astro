@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
 
@@ -57,7 +58,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                     </a>
                     <div class="listing-body">
                       <h3><a href={href}>{d.title}</a></h3>
-                      <strong class="price">{plain(d.price) || 'Liên hệ giá thuê'}</strong>
+                      <strong class="price">{formatListingPrice(plain(d.price), d.transaction || 'cho-thue', d.priceValue)}</strong>
                       <div class="facts">
                         <span>Diện tích: {formatArea(d.area, d.areaValue)}</span>
                         {d.bedrooms != null && <span>{d.bedrooms} phòng ngủ</span>}
