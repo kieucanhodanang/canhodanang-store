@@ -370,49 +370,16 @@ collections:
     name: buildingDensity
     widget: string
     required: false
-  - label: Nội dung mặt bằng dự án
+  - label: Nội dung mặt bằng dự án (chèn ảnh trực tiếp)
     name: floorPlanText
     widget: markdown
     required: false
-  - label: Hình ảnh mặt bằng dự án
-    name: floorPlanImages
-    widget: list
-    required: false
-    field:
-      label: Ảnh mặt bằng
-      name: image
-      widget: image
-  - label: Nội dung tiến độ dự án
+    hint: 'Chèn ảnh bằng nút hình ảnh trong trình soạn thảo; ảnh, chữ và liên kết có thể xen kẽ.'
+  - label: Nội dung tiến độ dự án (chèn ảnh trực tiếp)
     name: progressText
     widget: markdown
     required: false
-  - label: Các lần cập nhật tiến độ
-    name: progressItems
-    widget: list
-    required: false
-    summary: '{{fields.title}}'
-    fields:
-    - label: Tiêu đề H3 của ảnh / video
-      name: title
-      widget: string
-    - label: Nội dung cập nhật
-      name: description
-      widget: text
-      required: false
-    - label: Hình ảnh tiến độ
-      name: image
-      widget: image
-      required: false
-    - label: Link video YouTube
-      name: videoUrl
-      widget: string
-      required: false
-      hint: Dán link YouTube thông thường hoặc YouTube Shorts.
-    - label: Tệp video tải lên (MP4/WebM)
-      name: videoFile
-      widget: file
-      required: false
-      hint: Chỉ dùng video dung lượng nhỏ; ưu tiên YouTube để tránh tăng dung lượng GitHub và Cloudflare.
+    hint: 'Chèn ảnh trực tiếp vào nội dung Markdown, không cần tạo danh sách ảnh riêng.'
   - label: Ảnh đại diện 4 phân khu Vinhomes Hải Vân Bay
     name: haiVanZoneImages
     widget: object
