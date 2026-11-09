@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -269,7 +270,7 @@ const schema = {
                   <h3>{item.data.title}</h3>
                   {item.data.productCode && <p class="hai-van-code">Mã: {item.data.productCode}</p>}
                   <div class="card-info-row">
-                    {item.data.price && <strong class="apartment-price">{item.data.price}</strong>}
+                    {item.data.price && <strong class="apartment-price">{formatListingPrice(item.data.price, item.data.transaction, item.data.priceValue)}</strong>}
                     {formatArea(item.data.area) && <span class="apartment-detail">{formatArea(item.data.area)}</span>}
                     {item.data.bedrooms != null && <span class="apartment-detail">{item.data.bedrooms} PN</span>}
                   </div>
@@ -302,7 +303,7 @@ const schema = {
                       <h3>{item.data.title}</h3>
                       <p class="property-action">{item.href === '#lien-he-du-an' ? 'Liên hệ tư vấn sản phẩm →' : 'Xem chi tiết bất động sản →'}</p>
                       <div class="card-info-row">
-                        {item.data.price && <strong class="apartment-price">{item.data.price}</strong>}
+                        {item.data.price && <strong class="apartment-price">{formatListingPrice(item.data.price, item.data.transaction, item.data.priceValue)}</strong>}
                         {formatArea(item.data.area) && <span class="apartment-detail">{formatArea(item.data.area)}</span>}
                         {item.data.bedrooms != null && <span class="apartment-detail">{item.data.bedrooms} PN</span>}
                       </div>
