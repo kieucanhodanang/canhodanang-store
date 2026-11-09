@@ -12,8 +12,20 @@ totalArea: "3.720"
 towerCount: "1"
 unitCount: "782"
 handoverDate: 11/2028
+floorPlanText: >-
+  Mặt bằng Sun Saphia Residence Đà Nẵng được quy hoạch khoa học, tối ưu công
+  năng sử dụng và khả năng đón ánh sáng tự nhiên. Dự án cung cấp đa dạng loại
+  hình căn hộ từ Studio, 1 phòng ngủ + 1 đến 2 phòng ngủ, đáp ứng nhu cầu nghỉ
+  dưỡng và đầu tư khai thác cho thuê. Các căn hộ được bố trí hợp lý trên từng
+  tầng, tận dụng lợi thế vị trí ven biển với nhiều hướng nhìn về biển Sơn Thủy,
+  danh thắng Ngũ Hành Sơn và cảnh quan thành phố. Thiết kế mặt bằng chú trọng sự
+  thông thoáng, riêng tư và trải nghiệm sống tiện nghi cho cư dân.
+
+
+  Xem chi tiết: [Mặt bằng căn hộ Sun Saphia](https://canhodanang.store/tin-tuc/mat-bang-sun-saphia-da-nang-vi-tri-du-an-layout-can-ho-va-thiet-ke-chi-tiet/)
 propertyTypes:
   - can-ho
+  - shophouse
 ogImage: /uploads/sun-saphia-residence-da-nang.jpeg
 image: /uploads/sun-saphia-residence-da-nang.jpeg
 imageAlt: Sun Saphia Residence
