@@ -217,12 +217,15 @@ const schema = {
         </nav>
         <h1>Căn Hộ {region.name} Đà Nẵng</h1>
         <p class="region-lead">Khám phá căn hộ đang bán và cho thuê tại khu vực {region.name}, Đà Nẵng. Danh sách cập nhật từ hệ thống quản trị.</p>
-        <p class="region-count">{regionApartments.length} căn hộ đang giao dịch</p>
+        <div class="region-toolbar">
+          <p class="region-count">{regionApartments.length} căn hộ đang giao dịch</p>
+          {regionApartments.length > 0 && <label class="region-sort-label" for="region-sort">Sắp xếp <select id="region-sort" aria-label="Sắp xếp căn hộ"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label>}
+        </div>
         {regionApartments.length ? (
           <>
             <div class="region-grid">
               {regionApartments.map((item, index) => (
-                <article class="region-card" data-region-card data-page={Math.floor(index / 12) + 1} hidden={index >= 12}>
+                <article class="region-card" data-region-card data-page={Math.floor(index / 12) + 1} data-region-price={item.data.priceValue ?? ''} data-region-area={item.data.areaValue ?? ''} data-region-date={item.data.date ? new Date(item.data.date).getTime() || 0 : 0} hidden={index >= 12}>
                   <a class="region-image" href={`/can-ho/${encodeURIComponent(item.id)}/`}>
                     {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
                     {item.data.featured && <span class="region-pin">Nổi bật</span>}
@@ -339,7 +342,26 @@ const schema = {
       const cards = [...document.querySelectorAll('[data-region-card]')];
       if (!cards.length) return;
       const total = Math.ceil(cards.length / 12);
+      const grid = document.querySelector('.region-grid');
+      const sort = document.getElementById('region-sort');
+      const originalOrder = new Map(cards.map((card, index) => [card, index]));
+      const number = (card, key) => { const value = card.dataset[key]; return value === undefined || value === '' ? null : Number(value); };
       let page = 1;
+      const sortCards = () => {
+        const mode = sort?.value || 'default';
+        cards.sort((a, b) => {
+          if (mode === 'newest') return (number(b, 'regionDate') || 0) - (number(a, 'regionDate') || 0) || originalOrder.get(a) - originalOrder.get(b);
+          if (mode === 'price-asc' || mode === 'price-desc' || mode === 'area-desc') {
+            const key = mode === 'area-desc' ? 'regionArea' : 'regionPrice';
+            const left = number(a, key), right = number(b, key);
+            if (left === null && right !== null) return 1;
+            if (right === null && left !== null) return -1;
+            if (left !== null && right !== null && left !== right) return mode === 'price-asc' ? left - right : right - left;
+          }
+          return originalOrder.get(a) - originalOrder.get(b);
+        });
+        cards.forEach((card, index) => { card.dataset.page = String(Math.floor(index / 12) + 1); grid?.appendChild(card); });
+      };
       const prev = document.getElementById('region-prev');
       const next = document.getElementById('region-next');
       const label = document.getElementById('region-page-label');
@@ -349,6 +371,7 @@ const schema = {
         if (next) next.disabled = page === total;
         if (label) label.textContent = `Trang ${page} / ${total}`;
       };
+      sort?.addEventListener('change', () => { page = 1; sortCards(); show(); });
       prev?.addEventListener('click', () => { if (page > 1) { page--; show(); } });
       next?.addEventListener('click', () => { if (page < total) { page++; show(); } });
       show();
@@ -359,7 +382,10 @@ const schema = {
     .region-page { background:#f5f8fb; color:#19334d; padding:30px 0 65px; }
     .region-page h1 { font-size:clamp(27px,4vw,38px); margin:16px 0 12px; }
     .region-lead { color:#587187; line-height:1.7; }
-    .region-count { font-weight:700; margin:20px 0; }
+    .region-toolbar {display:flex;align-items:center;justify-content:space-between;gap:16px;margin:20px 0;flex-wrap:wrap}
+    .region-count {font-weight:700;margin:0}
+    .region-sort-label {display:flex;align-items:center;gap:12px;font-weight:600;color:#36536a;white-space:nowrap}
+    .region-sort-label select {min-height:40px;max-width:100%;padding:0 9px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#19334d;font-size:16px}
     .region-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
     .region-card { display:flex;flex-direction:column;min-width:0;overflow:hidden;background:#fff;border:1px solid #e1e8ee;border-radius:16px;box-shadow:0 8px 24px #102b4508; }
     .region-card[hidden] { display:none!important; }
@@ -392,7 +418,7 @@ const schema = {
     @media(max-width:600px) { .region-seo-content { padding:20px 17px; } }
 
     @media(max-width:900px) { .region-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    @media(max-width:600px) { .region-grid { grid-template-columns:1fr; } }
+    @media(max-width:600px) { .region-grid { grid-template-columns:1fr; } .region-toolbar{justify-content:flex-end}.region-count{display:none}.region-sort-label{gap:14px}.region-sort-label select{max-width:calc(100vw - 145px)} }
     .property-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}.property-primary{min-width:0}.property-sidebar{min-width:0;position:sticky;top:88px;display:grid;gap:16px}
     .consultant-card,.sidebar-list{background:#fff;border:1px solid #e0e7ef;border-radius:14px;overflow:hidden;box-shadow:0 6px 22px #102c4915}.consultant-heading{background:linear-gradient(125deg,#10365e,#185d8c);color:#fff;padding:17px 14px;text-align:center;display:grid;gap:5px;font-size:16px}.consultant-heading strong{font-size:20px;color:#f4c16b;line-height:1.35}.consultant-body{padding:20px 16px;text-align:center}.consultant-avatar{width:150px;height:150px;margin:0 auto 14px;border:2px solid #b88b41;border-radius:50%;overflow:hidden;background:#edf3f8}.consultant-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 20%}.consultant-body h2{font-size:17px;margin:0 0 7px;color:#17334d}.consultant-body p{font-size:13px;color:#718092;margin:0 0 16px}.consultant-zalo,.consultant-call{display:block;padding:12px;border-radius:9px;font-weight:700;text-decoration:none;margin-top:9px}.consultant-zalo{border:1px solid #b9c9dc;color:#135c99}.consultant-call{background:#009d9f;color:#fff}.sidebar-list h2{margin:0;padding:15px;background:#eff5fa;color:#173d62;font-size:18px}.sidebar-list ul{list-style:none;padding:5px 14px;margin:0}.sidebar-list li{padding:12px 0;border-bottom:1px solid #e6edf2;display:flex;justify-content:space-between;align-items:center;gap:8px}.sidebar-list li:last-child{border:0}.sidebar-list li a{display:flex;flex-direction:column;gap:4px;color:#173d62;text-decoration:none;font-size:13px;font-weight:650}.sidebar-list li a:hover{color:#a87831}.sidebar-list small{font-size:12px;color:#6a7c8c;font-weight:500;white-space:nowrap}.sidebar-list .ward-label{font-size:13px;color:#173d62}.sidebar-list p{padding:0 14px;font-size:13px;color:#718092}
     @media(max-width:980px){.property-layout{grid-template-columns:minmax(0,1fr)}.property-sidebar{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.consultant-card{grid-row:span 2}}@media(max-width:640px){.property-sidebar{grid-template-columns:1fr}.consultant-card{grid-row:auto}}
