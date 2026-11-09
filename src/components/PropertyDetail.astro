@@ -1,4 +1,5 @@
 ---
+import { formatListingPrice } from '../utils/formatListingPrice';
 /**
  * Shared property detail UI for can-ho and nha-dat-tho-cu.
  * Usage: <PropertyDetail property={entry.data} kind="can-ho"><Content /></PropertyDetail>
@@ -49,6 +50,7 @@ const {
 } = Astro.props;
 const gallery = Array.from(new Set([property.image, ...(property.gallery ?? [])].filter((item): item is string => typeof item === 'string' && item.trim().length > 0)));
 const isSale = (property.transaction ?? 'ban') === 'ban';
+const displayPrice = formatListingPrice(property.price, property.transaction ?? 'ban', property.priceValue);
 const pricePerSqm = isSale && typeof property.priceValue === 'number' && property.priceValue > 0 && typeof property.areaValue === 'number' && property.areaValue > 0
   ? new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 2 }).format(property.priceValue / property.areaValue)
   : null;
@@ -64,7 +66,7 @@ const formatArea = (value: string | number | null | undefined): string | null =>
 };
 const formattedArea = formatArea(property.area) ?? formatArea(property.areaValue);
 const specs = [
-  { label: isSale ? 'Giá bán' : 'Giá thuê', value: property.price || 'Liên hệ', price: true },
+  { label: isSale ? 'Giá bán' : 'Giá thuê', value: displayPrice, price: true },
   { label: areaLabel, value: formattedArea ?? 'Đang cập nhật' },
   kind === 'can-ho'
     ? { label: 'Phòng ngủ', value: typeof property.bedrooms === 'number' ? `${property.bedrooms} PN` : 'Đang cập nhật' }
@@ -85,7 +87,7 @@ const projectTypeNames: Record<string, string> = {
   'resort': 'Resort',
 };
 const details = [
-  { icon: 'tag', label: isSale ? 'Giá bán' : 'Giá thuê', value: property.price },
+  { icon: 'tag', label: isSale ? 'Giá bán' : 'Giá thuê', value: displayPrice },
   { icon: 'area', label: areaLabel, value: formattedArea },
   { icon: 'bed', label: 'Số phòng ngủ', value: property.bedrooms != null ? `${property.bedrooms} phòng` : null },
   { icon: 'bath', label: 'Số phòng tắm, vệ sinh', value: property.bathrooms != null ? `${property.bathrooms} phòng` : null },
