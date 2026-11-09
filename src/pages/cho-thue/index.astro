@@ -40,7 +40,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       <div class="listing-container">
         <div class="section-heading">
           <div><p class="eyebrow">DANH SÁCH CHO THUÊ</p><h2>Bất động sản đang cho thuê</h2></div>
-          <span class="count">{apartments.length} bất động sản</span>
+          <div class="listing-sort-row"><span class="count">{apartments.length} bất động sản</span><label for="sort-rentals">Sắp xếp <select id="sort-rentals"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label></div>
         </div>
         {apartments.length ? (
           <>
@@ -50,7 +50,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 const image = imageFor(d);
                 const href = `/${item.rentalType}/${item.id}/`;
                 return (
-                  <article class="listing-card" data-listing-index={index} hidden={index >= pageSize}>
+                  <article class="listing-card" data-listing-index={index} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-date={d.date ? new Date(d.date).getTime() || 0 : 0} hidden={index >= pageSize}>
                     <a class="listing-image" href={href} aria-label={`Xem ${d.title}`}>
                       {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">BẤT ĐỘNG SẢN ĐÀ NẴNG</div>}
                       {d.featured && <span class="pin-label">Nổi bật</span>}
@@ -91,9 +91,30 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   (() => {
     const grid = document.getElementById('rental-grid');
     const pagination = document.getElementById('rental-pagination');
-    if (!grid || !pagination) return;
+    if (!grid) return;
     const cards = [...grid.querySelectorAll('[data-listing-index]')];
     const numbers = document.getElementById('pagination-numbers');
+    const sort = document.getElementById('sort-rentals');
+    const originalOrder = new Map(cards.map((card, index) => [card, index]));
+    const numeric = (card, key) => {
+      const value = card.dataset[key];
+      return value === undefined || value === '' ? null : Number(value);
+    };
+    const sortCards = () => {
+      const mode = sort?.value || 'default';
+      cards.sort((a, b) => {
+        if (mode === 'newest') return (numeric(b,'date') || 0) - (numeric(a,'date') || 0) || originalOrder.get(a) - originalOrder.get(b);
+        if (['price-asc','price-desc','area-desc'].includes(mode)) {
+          const key = mode === 'area-desc' ? 'area' : 'price';
+          const av = numeric(a,key), bv = numeric(b,key);
+          if (av === null && bv !== null) return 1;
+          if (bv === null && av !== null) return -1;
+          if (av !== null && bv !== null && av !== bv) return mode === 'price-asc' ? av-bv : bv-av;
+        }
+        return originalOrder.get(a) - originalOrder.get(b);
+      });
+      cards.forEach(card => grid.appendChild(card));
+    };
     const summary = document.getElementById('rental-page-summary');
     const readPage = () => {
       const raw = Number(new URLSearchParams(location.search).get('page'));
@@ -104,7 +125,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       currentPage = Math.min(totalPages, Math.max(1, page));
       const start = (currentPage - 1) * pageSize;
       cards.forEach((card, i) => { card.hidden = i < start || i >= start + pageSize; });
-      numbers.replaceChildren();
+      numbers?.replaceChildren();
       for (let n = 1; n <= totalPages; n++) {
         const button = document.createElement('button');
         button.type = 'button';
@@ -112,10 +133,12 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
         button.className = n === currentPage ? 'active' : '';
         if (n === currentPage) button.setAttribute('aria-current', 'page');
         button.addEventListener('click', () => go(n));
-        numbers.append(button);
+        numbers?.append(button);
       }
-      pagination.querySelector('[data-action="prev"]').disabled = currentPage === 1;
-      pagination.querySelector('[data-action="next"]').disabled = currentPage === totalPages;
+      if (pagination) {
+        pagination.querySelector('[data-action="prev"]').disabled = currentPage === 1;
+        pagination.querySelector('[data-action="next"]').disabled = currentPage === totalPages;
+      }
       summary.textContent = `Hiển thị ${start + 1}–${Math.min(start + pageSize, cards.length)} / ${cards.length} bất động sản`;
       if (scroll) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
@@ -126,8 +149,9 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       history.pushState({ page }, '', url);
       render(page, true);
     };
-    pagination.querySelector('[data-action="prev"]').addEventListener('click', () => go(currentPage - 1));
-    pagination.querySelector('[data-action="next"]').addEventListener('click', () => go(currentPage + 1));
+    pagination?.querySelector('[data-action="prev"]').addEventListener('click', () => go(currentPage - 1));
+    pagination?.querySelector('[data-action="next"]').addEventListener('click', () => go(currentPage + 1));
+    sort?.addEventListener('change', () => {sortCards();go(1);});
     addEventListener('popstate', () => render(readPage()));
     render(currentPage);
   })();
@@ -162,5 +186,9 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   .listing-contact{background:#102c49;color:#fff;padding:35px 0}.contact-inner{display:flex;align-items:center;justify-content:space-between;gap:25px}
   .contact-inner h2{font-size:24px;margin:0 0 8px}.contact-inner p{color:#d4e2ee;margin:0}.contact-inner>a{display:inline-block;background:#c99b56;color:#fff;padding:14px 22px;border-radius:9px;font-weight:800;text-decoration:none;white-space:nowrap}
   @media(max-width:900px){.listing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .listing-sort-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .listing-sort-row label{display:flex;align-items:center;gap:12px;white-space:nowrap;font-weight:600}
+  .listing-sort-row select{min-height:40px;border:1px solid #ccd8e3;border-radius:8px;padding:0 10px;background:#fff;color:#19334d;font-size:16px;max-width:100%}
+  @media(max-width:600px){.section-heading>div:first-child{display:none}.section-heading{display:block}.listing-sort-row{width:100%;justify-content:space-between;gap:12px;flex-wrap:nowrap}.listing-sort-row label{gap:12px;white-space:nowrap}.listing-sort-row select{min-width:0;max-width:calc(100vw - 170px)}}
   @media(max-width:600px){.listing-container{width:min(100% - 28px,1200px)}.listing-hero{padding:30px 0 45px}.breadcrumb{margin-bottom:25px}.listing-section{padding:38px 0 50px}.listing-grid{grid-template-columns:1fr;gap:18px}.listing-image{height:210px}.section-heading{align-items:start}.contact-inner{flex-direction:column;align-items:start}.contact-inner>a{width:100%;text-align:center}}
 </style>
