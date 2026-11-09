@@ -123,6 +123,26 @@ collections:
     min: 0
     required: false
     hint: Nhập số, ví dụ 75.5. Thanh trượt trang chủ hiển thị khoảng 25–125 m².
+  - label: Loại hình căn hộ
+    name: apartmentType
+    widget: select
+    required: false
+    hint: Chọn loại hình căn hộ để hiển thị và lọc chính xác (1PN+ khác 1PN). Không thay thế trường Số phòng ngủ.
+    options:
+    - label: STU
+      value: STU
+    - label: 1PN
+      value: 1PN
+    - label: 1PN+
+      value: 1PN+
+    - label: 2PN
+      value: 2PN
+    - label: 2PN+
+      value: 2PN+
+    - label: 3PN
+      value: 3PN
+    - label: Duplex / Penthouse
+      value: Duplex / Penthouse
   - &id026
     label: Số phòng ngủ
     name: bedrooms
@@ -352,7 +372,7 @@ collections:
     required: false
   - label: Nội dung mặt bằng dự án
     name: floorPlanText
-    widget: text
+    widget: markdown
     required: false
   - label: Hình ảnh mặt bằng dự án
     name: floorPlanImages
@@ -364,7 +384,7 @@ collections:
       widget: image
   - label: Nội dung tiến độ dự án
     name: progressText
-    widget: text
+    widget: markdown
     required: false
   - label: Các lần cập nhật tiến độ
     name: progressItems
