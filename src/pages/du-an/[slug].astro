@@ -472,8 +472,13 @@ const schema = {
         if (!leadSubmitted || !leadSending) return;
         leadSending = false;
         if (leadSubmit) leadSubmit.disabled = false;
-        leadStatus.textContent = 'Yêu cầu đã được chuyển đến Google Forms. Chúng tôi sẽ liên hệ sớm sau khi tiếp nhận.';
+        leadStatus.textContent = 'Cảm ơn anh/chị! Chúng tôi đã tiếp nhận yêu cầu tư vấn và sẽ liên hệ sớm.';
         leadForm.reset();
+        window.setTimeout(() => {
+          if (leadDialog?.open) leadDialog.close();
+          leadStatus.textContent = '';
+          leadSubmitted = false;
+        }, 2000);
       });
       document.querySelectorAll('[data-project-slideshow]').forEach(slideshow => {
         const slides = Array.from(slideshow.querySelectorAll('.project-hero-slide'));
