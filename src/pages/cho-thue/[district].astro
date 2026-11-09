@@ -49,13 +49,13 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
       </header>
       {totalItems > 0 ? (
         <>
-          <p class="result-count">Có <strong>{totalItems}</strong> bất động sản cho thuê</p>
+          <div class="result-toolbar"><p class="result-count">Có <strong>{totalItems}</strong> bất động sản cho thuê</p><label for="sort-listings">Sắp xếp <select id="sort-listings"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label></div>
           <div class="property-grid" id="property-grid">
             {properties.map((entry, index) => {
               const data = entry.data;
               const location = [data.ward, data.district].filter(Boolean).join(' · ') || data.address;
               return (
-                <article class="property-card" data-page={Math.floor(index / 12) + 1} hidden={index >= 12}>
+                <article class="property-card" data-page={Math.floor(index / 12) + 1} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-date={data.date ? new Date(data.date).getTime() || 0 : 0} hidden={index >= 12}>
                   <a href={`/${entry.rentalType}/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
                     <img src={data.image} alt={data.imageAlt || data.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
                     {data.featured && <span class="featured-tag">Nổi bật</span>}
@@ -93,25 +93,47 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
     </div>
   </main>
   <script>
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('#property-grid .property-card'));
+    const grid = document.querySelector<HTMLElement>('#property-grid');
+    const sort = document.querySelector<HTMLSelectElement>('#sort-listings');
     const pagination = document.querySelector<HTMLElement>('#pagination');
-    if (pagination) {
-      const cards = Array.from(document.querySelectorAll<HTMLElement>('#property-grid .property-card'));
-      const total = Number(pagination.dataset.totalPages || '1');
-      const previous = pagination.querySelector<HTMLButtonElement>('[data-action="previous"]');
-      const next = pagination.querySelector<HTMLButtonElement>('[data-action="next"]');
-      const status = pagination.querySelector<HTMLElement>('#page-status');
-      let current = 1;
-      const showPage = (page: number) => {
-        current = Math.max(1, Math.min(total, page));
-        cards.forEach((card) => { card.hidden = Number(card.dataset.page) !== current; });
-        if (previous) previous.disabled = current === 1;
-        if (next) next.disabled = current === total;
-        if (status) status.textContent = `Trang ${current} / ${total}`;
-        document.querySelector('.heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      };
-      previous?.addEventListener('click', () => showPage(current - 1));
-      next?.addEventListener('click', () => showPage(current + 1));
-    }
+    const previous = pagination?.querySelector<HTMLButtonElement>('[data-action="previous"]');
+    const next = pagination?.querySelector<HTMLButtonElement>('[data-action="next"]');
+    const status = pagination?.querySelector<HTMLElement>('#page-status');
+    const originalOrder = new Map(cards.map((card, index) => [card, index]));
+    const valueOf = (card: HTMLElement, key: string) => {
+      const raw = card.dataset[key as keyof DOMStringMap];
+      return raw === undefined || raw === '' ? null : Number(raw);
+    };
+    const total = Math.max(1, Math.ceil(cards.length / 12));
+    let current = 1;
+    const showPage = (scroll = false) => {
+      cards.forEach(card => { card.hidden = Number(card.dataset.page) !== current; });
+      if (previous) previous.disabled = current === 1;
+      if (next) next.disabled = current === total;
+      if (status) status.textContent = `Trang ${current} / ${total}`;
+      if (scroll) document.querySelector('.heading')?.scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    sort?.addEventListener('change', () => {
+      const mode = sort.value;
+      cards.sort((a,b) => {
+        if (mode === 'newest') return (valueOf(b,'date') || 0) - (valueOf(a,'date') || 0) || originalOrder.get(a)! - originalOrder.get(b)!;
+        if (mode === 'price-asc' || mode === 'price-desc' || mode === 'area-desc') {
+          const key = mode === 'area-desc' ? 'area' : 'price';
+          const av = valueOf(a,key), bv = valueOf(b,key);
+          if (av === null && bv !== null) return 1;
+          if (bv === null && av !== null) return -1;
+          if (av !== null && bv !== null && av !== bv) return mode === 'price-asc' ? av - bv : bv - av;
+        }
+        return originalOrder.get(a)! - originalOrder.get(b)!;
+      });
+      cards.forEach((card,index) => {card.dataset.page = String(Math.floor(index / 12) + 1);grid?.appendChild(card);});
+      current = 1;
+      showPage();
+    });
+    previous?.addEventListener('click', () => {if(current>1){current--;showPage(true);}});
+    next?.addEventListener('click', () => {if(current<total){current++;showPage(true);}});
+    showPage();
   </script>
   <style>
     .listing-page{background:#f5f8fb;color:#19334d;min-height:65vh;padding:28px 0 70px}
@@ -121,7 +143,10 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
     .heading{margin-bottom:24px}
     .heading h1{font-size:clamp(27px,3vw,38px);line-height:1.25;margin:0 0 10px;color:#173c5b}
     .heading p{color:#63788a;margin:0;line-height:1.6}
-    .result-count{font-size:14px;color:#60758a;margin:0 0 18px}
+    .result-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 18px}
+    .result-count{font-size:14px;color:#60758a;margin:0}
+    .result-toolbar label{display:flex;align-items:center;gap:12px;white-space:nowrap;font-size:14px;font-weight:600;color:#36536a}
+    .result-toolbar select{min-height:40px;max-width:100%;padding:0 9px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#19334d;font-size:16px}
     .property-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
     .property-card{background:#fff;border:1px solid #e6ebf0;border-radius:14px;overflow:hidden;box-shadow:0 5px 18px rgba(26,60,90,.055);display:flex;flex-direction:column;min-width:0}
     .property-card[hidden]{display:none!important}
@@ -150,6 +175,7 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
     .empty-state p{color:#60758a;line-height:1.6}
     .empty-state a{color:#1b648f;font-weight:700}
     @media(max-width:900px){.property-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
+    @media(max-width:600px){.result-count{display:none}.result-toolbar{justify-content:flex-end}.result-toolbar label{gap:14px}.result-toolbar select{max-width:calc(100vw - 145px)}}
     @media(max-width:600px){.container{padding:0 14px}.property-grid{grid-template-columns:1fr;gap:15px}.card-content{padding:15px}.listing-page{padding-top:20px}.pagination{gap:10px}.pagination button{padding:9px 12px}}
   </style>
 </Base>
