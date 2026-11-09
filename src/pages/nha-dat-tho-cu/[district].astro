@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
 
@@ -64,7 +65,7 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
                       {data.bedrooms != null && <span><strong>{data.bedrooms} phòng ngủ</strong></span>}
                     </div>
                     <div class="card-footer">
-                      <strong class="price">{data.price || 'Liên hệ'}</strong>
+                      <strong class="price">{formatListingPrice(data.price, 'ban', data.priceValue)}</strong>
                       <div class="card-action-row">
                         <a class="detail-link" href={`/nha-dat-tho-cu/${entry.id}/`}>Xem chi tiết</a>
                         {formatPostedDate(data.date) && <time class="posted-date">Ngày đăng: {formatPostedDate(data.date)}</time>}
