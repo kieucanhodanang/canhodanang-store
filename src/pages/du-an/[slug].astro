@@ -77,21 +77,31 @@ const extra = data as typeof data & {
   floorPlanText?: string; floorPlanImages?: string[];
   progressText?: string; progressItems?: { title?: string; image?: string; videoUrl?: string; videoFile?: string; description?: string }[];
 };
-// Hiển thị liên kết Markdown an toàn trong hai trường mô tả dự án từ CMS.
+// Render Markdown an toàn cho Mặt bằng / Tiến độ: ảnh, liên kết, tiêu đề và đoạn văn.
 const escapeHtml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;')
   .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const safeProjectUrl = (url: string, image = false) => {
+  const clean = url.trim();
+  if (/^\/(?!\/)[^\s]*$/.test(clean)) return clean;
+  if (/^https:\/\/[^\s]+$/i.test(clean)) return clean;
+  if (!image && /^http:\/\/[^\s]+$/i.test(clean)) return clean;
+  return '';
+};
 const renderProjectText = (value?: string) => {
   if (!value) return '';
   const source = String(value).replace(/\r\n?/g, '\n');
-  const renderLine = (line: string) => {
-    const pattern = /\[([^\]\n]+)\]\(([^\s)]+)\)/g;
+  const renderInline = (line: string) => {
+    const pattern = /(!?)\[([^\]\n]*)\]\(([^\s)]+)\)/g;
     let html = '', cursor = 0;
     for (const match of line.matchAll(pattern)) {
       const index = match.index ?? 0;
       html += escapeHtml(line.slice(cursor, index));
-      const label = escapeHtml(match[1]);
-      const url = match[2].trim();
-      if (/^(https?:\/\/|\/(?!\/))/.test(url)) {
+      const isImage = match[1] === '!';
+      const label = escapeHtml(match[2]);
+      const url = safeProjectUrl(match[3], isImage);
+      if (url && isImage) {
+        html += `<img src="${escapeHtml(url)}" alt="${label}" loading="lazy" decoding="async" />`;
+      } else if (url) {
         html += `<a href="${escapeHtml(url)}">${label}</a>`;
       } else {
         html += escapeHtml(match[0]);
@@ -100,9 +110,15 @@ const renderProjectText = (value?: string) => {
     }
     return html + escapeHtml(line.slice(cursor));
   };
-  return source.split(/\n\s*\n/).map(paragraph =>
-    `<p>${paragraph.split('\n').map(renderLine).join('<br />')}</p>`
-  ).join('');
+  return source.split(/\n\s*\n/).map(block => {
+    const trimmed = block.trim();
+    const heading = /^(#{2,4})\s+(.+)$/.exec(trimmed);
+    if (heading) {
+      const level = heading[1].length;
+      return `<h${level}>${renderInline(heading[2])}</h${level}>`;
+    }
+    return `<p>${trimmed.split('\n').map(renderInline).join('<br />')}</p>`;
+  }).join('');
 };
 const detailRows = [
   ['Tên gọi', data.title], ['Chủ đầu tư', data.developer],
@@ -551,6 +567,9 @@ const schema = {
     .card-body{padding:15px}
     .card h3{font-size:16px;line-height:1.5;margin:0 0 9px;font-weight:700}
     .card-info-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .project-markdown :global(img){display:block;width:auto;max-width:100%;height:auto;margin:16px auto;border-radius:10px;object-fit:contain}
+    .project-markdown :global(p){line-height:1.75}
+    .project-markdown :global(h2),.project-markdown :global(h3),.project-markdown :global(h4){margin:20px 0 10px}
     .card .apartment-price{font-size:20px;font-weight:800;line-height:1.35;color:#dc2626;white-space:nowrap}
     .card .apartment-detail{font-size:13px;font-weight:700;color:#62788b;line-height:1.6;white-space:nowrap}
     .empty{font-size:15px;line-height:1.7;color:#718296;margin:0}
