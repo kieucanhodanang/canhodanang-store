@@ -216,7 +216,7 @@ const schema = {
             {extra.unitCount && <div><dt>Tổng căn hộ / biệt thự</dt><dd>{extra.unitCount}</dd></div>}
             {(data as typeof data & {ownership?:string}).ownership && <div><dt>Hình thức sở hữu</dt><dd>{(data as typeof data & {ownership?:string}).ownership}</dd></div>}
           </dl>
-          <a class="hero-quote" href="#lien-he-du-an">Nhận thông tin & báo giá <span aria-hidden="true">→</span></a>
+          <button class="hero-quote" type="button" data-open-lead-popup>Nhận thông tin & báo giá <span aria-hidden="true">→</span></button>
         </div>
         <div class="project-hero-media">
           {[data.image, ...(data.gallery ?? [])].filter((v, i, arr): v is string => typeof v === 'string' && v.trim().length > 0 && arr.indexOf(v) === i).length > 0
@@ -240,6 +240,27 @@ const schema = {
         </div>
         <img class="project-hero-advisor" src="/uploads/tu-van-vien-vest.jpg" alt="Tư vấn viên bất động sản" loading="lazy" />
       </aside>
+
+      <dialog class="project-lead-dialog" id="project-lead-dialog" aria-labelledby="project-lead-title">
+        <div class="project-lead-inner">
+          <button class="project-lead-close" type="button" data-close-lead-popup aria-label="Đóng biểu mẫu">×</button>
+          <span class="eyebrow">TƯ VẤN DỰ ÁN</span>
+          <h2 id="project-lead-title">Nhận thông tin & bảng giá</h2>
+          <p>Để lại thông tin, chuyên viên sẽ liên hệ tư vấn về <strong>{data.title}</strong>.</p>
+          <form id="project-lead-form" action="https://docs.google.com/forms/d/e/1FAIpQLScpdMvW3g0dfHdc4sx_k9Mps05ObD57aOzy1ugbEY0UBBENqQ/formResponse" method="POST" target="project-lead-frame">
+            <label for="lead-name">Họ và tên <span>*</span></label>
+            <input id="lead-name" name="entry.1817354620" type="text" autocomplete="name" maxlength="120" placeholder="Nhập họ và tên" required />
+            <label for="lead-phone">Số điện thoại <span>*</span></label>
+            <input id="lead-phone" name="entry.996658541" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9+ .()-]{9,18}" title="Nhập số điện thoại hợp lệ" placeholder="Nhập số điện thoại" required />
+            <label for="lead-interest">Thông tin quan tâm <span>*</span></label>
+            <textarea id="lead-interest" name="entry.2014010319" rows="3" maxlength="1000" required>{`Tôi muốn nhận bảng giá và thông tin dự án ${data.title}. Trang: https://canhodanang.store/du-an/${project.id}/`}</textarea>
+            <p class="project-lead-consent">Thông tin chỉ dùng để liên hệ tư vấn theo yêu cầu của anh/chị.</p>
+            <button class="project-lead-submit" type="submit">Gửi yêu cầu tư vấn</button>
+            <p class="project-lead-status" id="project-lead-status" role="status" aria-live="polite"></p>
+          </form>
+          <iframe title="Gửi đăng ký tư vấn" name="project-lead-frame" id="project-lead-frame" hidden></iframe>
+        </div>
+      </dialog>
 
       <section class="description" aria-label="Giới thiệu và thông tin chi tiết dự án">
         <div class="article-content" id="project-detail-content">
@@ -414,6 +435,46 @@ const schema = {
   </main>
   <script is:inline>
     (() => {
+      const leadDialog = document.getElementById('project-lead-dialog');
+      const leadForm = document.getElementById('project-lead-form');
+      const leadFrame = document.getElementById('project-lead-frame');
+      const leadStatus = document.getElementById('project-lead-status');
+      const leadSubmit = leadForm?.querySelector('button[type="submit"]');
+      let leadSending = false;
+      let leadSubmitted = false;
+      document.querySelectorAll('[data-open-lead-popup]').forEach(button => button.addEventListener('click', () => {
+        if (leadDialog?.showModal) leadDialog.showModal();
+      }));
+      leadDialog?.querySelector('[data-close-lead-popup]')?.addEventListener('click', () => leadDialog.close());
+      leadDialog?.addEventListener('click', event => {
+        if (event.target === leadDialog) leadDialog.close();
+      });
+      leadForm?.addEventListener('submit', event => {
+        const phone = leadForm.querySelector('#lead-phone')?.value.replace(/[^0-9]/g, '') || '';
+        if (phone.length < 9 || phone.length > 11) {
+          event.preventDefault();
+          leadStatus.textContent = 'Vui lòng nhập số điện thoại từ 9 đến 11 chữ số.';
+          return;
+        }
+        leadSending = true;
+        leadSubmitted = true;
+        leadStatus.textContent = 'Đang gửi thông tin...';
+        if (leadSubmit) leadSubmit.disabled = true;
+        window.setTimeout(() => {
+          if (leadSending) {
+            leadSending = false;
+            if (leadSubmit) leadSubmit.disabled = false;
+            leadStatus.textContent = 'Chưa xác nhận được kết quả gửi. Anh/chị vui lòng thử lại hoặc liên hệ qua Zalo.';
+          }
+        }, 12000);
+      });
+      leadFrame?.addEventListener('load', () => {
+        if (!leadSubmitted || !leadSending) return;
+        leadSending = false;
+        if (leadSubmit) leadSubmit.disabled = false;
+        leadStatus.textContent = 'Yêu cầu đã được chuyển đến Google Forms. Chúng tôi sẽ liên hệ sớm sau khi tiếp nhận.';
+        leadForm.reset();
+      });
       document.querySelectorAll('[data-project-slideshow]').forEach(slideshow => {
         const slides = Array.from(slideshow.querySelectorAll('.project-hero-slide'));
         if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -505,6 +566,22 @@ const schema = {
     .breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:28px}
     .breadcrumbs a{color:#1a5d8c;text-decoration:none}
     .breadcrumbs a:hover{text-decoration:underline}
+    button.hero-quote{border:0;cursor:pointer;font-family:inherit}
+    .project-lead-dialog{border:0;border-radius:18px;padding:0;width:min(94vw,470px);max-height:92vh;box-shadow:0 22px 90px #071b3280;color:#19334d}
+    .project-lead-dialog::backdrop{background:rgba(7,23,40,.68)}
+    .project-lead-inner{position:relative;padding:clamp(22px,4vw,34px)}
+    .project-lead-inner h2{font-size:25px;line-height:1.3;margin:10px 0}
+    .project-lead-inner>p{font-size:14px;line-height:1.7;color:#526a7d;margin:0 0 20px}
+    .project-lead-close{position:absolute;top:12px;right:16px;background:none;border:0;font-size:30px;color:#60768a;cursor:pointer}
+    #project-lead-form{display:flex;flex-direction:column;gap:8px}
+    #project-lead-form label{font-size:14px;font-weight:700;margin-top:6px}
+    #project-lead-form label span{color:#dc2626}
+    #project-lead-form input,#project-lead-form textarea{width:100%;box-sizing:border-box;border:1px solid #d7e1e9;border-radius:9px;padding:12px;font:inherit;font-size:16px;color:#19334d;background:#fff}
+    #project-lead-form input:focus,#project-lead-form textarea:focus{outline:2px solid #6ba9cc;outline-offset:1px}
+    .project-lead-consent{font-size:12px;color:#708497;line-height:1.5;margin:6px 0}
+    .project-lead-submit{border:0;background:#17618c;color:#fff;border-radius:9px;padding:14px 16px;font:inherit;font-weight:750;cursor:pointer}
+    .project-lead-submit:disabled{opacity:.6;cursor:wait}
+    .project-lead-status{font-size:13px;line-height:1.5;margin:4px 0 0;color:#31566d}
     .project-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#fff;border:1px solid #e5edf3;border-radius:16px;overflow:hidden;min-height:440px}
     .project-hero-info{padding:clamp(24px,3.5vw,42px);display:flex;flex-direction:column;align-items:flex-start}
     .project-hero-info h1{font-size:clamp(27px,3vw,38px);line-height:1.2;margin:12px 0 24px;letter-spacing:-.025em}
