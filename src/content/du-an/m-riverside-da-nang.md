@@ -69,7 +69,7 @@ logoAlt: logo M Riverside Đà Nẵng
 distributionStatus: dang-phan-phoi
 showLogoInFooter: true
 showInMenu: true
-date: 2026-11-09T15:54:00
+date: 2026-11-09T16:08:00
 status: published
 showOnHome: true
 featured: false
