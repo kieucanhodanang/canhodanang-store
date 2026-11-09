@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { formatListingPrice } from '../../utils/formatListingPrice';
 import PropertyDetail from '../../components/PropertyDetail.astro';
 import { getCollection, render } from 'astro:content';
 import { sortFeaturedFirst } from '../../utils/listingSort';
@@ -238,7 +239,7 @@ const schema = {
                     </div>
                     <h2><a href={`/can-ho/${encodeURIComponent(item.id)}/`}>{item.data.title}</a></h2>
                     <div class="region-facts">
-                      <strong class="region-price">{item.data.price || 'Liên hệ'}</strong>
+                      <strong class="region-price">{formatListingPrice(item.data.price, item.data.transaction, item.data.priceValue)}</strong>
                       {formatRegionArea(item.data.area, item.data.areaValue) && <span class="region-fact">{formatRegionArea(item.data.area, item.data.areaValue)}</span>}
                       {item.data.bedrooms != null && <span class="region-fact">{item.data.bedrooms} PN</span>}
                     </div>
@@ -306,7 +307,7 @@ const schema = {
             <p class="similar-location">{[item.data.ward, item.data.district].filter(Boolean).join(' · ')}</p>
             <h3><a href={`/can-ho/${encodeURIComponent(item.id)}/`}>{item.data.title}</a></h3>
             <div class="similar-facts">
-              <strong>{item.data.price || 'Liên hệ'}</strong>
+              <strong>{formatListingPrice(item.data.price, item.data.transaction, item.data.priceValue)}</strong>
               {formatRegionArea(item.data.area, item.data.areaValue) && <span>{formatRegionArea(item.data.area, item.data.areaValue)}</span>}
               {item.data.bedrooms != null && <span>{item.data.bedrooms} PN</span>}
             </div>
