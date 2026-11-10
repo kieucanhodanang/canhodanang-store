@@ -22,12 +22,12 @@
     "haiChau": "/uploads/can-ho-hai-chau.jfif"
   },
   "rentalAreaImages": {
-    "sonTra": "",
-    "haiChau": "",
-    "thanhKhe": "",
-    "nguHanhSon": "",
-    "lienChieu": "",
-    "camLe": ""
+    "sonTra": "/uploads/can-ho-cho-thue-son-tra.jpg",
+    "haiChau": "/uploads/can-ho-cho-thue-hai-chau-da-nang.png",
+    "thanhKhe": "/uploads/can-o-cho-thue-thanh-khe.jpg",
+    "nguHanhSon": "/uploads/can-ho-cho-thue-ngu-hanh-son.avif",
+    "lienChieu": "/uploads/can-o-cho-thue-lien-chieu.jpg",
+    "camLe": "/uploads/can-o-cho-thue-cam-le.jpg"
   },
   "bannerTextAlign": "left",
   "bannerTitle": "Căn Hộ Đà Nẵng – Mua Bán, Cho Thuê & Dự Án Nổi Bật",
@@ -55,9 +55,9 @@
   "primaryButtonColor": "#D4A85E",
   "bannerDescription": "Khám phá thông tin căn hộ Đà Nẵng, các dự án nổi bật và lựa chọn bất động sản phù hợp nhu cầu an cư hoặc đầu tư.",
   "landAreaImages": {
-    "sonTra": "",
-    "haiChau": "",
-    "thanhKhe": ""
+    "sonTra": "/uploads/nha-son-tra-da-nanggx.webp",
+    "haiChau": "/uploads/nha-hai-chau-da-nang.jpg",
+    "thanhKhe": "/uploads/nha-thanh-khe-da-nang.jpg"
   },
   "siteLogo": "/uploads/can-ho-da-nang-logo-1-.png",
   "secondaryButtonText": "Liên hệ tư vấn",
