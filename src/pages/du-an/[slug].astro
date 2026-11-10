@@ -75,6 +75,7 @@ const extra = data as typeof data & {
   district?: string; totalArea?: string; towerCount?: string | number;
   unitCount?: string | number; handoverDate?: string; buildingDensity?: string;
   floorPlanText?: string; floorPlanImages?: string[];
+  googleMapsEmbed?: string; showGoogleMap?: boolean;
   progressText?: string; progressItems?: { title?: string; image?: string; videoUrl?: string; videoFile?: string; description?: string }[];
 };
 // Render Markdown an toàn cho Mặt bằng / Tiến độ: ảnh, liên kết, tiêu đề và đoạn văn.
@@ -120,6 +121,19 @@ const renderProjectText = (value?: string) => {
     return `<p>${trimmed.split('\n').map(renderInline).join('<br />')}</p>`;
   }).join('');
 };
+// Chỉ cho phép URL iframe nhúng Google Maps từ các hostname chính thức.
+const googleMapsSrc = (() => {
+  if (extra.showGoogleMap === false || !extra.googleMapsEmbed?.trim()) return '';
+  const match = extra.googleMapsEmbed.match(/<iframe\\b[^>]*\\bsrc\\s*=\\s*(["'])(.*?)\\1/i);
+  const candidate = match?.[2] || extra.googleMapsEmbed.trim();
+  try {
+    const url = new URL(candidate.replace(/&amp;/g, '&'));
+    const host = url.hostname.toLowerCase();
+    if (url.protocol !== 'https:' || !['www.google.com', 'google.com', 'maps.google.com'].includes(host)) return '';
+    if (!url.pathname.startsWith('/maps/embed')) return '';
+    return url.href;
+  } catch { return ''; }
+})();
 const detailRows = [
   ['Tên gọi', data.title], ['Chủ đầu tư', data.developer],
   ['Diện tích', extra.totalArea], ['Vị trí', data.location],
@@ -272,6 +286,13 @@ const schema = {
         </button>
       </section>
 
+      {googleMapsSrc && <section class="description project-map" aria-label={`Bản đồ vị trí ${data.title}`}>
+        <h2>Bản đồ vị trí {data.title}</h2>
+        <p>{data.location}</p>
+        <iframe src={googleMapsSrc} title={`Google Maps vị trí ${data.title}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        <a href={googleMapsSrc} target="_blank" rel="noopener noreferrer">Xem bản đồ lớn ↗</a>
+      </section>}
+
       <section class="description" aria-label="Thông số chi tiết dự án">
         <h2>Thông số chi tiết dự án {data.title}</h2>
         <dl class="spec-grid">
@@ -279,6 +300,37 @@ const schema = {
             <div class="spec-item"><dt>◈ {label}</dt><dd>{String(value)}</dd></div>
           ))}
         </dl>
+      </section>
+
+      <section class="description">
+        <h2>Mặt bằng dự án {data.title}</h2>
+        {extra.floorPlanText && <div class="section-copy project-markdown" set:html={renderProjectText(extra.floorPlanText)} />}
+        {extra.floorPlanImages?.length ? <>
+          <div class="floor-plan-gallery">{extra.floorPlanImages.filter(Boolean).map((image, index) => (
+            <button class="floor-plan-open" type="button" data-floor-plan-src={image} data-floor-plan-alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} aria-label={`Phóng to mặt bằng ${data.title} - ảnh ${index + 1}`}>
+              <img src={image} alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} loading="lazy" />
+              <span class="floor-plan-zoom">⛶ Phóng to ảnh</span>
+            </button>
+          ))}</div>
+          <dialog class="floor-plan-dialog" aria-label="Xem mặt bằng dự án phóng to">
+            <button type="button" class="floor-plan-close" aria-label="Đóng ảnh phóng to">×</button>
+            <img class="floor-plan-full-image" alt="" />
+          </dialog>
+        </> : (!extra.floorPlanText?.trim() && <p class="empty">Thông tin mặt bằng đang được cập nhật.</p>)}
+      </section>
+
+      <section class="description">
+        <h2>Tiến độ dự án {data.title}</h2>
+        {extra.progressText && <div class="section-copy project-markdown" set:html={renderProjectText(extra.progressText)} />}
+        {extra.progressItems?.length ? extra.progressItems.map((item, index) => (
+          <article class="progress-item">
+            <h3>{item.title || `Cập nhật tiến độ ${data.title} - ${index + 1}`}</h3>
+            {item.description && <p>{item.description}</p>}
+            {item.image && <img src={item.image} alt={item.title || `Tiến độ ${data.title}`} loading="lazy" />}
+            {item.videoUrl && youtubeEmbed(item.videoUrl) && <iframe src={youtubeEmbed(item.videoUrl)} title={item.title || `Video tiến độ ${data.title}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>}
+            {item.videoFile && <video controls preload="metadata" playsinline src={item.videoFile}></video>}
+          </article>
+        )) : (!extra.progressText?.trim() && <p class="empty">Tiến độ dự án đang được cập nhật.</p>)}
       </section>
 
       {isHaiVanBay && (
@@ -375,37 +427,6 @@ const schema = {
           ) : <p class="empty">Hiện chưa có bất động sản phù hợp được đăng trong dự án này.</p>}
         </section>
       ))}
-
-      <section class="description">
-        <h2>Mặt bằng dự án {data.title}</h2>
-        {extra.floorPlanText && <div class="section-copy project-markdown" set:html={renderProjectText(extra.floorPlanText)} />}
-        {extra.floorPlanImages?.length ? <>
-          <div class="floor-plan-gallery">{extra.floorPlanImages.filter(Boolean).map((image, index) => (
-            <button class="floor-plan-open" type="button" data-floor-plan-src={image} data-floor-plan-alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} aria-label={`Phóng to mặt bằng ${data.title} - ảnh ${index + 1}`}>
-              <img src={image} alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} loading="lazy" />
-              <span class="floor-plan-zoom">⛶ Phóng to ảnh</span>
-            </button>
-          ))}</div>
-          <dialog class="floor-plan-dialog" aria-label="Xem mặt bằng dự án phóng to">
-            <button type="button" class="floor-plan-close" aria-label="Đóng ảnh phóng to">×</button>
-            <img class="floor-plan-full-image" alt="" />
-          </dialog>
-        </> : (!extra.floorPlanText?.trim() && <p class="empty">Thông tin mặt bằng đang được cập nhật.</p>)}
-      </section>
-
-      <section class="description">
-        <h2>Tiến độ dự án {data.title}</h2>
-        {extra.progressText && <div class="section-copy project-markdown" set:html={renderProjectText(extra.progressText)} />}
-        {extra.progressItems?.length ? extra.progressItems.map((item, index) => (
-          <article class="progress-item">
-            <h3>{item.title || `Cập nhật tiến độ ${data.title} - ${index + 1}`}</h3>
-            {item.description && <p>{item.description}</p>}
-            {item.image && <img src={item.image} alt={item.title || `Tiến độ ${data.title}`} loading="lazy" />}
-            {item.videoUrl && youtubeEmbed(item.videoUrl) && <iframe src={youtubeEmbed(item.videoUrl)} title={item.title || `Video tiến độ ${data.title}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>}
-            {item.videoFile && <video controls preload="metadata" playsinline src={item.videoFile}></video>}
-          </article>
-        )) : (!extra.progressText?.trim() && <p class="empty">Tiến độ dự án đang được cập nhật.</p>)}
-      </section>
 
       {relatedNews.length > 0 && <section class="listings">
         <h2>Tin tức về dự án {data.title}</h2>
@@ -719,5 +740,8 @@ const schema = {
       .description,.listings{padding:20px 5px;margin-top:18px}.article-content{font-size:15.5px;line-height:1.8}
     }
     @media(max-width:440px){.cards{grid-template-columns:1fr}.card img{height:195px}.contact a{flex:1;text-align:center}}
+    .project-map iframe{display:block;width:100%;height:420px;border:0;border-radius:12px;margin:14px 0}
+    .project-map>a{display:inline-block;color:#1769a0;font-weight:650;text-decoration:none}
+    @media(max-width:767px){.project-map iframe{height:320px}}
   </style>
 </Base>
