@@ -89,11 +89,13 @@ select:focus-visible {
   white-space: nowrap;
 }
 
-.brand::before {
-  content: "◆";
-  color: var(--gold);
-  margin-right: 10px;
-  font-size: 15px;
+/* Logo chính thức thay cho hình thoi trang trí cũ. */
+.site-gold-header .site-brand::before {
+  content: none;
+  display: none;
+}
+.site-gold-header .site-brand {
+  gap: 5px !important;
 }
 
 .header nav {
