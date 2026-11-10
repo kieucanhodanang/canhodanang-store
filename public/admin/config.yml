@@ -379,6 +379,16 @@ collections:
     name: buildingDensity
     widget: string
     required: false
+  - label: Google Maps Embed (HTML nhúng từ Google Maps)
+    name: googleMapsEmbed
+    widget: text
+    required: false
+    hint: 'Google Maps → Chia sẻ → Nhúng bản đồ → Sao chép HTML. Chỉ dán mã iframe Google Maps; website sẽ kiểm tra đường dẫn hợp lệ.'
+  - label: Hiển thị bản đồ vị trí
+    name: showGoogleMap
+    widget: boolean
+    default: true
+    required: false
   - label: Nội dung mặt bằng dự án (chèn ảnh trực tiếp)
     name: floorPlanText
     widget: markdown
