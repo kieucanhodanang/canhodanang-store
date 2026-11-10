@@ -194,6 +194,13 @@ const structuredData = {
       </aside>
     )}
 
+    <nav class="social-dock" aria-label="Liên hệ nhanh">
+      <a class="social-dock-link social-zalo" href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer" aria-label="Chat Zalo" title="Zalo"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" /><span class="social-fallback" style="display:none">Z</span></a>
+      <a class="social-dock-link social-messenger" href="https://m.me/kieulands" target="_blank" rel="noopener noreferrer" aria-label="Nhắn Messenger" title="Messenger"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 2C6.35 2 2 6.14 2 11.75c0 2.93 1.19 5.4 3.13 7.11V22l3.03-1.66c1.21.39 2.5.6 3.84.6 5.65 0 10-4.14 10-9.75S17.65 2 12 2Zm1.06 13.1-2.6-2.78-5.06 2.78 5.58-5.93 2.66 2.78 5-2.78-5.58 5.93Z"/></svg></a>
+      <span class="social-dock-link social-tiktok is-disabled" aria-label="TikTok - đang cập nhật liên kết" title="TikTok - đang cập nhật"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.7 2h-3.2v13.05a3.05 3.05 0 1 1-2.6-3.02V8.78a6.28 6.28 0 1 0 5.8 6.27V8.42a8.65 8.65 0 0 0 5.3 1.72V6.96A5.38 5.38 0 0 1 16.7 2Z"/></svg></span>
+      <a class="social-dock-link social-call" href="tel:0869437415" aria-label="Gọi 0869 437 415" title="Gọi điện"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 3.1 5.18 2 2 0 0 1 5.09 3h3a2 2 0 0 1 2 1.72c.13.97.37 1.92.72 2.82a2 2 0 0 1-.45 2.11L9.1 10.9a16 16 0 0 0 4 4l1.25-1.26a2 2 0 0 1 2.11-.45c.9.35 1.85.59 2.82.72A2 2 0 0 1 22 16.9Z"/></svg></a>
+    </nav>
+
     <footer class="site-footer">
       <div class="wrap footer-layout">
         <section class="footer-projects" aria-label="Dự án đang phân phối">
@@ -437,6 +444,15 @@ const structuredData = {
       }
       @media (max-width:1599px) { .floating-ads { display:none; } }
       @media (prefers-reduced-motion:reduce) { .floating-ad { transition:none; } }
+      .social-dock{position:fixed;right:16px;bottom:24px;z-index:90;display:flex;flex-direction:column;gap:11px;align-items:center}
+      .social-dock-link{width:48px;height:48px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:50%;box-shadow:0 3px 13px #0003;border:2px solid white;color:white;text-decoration:none;transition:transform .2s}
+      .social-dock-link:hover{transform:translateY(-3px)}
+      .social-dock-link svg{width:25px;height:25px;display:block}
+      .social-zalo{background:#0879e8}.social-zalo img{width:100%;height:100%;object-fit:contain;border-radius:50%}.social-fallback{font-size:25px;font-weight:800}
+      .social-messenger{background:linear-gradient(145deg,#00b2ff,#6d4aff)}
+      .social-tiktok{background:#111}.social-tiktok svg{filter:drop-shadow(1px 1px #ff0050)}
+      .social-call{background:#158452}.social-dock .is-disabled{cursor:default;opacity:.85}
+      @media(max-width:767px){.social-dock{left:50%;right:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);flex-direction:row;gap:clamp(15px,5vw,30px);padding:7px 15px;border-radius:35px;background:#ffffffed;box-shadow:0 5px 20px #0002}.social-dock-link{width:43px;height:43px}.social-dock-link svg{width:23px;height:23px}body{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}}
       .site-footer { background:#10243a; color:#e8eef5; padding:38px 0; }
       .footer-layout { display:grid; grid-template-columns:minmax(0,3fr) minmax(0,2fr); gap:36px; }
       .site-footer h2 { color:#d4a85e; font-size:15px; letter-spacing:.035em; margin:0 0 20px; }
