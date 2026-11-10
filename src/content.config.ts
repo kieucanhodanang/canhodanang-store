@@ -79,6 +79,8 @@ const duAn = defineCollection({
     unitCount: optionalText,
     handoverDate: optionalText,
     buildingDensity: optionalText,
+    googleMapsEmbed: optionalText,
+    showGoogleMap: z.boolean().default(true),
     floorPlanText: optionalText,
     floorPlanImages: z.array(z.string()).nullish(),
     progressText: optionalText,
