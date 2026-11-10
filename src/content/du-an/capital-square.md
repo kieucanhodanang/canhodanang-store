@@ -20,7 +20,7 @@ googleMapsEmbed: <iframe
   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.943211236969!2d108.22904957576046!3d16.068436439458452!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752bfbfff66083%3A0xb8cb8a1e16de6f11!2zQ2FwaXRhbCBTcXVhcmUgxJDDoCBO4bq1bmc!5e0!3m2!1sen!2s!4v1794299552928!5m2!1sen!2s"
   width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
   referrerpolicy="strict-origin-when-cross-origin"></iframe>
-showGoogleMap: false
+showGoogleMap: true
 floorPlanText: >-
   ![Thiết kế layout tòa điển hình của Capital
   Square](/uploads/mat-bang-layout-toa-dien-hinh-2-cua-capital-square.webp
