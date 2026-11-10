@@ -583,7 +583,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
                 ⌖ {item.place}
               </span>
 
-              <h3>{item.title}</h3>
+              <h3><a href={item.href}>{item.title}</a></h3>
 
               <p>{item.summary}</p>
 
@@ -669,7 +669,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
                 ⌖ {item.place}
               </span>
 
-              <h3>{item.title}</h3>
+              <h3><a href={item.href}>{item.title}</a></h3>
 
               <p>{item.summary}</p>
 
@@ -735,7 +735,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
             </a>
             <div class="cardbody">
               <span class="location">⌖ {area.name}, Đà Nẵng</span>
-              <h3>Nhà Đất {area.name}</h3>
+              <h3><a href={area.href}>Nhà Đất {area.name}</a></h3>
               <p>{area.description}</p>
               <a class="textlink" href={area.href}>Xem nhà đất →</a>
             </div>
@@ -803,7 +803,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
             </a>
             <div class="cardbody">
               <span class="location">⌖ {area.name}, Đà Nẵng</span>
-              <h3>Cho Thuê {area.name}</h3>
+              <h3><a href={area.href}>Cho Thuê {area.name}</a></h3>
               <p>Căn hộ và nhà đất cho thuê tại khu vực {area.name}, Đà Nẵng.</p>
               <a class="textlink" href={area.href}>Xem bất động sản cho thuê →</a>
             </div>
@@ -929,6 +929,10 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       .home-listing-meta {font-size:12px;margin:4px 0;}
       .home-listing-body .textlink {font-size:12px;}
     }
+
+    /* Tất cả tiêu đề thẻ trang chủ có thể mở trang đích. */
+    .cards .cardbody h3 a{color:inherit;text-decoration:none;cursor:pointer}
+    .cards .cardbody h3 a:hover{color:#a77a38}
     .home-project-visual {position:relative;overflow:hidden;background:#dbe6ee;min-height:220px;}
     .home-project-visual img {display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:cover;}
     .home-project-visual .tag {position:relative;z-index:1;}
