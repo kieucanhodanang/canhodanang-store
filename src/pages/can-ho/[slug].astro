@@ -126,15 +126,16 @@ const saleApartmentsForSidebar = !region ? (await getCollection('can-ho')).filte
 ) : [];
 const allProjectsForSidebar = !region ? (await getCollection('du-an')).filter(item => item.data.status === 'published') : [];
 const projectSaleCounts = new Map<string, number>();
-const wardSaleCounts = new Map<string, number>();
+const districtSaleCounts = new Map<string, number>();
+const sidebarDistricts = [{slug:'son-tra',name:'Sơn Trà'},{slug:'ngu-hanh-son',name:'Ngũ Hành Sơn'},{slug:'hai-chau',name:'Hải Châu'}];
 for (const item of saleApartmentsForSidebar) {
   if (item.data.project) projectSaleCounts.set(item.data.project, (projectSaleCounts.get(item.data.project) || 0) + 1);
-  const ward = item.data.ward?.trim();
-  if (ward) wardSaleCounts.set(ward, (wardSaleCounts.get(ward) || 0) + 1);
+  const district = sidebarDistricts.find(area => normalizeRelatedDistrict(area.name) === normalizeRelatedDistrict(item.data.district));
+  if (district) districtSaleCounts.set(district.slug, (districtSaleCounts.get(district.slug) || 0) + 1);
 }
 const sidebarProjects = allProjectsForSidebar.filter(item => projectSaleCounts.has(item.id))
   .sort((a, b) => (projectSaleCounts.get(b.id) || 0) - (projectSaleCounts.get(a.id) || 0));
-const sidebarWards = [...wardSaleCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'vi'));
+const sidebarRegions = sidebarDistricts.filter(area => districtSaleCounts.has(area.slug)).sort((a,b) => (districtSaleCounts.get(b.slug) || 0) - (districtSaleCounts.get(a.slug) || 0));
 const seoTitle = region ? regionSeoTitle : (data.seoTitle || data.title);
 const seoDescription = region ? regionSeoDescription : (data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`);
 const locationLine = [data.address, data.ward, data.district].filter(Boolean).join(' · ');
@@ -330,8 +331,8 @@ const schema = {
           <section class="sidebar-list"><h2>Dự án đang bán</h2>
             {sidebarProjects.length ? <ul>{sidebarProjects.map(project => <li><a href={`/du-an/${project.id}/`}><span>{project.data.title}</span><small>{projectSaleCounts.get(project.id)} căn đang bán</small></a></li>)}</ul> : <p>Chưa có căn hộ đang bán thuộc dự án.</p>}
           </section>
-          <section class="sidebar-list"><h2>Căn hộ theo phường</h2>
-            {sidebarWards.length ? <ul>{sidebarWards.map(([ward, count]) => <li><span class="ward-label">{ward}</span><small>{count} căn đang bán</small></li>)}</ul> : <p>Chưa có căn hộ đang bán.</p>}
+          <section class="sidebar-list"><h2>Căn hộ theo quận</h2>
+            {sidebarRegions.length ? <ul>{sidebarRegions.map(area => <li><a href={`/can-ho/${area.slug}/`}><span>{area.name}</span><small>{districtSaleCounts.get(area.slug)} căn đang bán</small></a></li>)}</ul> : <p>Chưa có căn hộ đang bán tại các quận hiện có danh mục.</p>}
           </section>
         </aside>
       </div>
@@ -437,13 +438,13 @@ const schema = {
     .linked-project{margin-top:24px;padding:22px;background:#fff;border:1px solid #e3eaf0;border-radius:12px}.linked-project h2{font-size:20px;margin:0 0 10px}.linked-project a{color:#1a5d8c;font-weight:700}.linked-project p{color:#62788b;margin:8px 0 0}
     .similar-apartments{margin-top:30px;padding-top:24px;border-top:1px solid #dce6ef}
     .similar-apartments>h2{font-size:24px;color:#173b60;margin:0 0 20px}
-    .similar-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .similar-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
     .similar-card{min-width:0;background:#fff;border:1px solid #e1e8ee;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-    .similar-image{display:block;aspect-ratio:16/10;background:#e6edf4}
-    .similar-image img{width:100%;height:100%;object-fit:cover;display:block}
+    .similar-image{display:block;aspect-ratio:16/10;background:#e6edf4;overflow:hidden;flex:none}
+    .similar-image img{width:100%;height:100%;aspect-ratio:16/10;object-fit:cover;display:block}
     .similar-info{padding:17px;display:flex;flex-direction:column;flex:1}
     .similar-location{font-size:12px;color:#617789;margin:0}
-    .similar-info h3{font-size:17px;line-height:1.45;margin:9px 0 15px}
+    .similar-info h3{font-size:17px;line-height:1.45;margin:9px 0 15px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
     .similar-info h3 a{color:#173b60;text-decoration:none}
     .similar-facts{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:auto;font-size:13px;color:#617789}
     .similar-facts strong{color:#c42626;font-size:18px}
