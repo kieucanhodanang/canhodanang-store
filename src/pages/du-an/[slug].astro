@@ -124,7 +124,7 @@ const renderProjectText = (value?: string) => {
 // Chỉ cho phép URL iframe nhúng Google Maps từ các hostname chính thức.
 const googleMapsSrc = (() => {
   if (extra.showGoogleMap === false || !extra.googleMapsEmbed?.trim()) return '';
-  const match = extra.googleMapsEmbed.match(/<iframe\\b[^>]*\\bsrc\\s*=\\s*(["'])(.*?)\\1/i);
+  const match = extra.googleMapsEmbed.match(/<iframe\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1/i);
   const candidate = match?.[2] || extra.googleMapsEmbed.trim();
   try {
     const url = new URL(candidate.replace(/&amp;/g, '&'));
@@ -304,7 +304,7 @@ const schema = {
 
       <section class="description">
         <h2>Mặt bằng dự án {data.title}</h2>
-        {extra.floorPlanText && <div class="section-copy project-markdown" set:html={renderProjectText(extra.floorPlanText)} />}
+        {extra.floorPlanText && !extra.floorPlanImages?.length && <div class="section-copy project-markdown" set:html={renderProjectText(extra.floorPlanText)} />}
         {extra.floorPlanImages?.length ? <>
           <div class="floor-plan-gallery">{extra.floorPlanImages.filter(Boolean).map((image, index) => (
             <button class="floor-plan-open" type="button" data-floor-plan-src={image} data-floor-plan-alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} aria-label={`Phóng to mặt bằng ${data.title} - ảnh ${index + 1}`}>
@@ -321,7 +321,7 @@ const schema = {
 
       <section class="description">
         <h2>Tiến độ dự án {data.title}</h2>
-        {extra.progressText && <div class="section-copy project-markdown" set:html={renderProjectText(extra.progressText)} />}
+        {extra.progressText && !extra.progressItems?.length && <div class="section-copy project-markdown" set:html={renderProjectText(extra.progressText)} />}
         {extra.progressItems?.length ? extra.progressItems.map((item, index) => (
           <article class="progress-item">
             <h3>{item.title || `Cập nhật tiến độ ${data.title} - ${index + 1}`}</h3>
