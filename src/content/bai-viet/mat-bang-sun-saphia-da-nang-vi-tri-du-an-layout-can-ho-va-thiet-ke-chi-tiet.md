@@ -72,7 +72,11 @@ Với diện tích tham khảo khoảng 30–40m², loại căn này được th
 
 ![layout mặt băng căn stu 30m2](/uploads/layout-mat-bang-can-ho-stu-saphia.jpg "Layout căn hộ STU loại 30-33m2")
 
+> Layout căn STU có diện tích thông thủy 30m²
+
 ![layout căn hộ STU 40m2 tại sun saphia](/uploads/layout-mat-bang-can-ho-stu-40m2-saphia.jpg "Layout loại căn hộ STU 40m2")
+
+> Layout căn STU có diện tích thông thủy 40m²
 
 ## Layout căn hộ 1PN+1 Sun Saphia – Diện tích khoảng 50–51m²
 
@@ -96,9 +100,15 @@ Thiết kế thường bao gồm phòng khách, khu vực bếp, hai phòng ng�
 
 ![Layout mặt bằng căn hộ 2PN saphia](/uploads/layout-mat-bang-can-ho-2br-saphia.jpg "Layout mặt bằng căn góc 2PN Saphia")
 
-![Layout mặt bằng căn góc 2PN saphia](/uploads/layout-can-2pn-sun-saphia-residence.jpg)
+> Layout căn góc 2PN view biển Sơn Thủy, Mỹ Khê
 
-![Layout mặt bằng căn hộ 2PN saphia](/uploads/layout-mat-bang-can-2pn-saphia.jpg)
+![Layout mặt bằng căn góc 2PN saphia](/uploads/layout-can-2pn-sun-saphia-residence.jpg "Layout mặt bằng căn góc 2PN saphia residence")
+
+> Layout căn góc 2PN view núi Ngũ Hành Sơn
+
+![Layout mặt bằng căn hộ 2PN saphia](/uploads/layout-mat-bang-can-2pn-saphia.jpg "Layout mặt bằng căn hộ 2PN saphia")
+
+> Layout căn góc 2PN view sông và thành phố
 
 ## Hướng view căn hộ Sun Saphia Residence
 
@@ -113,6 +123,8 @@ Những căn hộ hướng về phía biển có lợi thế tiếp cận cảnh
 ### View Ngũ Hành Sơn
 
 Hướng nhìn về khu vực danh thắng Ngũ Hành Sơn mang đến cảnh quan núi non đặc trưng của Đà Nẵng.
+
+![view núi Ngũ Hành Sơn nhìn từ Sun Saphia Residence](/uploads/view-nui-ngu-hanh-son-tu-sun-saphia.webp "view núi Ngũ Hành Sơn nhìn từ Sun Saphia Residence")
 
 ### View thành phố và sông
 
@@ -138,7 +150,117 @@ Một số yếu tố cần xem xét gồm:
 
 ## Cập nhật mặt bằng và layout Sun Saphia Residence mới nhất
 
-Mặt bằng và thiết kế từng loại căn hộ là những tài liệu quan trọng giúp khách hàng hình dung rõ hơn về không gian sống, hướng nhìn và khả năng sử dụng thực tế.
+Mặt bằng và thiết kế từng loại căn hộ là những tài liệu quan trọng giúp anh chị khách hàng hình dung rõ hơn về không gian sống, hướng nhìn và khả năng sử dụng thực tế.
+
+```
+
+<form
+  action="https://docs.google.com/forms/d/e/1FAIpQLScpdMvW3g0dfHdc4sx_k9Mps05ObD57aOzy1ugbEY0UBBENqQ/formResponse"
+  method="POST"
+  target="lead-google-frame"
+  class="contact-form"
+>
+  <h3>Nhận tư vấn bất động sản</h3>
+  <p>Để lại thông tin để được hỗ trợ nhanh chóng.</p>
+
+  <label for="customer-name">Họ và tên *</label>
+  <input
+    id="customer-name"
+    name="entry.1817354620"
+    type="text"
+    placeholder="Nhập họ và tên"
+    autocomplete="name"
+    required
+  />
+
+  <label for="customer-phone">Số điện thoại *</label>
+  <input
+    id="customer-phone"
+    name="entry.996658541"
+    type="tel"
+    placeholder="Nhập số điện thoại"
+    autocomplete="tel"
+    pattern="[0-9+ .()-]{9,18}"
+    required
+  />
+
+  <label for="customer-interest">Thông tin quan tâm *</label>
+  <textarea
+    id="customer-interest"
+    name="entry.2014010319"
+    rows="3"
+    placeholder="Anh/chị quan tâm căn hộ, nhà đất hoặc dự án nào?"
+    required
+  ></textarea>
+
+  <label class="consent">
+    <input type="checkbox" required />
+    Tôi đồng ý cung cấp thông tin để được liên hệ tư vấn.
+  </label>
+
+  <button type="submit">Gửi thông tin tư vấn</button>
+</form>
+
+<iframe
+  name="lead-google-frame"
+  title="Google Forms"
+  style="display:none"
+></iframe>
+
+<style>
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 460px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e1e7ed;
+    border-radius: 14px;
+    box-shadow: 0 8px 28px #102c4912;
+    font-family: Arial, sans-serif;
+  }
+  .contact-form h3 {
+    margin: 0;
+    color: #173d62;
+    font-size: 22px;
+  }
+  .contact-form p {
+    margin: 0 0 8px;
+    color: #64748b;
+  }
+  .contact-form label {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .contact-form input:not([type="checkbox"]),
+  .contact-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 16px;
+  }
+  .contact-form .consent {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-weight: 400;
+  }
+  .contact-form button {
+    padding: 14px;
+    background: #a77a38;
+    color: white;
+    border: 0;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+</style>
+
+```
 
 Các sơ đồ trong bài mang tính tham khảo theo tài liệu giới thiệu dự án. Diện tích, mã căn, thiết kế và thông số chính thức cần được đối chiếu với hồ sơ được chủ đầu tư xác nhận tại thời điểm giao dịch.
 
