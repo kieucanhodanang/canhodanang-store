@@ -202,8 +202,17 @@ collections:
   - &id025
     label: Thông tin pháp lý
     name: legal
-    widget: string
+    widget: select
     required: false
+    options:
+    - Sổ hồng lâu dài
+    - Hợp đồng mua bán
+    - Văn bản thỏa thuận
+    - Đang chờ cấp sổ
+    - Sở hữu 50 năm
+    - Sở hữu lâu dài
+    - Khác
+    hint: Chọn theo hồ sơ thực tế của căn hộ; nếu chưa xác minh, để trống.
   - label: Hướng căn hộ
     name: direction
     widget: select
