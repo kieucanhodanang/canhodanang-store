@@ -12,7 +12,7 @@ const properties = sortFeaturedFirst(
   )
 );
 const { totalItems } = paginateListings(properties, 1, 12);
-const areas = [...new Set([...["Sơn Trà","Ngũ Hành Sơn","Hải Châu","Thanh Khê","Liên Chiểu","Cẩm Lệ","Hòa Vang"],...properties.map(item => item.data.district || item.data.ward).filter(Boolean)])].sort((a,b) => a.localeCompare(b,'vi'));
+const areas = ['Sơn Trà', 'Hải Châu', 'Thanh Khê', 'Ngũ Hành Sơn'];
 const formatArea = (value: unknown, fallback?: number | null) => {
   const raw = String(value ?? fallback ?? '').trim();
   return raw ? (/m²|m2|mét vuông/i.test(raw) ? raw : `${raw} m²`) : '';
@@ -222,6 +222,15 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     const go = (delta: number) => { current += delta; render(false); document.querySelector('.heading')?.scrollIntoView({behavior:'smooth',block:'start'}); };
     previous?.addEventListener('click', () => go(-1));
     next?.addEventListener('click', () => go(1));
+    // Cho phép thẻ khu vực và sidebar chi tiết liên kết trực tiếp tới bộ lọc phường.
+    const requestedWard = new URLSearchParams(window.location.search).get('phuong') || new URLSearchParams(window.location.search).get('district') || '';
+    const validWards = ['Sơn Trà', 'Hải Châu', 'Thanh Khê', 'Ngũ Hành Sơn'];
+    const matchedWard = validWards.find(name => normalize(name) === normalize(requestedWard));
+    if (matchedWard) {
+      if (area) area.value = matchedWard;
+      if (sidebarArea) sidebarArea.value = matchedWard;
+      sidebar?.querySelectorAll<HTMLInputElement>('input[name="district"]').forEach(input => { input.checked = input.value === matchedWard; });
+    }
     render();
   </script>
   <style>
