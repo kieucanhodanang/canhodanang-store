@@ -115,6 +115,9 @@ const khuVuc = [
 ];
 
 const normalizeLandDistrict = (value: unknown) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase().replace(/^(quan|huyen)\s+/, '').trim();
+const normalizeApartmentArea = (value: unknown) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLowerCase().replace(/^(quan|phuong|huyen)\s+/, '').trim();
+const apartmentAreaCounts = (name: string) => searchableListings.filter(item => item.type === 'can-ho' && item.transaction === 'ban' && normalizeApartmentArea(item.ward || item.district) === normalizeApartmentArea(name)).length;
+const apartmentAreas = khuVuc.map(item => ({ ...item, count: apartmentAreaCounts(item.title.replace(/^Căn hộ\s+/, '')) }));
 const landDistrictAreas = [
   { name: 'Sơn Trà', description: 'Nhà phố và đất thổ cư khu vực ven biển, gần trung tâm.', image: homepage.landAreaImages?.sonTra || '' },
   { name: 'Hải Châu', description: 'Nhà đất tại khu vực trung tâm, thuận tiện kinh doanh và sinh sống.', image: homepage.landAreaImages?.haiChau || '' },
@@ -657,11 +660,11 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       </div>
 
       <div class="cards">
-        {khuVuc.map(item => (
+        {apartmentAreas.map(item => (
           <article class="card">
             <div class={`visual ${item.style}`}>
               {item.image?.startsWith("/uploads/") && <img src={item.image} alt={`Căn hộ tại ${item.place}`} loading="lazy" decoding="async" />}
-              <span class="tag">Theo khu vực</span>
+              <span class="tag">{item.count} căn hộ đang giao dịch</span>
             </div>
 
             <div class="cardbody">
