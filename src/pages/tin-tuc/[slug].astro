@@ -91,7 +91,7 @@ const schema = {
           <form action="https://docs.google.com/forms/d/e/1FAIpQLScpdMvW3g0dfHdc4sx_k9Mps05ObD57aOzy1ugbEY0UBBENqQ/formResponse" method="POST" target="news-lead-target">
             <label>Họ và tên <span>*</span><input name="entry.1817354620" type="text" autocomplete="name" maxlength="120" placeholder="Nhập họ và tên" required /></label>
             <label>Số điện thoại <span>*</span><input name="entry.996658541" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9+ .()-]{9,18}" placeholder="Nhập số điện thoại" required /></label>
-            <label>Thông tin quan tâm <span>*</span><textarea name="entry.2014010319" rows="3" maxlength="1000" placeholder="Anh/chị cần tư vấn bất động sản nào?" required></textarea></label>
+            <label>Thông tin quan tâm <span>*</span><textarea name="entry.2014010319" rows="3" maxlength="1000" placeholder="" required></textarea></label>
             <label class="news-lead-consent"><input type="checkbox" required /> Tôi đồng ý cung cấp thông tin để được liên hệ tư vấn.</label>
             <button type="submit">Gửi thông tin tư vấn</button>
             <small>Thông tin được gửi đến Google Forms. Vui lòng liên hệ Zalo nếu cần hỗ trợ ngay.</small>
@@ -120,7 +120,7 @@ const schema = {
               if (index < parts.length - 1) {
                 const form = template.content.firstElementChild.cloneNode(true);
                 const text = form.querySelector('textarea');
-                if (text) text.value = 'Tôi muốn được tư vấn: ' + document.title + '. Trang: ' + location.href;
+                if (text) text.value = '';
                 fragment.appendChild(form);
               }
             });
@@ -233,7 +233,7 @@ const schema = {
     .lead{font-size:17px;line-height:1.75;color:#536879;margin:20px 0 26px}
     .cover{display:block;width:100%;max-height:490px;object-fit:cover;border-radius:12px;margin-bottom:28px}
     .article-body{font-size:16px;line-height:1.85;overflow-wrap:anywhere}
-    .article-body :global(.news-lead-box){margin:28px 0;padding:24px;background:#f8fbff;border:1px solid #d7e5f0;border-radius:14px}
+    .article-body :global(.news-lead-box){margin:28px 0;padding:24px;background:linear-gradient(145deg,#fff3d6,#fce3ad);border:1px solid #d9a85a;border-radius:14px;box-shadow:0 8px 26px #a77a3826}
     .article-body :global(.news-lead-box h2){margin:0 0 8px;font-size:23px;color:#173d62}
     .article-body :global(.news-lead-box p){margin:0 0 16px;color:#64748b}
     .article-body :global(.news-lead-box form){display:grid;gap:12px}
