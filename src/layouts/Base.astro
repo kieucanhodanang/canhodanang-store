@@ -297,8 +297,20 @@ const structuredData = {
         const header = document.querySelector('.site-gold-header');
         const desktopHeader = window.matchMedia('(min-width: 1151px)');
         let scrollPending = false;
+        // Hysteresis: tránh bật/tắt liên tục khi header sticky thay đổi chiều cao
+        // (84px -> 58px) làm scrollY dao động gần ngưỡng chuyển tiếp.
+        const COMPACT_AT = 140;
+        const EXPAND_BELOW = 45;
         const updateHeader = () => {
-          if (header) header.classList.toggle('is-compact', desktopHeader.matches && window.scrollY > 80);
+          if (header) {
+            if (!desktopHeader.matches) {
+              header.classList.remove('is-compact');
+            } else if (header.classList.contains('is-compact')) {
+              if (window.scrollY < EXPAND_BELOW) header.classList.remove('is-compact');
+            } else if (window.scrollY > COMPACT_AT) {
+              header.classList.add('is-compact');
+            }
+          }
           scrollPending = false;
         };
         window.addEventListener('scroll', () => {
