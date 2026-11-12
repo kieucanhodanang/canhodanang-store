@@ -478,19 +478,48 @@ collections:
       widget: string
       required: false
       hint: 'Ví dụ: sống.'
-  - label: Các layer nội dung tùy chỉnh (giao diện dự án mới)
+  - label: Layer Builder — Nội dung trang dự án
     name: contentLayers
     widget: list
     required: false
     collapsed: true
-    summary: '{{fields.heading}} — {{fields.layout}}'
-    hint: 'Mỗi layer có H2, nội dung, ảnh và kiểu bố cục riêng. Kéo thả để sắp xếp. Dữ liệu cũ không bị ghi đè.'
+    summary: '{{fields.adminLabel}} — {{fields.type}}'
+    hint: 'Thêm layer, chọn kiểu hiển thị và kéo thả đổi thứ tự. Các trường không dùng cho kiểu đã chọn có thể để trống. Dữ liệu cũ được giữ nguyên.'
     fields:
+    - label: Hiển thị layer
+      name: enabled
+      widget: boolean
+      default: true
+      required: false
+    - label: Tên layer trong CMS
+      name: adminLabel
+      widget: string
+      required: false
+      hint: 'Chỉ dùng để quản trị, không hiển thị ngoài website.'
+    - label: Kiểu layer
+      name: type
+      widget: select
+      required: false
+      hint: 'Chọn kiểu bố cục. Layer cũ chưa có trường này vẫn được giữ nguyên.'
+      options:
+      - { label: 'A — Ảnh và nội dung trái/phải', value: split }
+      - { label: 'B — Nội dung trên, gallery dưới', value: text-gallery }
+      - { label: 'C — Bộ sưu tập 4 ảnh', value: four-images }
+      - { label: 'D — Ảnh lớn toàn chiều ngang', value: full-image }
+      - { label: 'E — Văn bản chuyên sâu', value: rich-text }
+      - { label: 'F — Google Maps và tiện ích', value: map-amenities }
+      - { label: 'G — Tab mặt bằng / tiến độ', value: tabs }
+      - { label: 'H — Thẻ bất động sản', value: property-cards }
+      - { label: 'I — Thẻ tin tức / dự án liên quan', value: related-cards }
     - label: Tiêu đề layer (H2)
       name: heading
       widget: string
-      required: true
+      required: false
       hint: 'Không nhập lại tên dự án hoặc tiêu đề H1.'
+    - label: Phụ đề layer (H3)
+      name: subheading
+      widget: string
+      required: false
     - label: Nội dung layer
       name: text
       widget: markdown
@@ -510,8 +539,10 @@ collections:
     - label: Vị trí ảnh (áp dụng kiểu A)
       name: imageSide
       widget: select
-      default: left
+      required: false
       options:
+      - label: Tự động xen kẽ
+        value: auto
       - label: Ảnh bên trái
         value: left
       - label: Ảnh bên phải
@@ -540,6 +571,49 @@ collections:
         name: imageAlt
         widget: string
         required: false
+    - label: Các tab mặt bằng hoặc tiến độ (kiểu G)
+      name: tabs
+      widget: list
+      required: false
+      collapsed: true
+      summary: '{{fields.title}}'
+      fields:
+      - { label: Tên tab, name: title, widget: string }
+      - { label: Ảnh tab, name: image, widget: image, required: false }
+      - { label: Alt ảnh, name: imageAlt, widget: string, required: false }
+      - { label: Nội dung tab, name: text, widget: markdown, required: false }
+    - label: Mã HTML nhúng Google Maps (kiểu F)
+      name: mapEmbed
+      widget: text
+      required: false
+      hint: 'Chỉ dán iframe nhúng Google Maps hợp lệ.'
+    - label: Danh sách tiện ích (kiểu F)
+      name: amenities
+      widget: list
+      required: false
+      collapsed: true
+      summary: '{{fields.name}}'
+      fields:
+      - { label: Tên địa điểm, name: name, widget: string }
+      - { label: Khoảng cách, name: distance, widget: string, required: false }
+      - { label: Thời gian di chuyển, name: travelTime, widget: string, required: false }
+      - { label: Ghi chú, name: note, widget: text, required: false }
+    - label: Nguồn thẻ dữ liệu (kiểu H/I)
+      name: dataSource
+      widget: select
+      required: false
+      options:
+      - { label: Căn hộ đang bán, value: sale }
+      - { label: Căn hộ cho thuê, value: rent }
+      - { label: Tin tức dự án, value: news }
+      - { label: Dự án liên quan, value: related-projects }
+    - label: Số thẻ hiển thị ban đầu
+      name: initialCount
+      widget: number
+      required: false
+      value_type: int
+      min: 1
+      max: 30
   - label: Nội dung tiến độ dự án (chèn ảnh trực tiếp)
     name: progressText
     widget: markdown
