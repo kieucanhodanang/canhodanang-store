@@ -16,7 +16,7 @@ const layerMarkdown = (value: unknown) => {
     const line=raw.trim();
     if(!line){closeList();continue;}
     const heading=line.match(/^(#{1,6})\s+(.+)$/);
-    if(heading){closeList();const level=Math.max(3,Math.min(6,heading[1].length+1));result.push('<h'+level+'>'+inline(heading[2])+'</h'+level+'>');continue;}
+    if(heading){closeList();const level=Math.min(6,heading[1].length+2);result.push('<h'+level+'>'+inline(heading[2])+'</h'+level+'>');continue;}
     const bullet=line.match(/^[-*+]\s+(.+)$/),numbered=line.match(/^\d+[.)]\s+(.+)$/);
     if(bullet||numbered){const next=bullet?'ul':'ol';if(list!==next){closeList();result.push('<'+next+'>');list=next;}result.push('<li>'+inline((bullet||numbered)![1])+'</li>');continue;}
     closeList();result.push('<p>'+inline(line)+'</p>');
