@@ -388,74 +388,6 @@ collections:
     name: buildingDensity
     widget: string
     required: false
-  - label: [Dữ liệu cũ] Google Maps
-    name: googleMapsEmbed
-    widget: text
-    required: false
-    hint: 'Google Maps → Chia sẻ → Nhúng bản đồ → Sao chép HTML. Chỉ dán mã iframe Google Maps; website sẽ kiểm tra đường dẫn hợp lệ.'
-  - label: [Dữ liệu cũ] Hiển thị bản đồ
-    name: showGoogleMap
-    widget: boolean
-    default: true
-    required: false
-  - label: [Dữ liệu cũ] Tiện ích xung quanh
-    name: nearbyAmenities
-    widget: list
-    required: false
-    collapsed: true
-    summary: '{{fields.name}} — {{fields.distance}}'
-    hint: 'Thêm từng địa điểm, kéo thả để đổi thứ tự. Chỉ nhập thông tin đã kiểm tra.'
-    fields:
-    - label: Tên địa điểm hoặc tiện ích
-      name: name
-      widget: string
-      required: true
-    - label: Khoảng cách
-      name: distance
-      widget: string
-      required: false
-      hint: 'Ví dụ: 2,5 km. Có thể để trống.'
-    - label: Thời gian di chuyển
-      name: travelTime
-      widget: string
-      required: false
-      hint: 'Ví dụ: khoảng 8 phút đi ô tô; chỉ nhập nếu đã kiểm tra.'
-    - label: Ghi chú ngắn
-      name: note
-      widget: text
-      required: false
-  - label: [Dữ liệu cũ] Nội dung mặt bằng
-    name: floorPlanText
-    widget: markdown
-    required: false
-    hint: 'Chèn ảnh bằng nút hình ảnh trong trình soạn thảo; ảnh, chữ và liên kết có thể xen kẽ.'
-  - label: [Dữ liệu cũ] Bộ sưu tập mặt bằng
-    name: floorPlanItems
-    widget: list
-    required: false
-    collapsed: true
-    summary: '{{fields.title}}'
-    hint: 'Mỗi mục gồm ảnh, tiêu đề và mô tả tương ứng. Kéo thả để thay đổi thứ tự tab. Ảnh mặt bằng hiển thị đầy đủ, không crop.'
-    fields:
-    - label: Tên mặt bằng (H3)
-      name: title
-      widget: string
-      required: true
-      hint: 'Ví dụ: Mặt bằng tầng điển hình. Không nhập lại tiêu đề H1 của dự án.'
-    - label: Ảnh mặt bằng
-      name: image
-      widget: image
-      required: true
-    - label: Mô tả mặt bằng
-      name: description
-      widget: text
-      required: false
-      hint: 'Mô tả chính xác mặt bằng trong ảnh; tránh sao chép nguyên mô tả tổng quan.'
-    - label: Mô tả ảnh (Alt Text)
-      name: imageAlt
-      widget: string
-      required: false
-      hint: 'Ví dụ: Sơ đồ mặt bằng tầng 5 dự án Capital Square.'
   - label: Slogan mở đầu dự án (giao diện mới)
     name: introSlogan
     widget: object
@@ -596,11 +528,6 @@ collections:
       - { label: Khoảng cách, name: distance, widget: string, required: false }
       - { label: Thời gian di chuyển, name: travelTime, widget: string, required: false }
       - { label: Ghi chú, name: note, widget: text, required: false }
-  - label: [Dữ liệu cũ] Nội dung tiến độ
-    name: progressText
-    widget: markdown
-    required: false
-    hint: 'Chèn ảnh trực tiếp vào nội dung Markdown, không cần tạo danh sách ảnh riêng.'
   - label: Ảnh đại diện 4 phân khu Vinhomes Hải Vân Bay
     name: haiVanZoneImages
     widget: object
@@ -685,6 +612,79 @@ collections:
   - *id013
   - *id014
   - *id015
+  - label: [Dữ liệu cũ] Google Maps
+    name: googleMapsEmbed
+    widget: text
+    required: false
+    hint: 'Google Maps → Chia sẻ → Nhúng bản đồ → Sao chép HTML. Chỉ dán mã iframe Google Maps; website sẽ kiểm tra đường dẫn hợp lệ.'
+  - label: [Dữ liệu cũ] Hiển thị bản đồ
+    name: showGoogleMap
+    widget: boolean
+    default: true
+    required: false
+  - label: [Dữ liệu cũ] Tiện ích xung quanh
+    name: nearbyAmenities
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.name}} — {{fields.distance}}'
+    hint: 'Thêm từng địa điểm, kéo thả để đổi thứ tự. Chỉ nhập thông tin đã kiểm tra.'
+    fields:
+    - label: Tên địa điểm hoặc tiện ích
+      name: name
+      widget: string
+      required: true
+    - label: Khoảng cách
+      name: distance
+      widget: string
+      required: false
+      hint: 'Ví dụ: 2,5 km. Có thể để trống.'
+    - label: Thời gian di chuyển
+      name: travelTime
+      widget: string
+      required: false
+      hint: 'Ví dụ: khoảng 8 phút đi ô tô; chỉ nhập nếu đã kiểm tra.'
+    - label: Ghi chú ngắn
+      name: note
+      widget: text
+      required: false
+  - label: [Dữ liệu cũ] Nội dung mặt bằng
+    name: floorPlanText
+    widget: markdown
+    required: false
+    hint: 'Chèn ảnh bằng nút hình ảnh trong trình soạn thảo; ảnh, chữ và liên kết có thể xen kẽ.'
+  - label: [Dữ liệu cũ] Bộ sưu tập mặt bằng
+    name: floorPlanItems
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.title}}'
+    hint: 'Mỗi mục gồm ảnh, tiêu đề và mô tả tương ứng. Kéo thả để thay đổi thứ tự tab. Ảnh mặt bằng hiển thị đầy đủ, không crop.'
+    fields:
+    - label: Tên mặt bằng (H3)
+      name: title
+      widget: string
+      required: true
+      hint: 'Ví dụ: Mặt bằng tầng điển hình. Không nhập lại tiêu đề H1 của dự án.'
+    - label: Ảnh mặt bằng
+      name: image
+      widget: image
+      required: true
+    - label: Mô tả mặt bằng
+      name: description
+      widget: text
+      required: false
+      hint: 'Mô tả chính xác mặt bằng trong ảnh; tránh sao chép nguyên mô tả tổng quan.'
+    - label: Mô tả ảnh (Alt Text)
+      name: imageAlt
+      widget: string
+      required: false
+      hint: 'Ví dụ: Sơ đồ mặt bằng tầng 5 dự án Capital Square.'
+  - label: [Dữ liệu cũ] Nội dung tiến độ
+    name: progressText
+    widget: markdown
+    required: false
+    hint: 'Chèn ảnh trực tiếp vào nội dung Markdown, không cần tạo danh sách ảnh riêng.'
 - name: nha-dat-tho-cu
   label: Nhà đất thổ cư
   label_singular: Nhà đất thổ cư
