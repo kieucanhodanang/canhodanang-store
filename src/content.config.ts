@@ -103,16 +103,36 @@ const duAn = defineCollection({
     })).nullish(),
     // Các layer tùy chỉnh của giao diện dự án mới.
     contentLayers: z.array(z.object({
-      heading: z.string(),
+      // Legacy CMS layers retain their original layout; new layers use type.
+      enabled: z.boolean().optional(),
+      adminLabel: optionalText,
+      type: z.enum(['split', 'text-gallery', 'four-images', 'full-image', 'rich-text', 'map-amenities', 'tabs', 'property-cards', 'related-cards']).optional(),
+      heading: optionalText,
+      subheading: optionalText,
       text: optionalText,
-      layout: z.enum(['split', 'text-gallery', 'full-image']).default('split'),
-      imageSide: z.enum(['left', 'right']).default('left'),
+      layout: z.enum(['split', 'text-gallery', 'full-image']).optional(),
+      imageSide: z.enum(['auto', 'left', 'right']).optional(),
       images: z.array(z.object({
         image: z.string(),
         captionTitle: optionalText,
         caption: optionalText,
         imageAlt: optionalText,
       })).nullish(),
+      tabs: z.array(z.object({
+        title: z.string(),
+        image: optionalText,
+        imageAlt: optionalText,
+        text: optionalText,
+      })).nullish(),
+      mapEmbed: optionalText,
+      amenities: z.array(z.object({
+        name: z.string(),
+        distance: optionalText,
+        travelTime: optionalText,
+        note: optionalText,
+      })).nullish(),
+      dataSource: z.enum(['sale', 'rent', 'news', 'related-projects']).optional(),
+      initialCount: z.number().int().min(1).max(30).optional(),
     })).nullish(),
     progressText: optionalText,
     progressItems: z.array(z.object({
