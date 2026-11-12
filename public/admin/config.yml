@@ -388,17 +388,17 @@ collections:
     name: buildingDensity
     widget: string
     required: false
-  - label: Google Maps Embed (HTML nhúng từ Google Maps)
+  - label: [Dữ liệu cũ] Google Maps
     name: googleMapsEmbed
     widget: text
     required: false
     hint: 'Google Maps → Chia sẻ → Nhúng bản đồ → Sao chép HTML. Chỉ dán mã iframe Google Maps; website sẽ kiểm tra đường dẫn hợp lệ.'
-  - label: Hiển thị bản đồ vị trí
+  - label: [Dữ liệu cũ] Hiển thị bản đồ
     name: showGoogleMap
     widget: boolean
     default: true
     required: false
-  - label: Tiện ích và kết nối xung quanh dự án (bên phải Google Maps)
+  - label: [Dữ liệu cũ] Tiện ích xung quanh
     name: nearbyAmenities
     widget: list
     required: false
@@ -424,12 +424,12 @@ collections:
       name: note
       widget: text
       required: false
-  - label: Nội dung mặt bằng dự án (chèn ảnh trực tiếp)
+  - label: [Dữ liệu cũ] Nội dung mặt bằng
     name: floorPlanText
     widget: markdown
     required: false
     hint: 'Chèn ảnh bằng nút hình ảnh trong trình soạn thảo; ảnh, chữ và liên kết có thể xen kẽ.'
-  - label: Bộ sưu tập mặt bằng 2D (giao diện mới)
+  - label: [Dữ liệu cũ] Bộ sưu tập mặt bằng
     name: floorPlanItems
     widget: list
     required: false
@@ -479,12 +479,12 @@ collections:
       required: false
       hint: 'Ví dụ: sống.'
   - label: SECTION BUILDER — Nội dung dự án
-    name: contentSections
+    name: contentLayers
     widget: list
     required: false
     collapsed: true
     summary: '{{fields.heading}} — {{fields.type}}'
-    hint: 'Tự tạo Section, đặt tiêu đề H2 và kéo thả thứ tự. Hero, form tư vấn, sản phẩm và tin tức là các phần cố định, không tạo ở đây.'
+    hint: 'Tự tạo Section H2 và kéo thả thứ tự. Hero, form tư vấn, sản phẩm, tin tức là phần cố định. Các trường [Dữ liệu cũ] chỉ dùng cho giao diện cũ, không cần nhập lại.'
     fields:
     - label: Hiển thị Section
       name: enabled
@@ -596,7 +596,7 @@ collections:
       - { label: Khoảng cách, name: distance, widget: string, required: false }
       - { label: Thời gian di chuyển, name: travelTime, widget: string, required: false }
       - { label: Ghi chú, name: note, widget: text, required: false }
-  - label: Nội dung tiến độ dự án (chèn ảnh trực tiếp)
+  - label: [Dữ liệu cũ] Nội dung tiến độ
     name: progressText
     widget: markdown
     required: false
