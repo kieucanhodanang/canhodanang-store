@@ -403,6 +403,95 @@ collections:
     widget: markdown
     required: false
     hint: 'Chèn ảnh bằng nút hình ảnh trong trình soạn thảo; ảnh, chữ và liên kết có thể xen kẽ.'
+  - label: Bộ sưu tập mặt bằng 2D (giao diện mới)
+    name: floorPlanItems
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.title}}'
+    hint: 'Mỗi mục gồm ảnh, tiêu đề và mô tả tương ứng. Kéo thả để thay đổi thứ tự tab. Ảnh mặt bằng hiển thị đầy đủ, không crop.'
+    fields:
+    - label: Tên mặt bằng (H3)
+      name: title
+      widget: string
+      required: true
+      hint: 'Ví dụ: Mặt bằng tầng điển hình. Không nhập lại tiêu đề H1 của dự án.'
+    - label: Ảnh mặt bằng
+      name: image
+      widget: image
+      required: true
+    - label: Mô tả mặt bằng
+      name: description
+      widget: text
+      required: false
+      hint: 'Mô tả chính xác mặt bằng trong ảnh; tránh sao chép nguyên mô tả tổng quan.'
+    - label: Mô tả ảnh (Alt Text)
+      name: imageAlt
+      widget: string
+      required: false
+      hint: 'Ví dụ: Sơ đồ mặt bằng tầng 5 dự án Capital Square.'
+  - label: Các layer nội dung tùy chỉnh (giao diện dự án mới)
+    name: contentLayers
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.heading}} — {{fields.layout}}'
+    hint: 'Mỗi layer có H2, nội dung, ảnh và kiểu bố cục riêng. Kéo thả để sắp xếp. Dữ liệu cũ không bị ghi đè.'
+    fields:
+    - label: Tiêu đề layer (H2)
+      name: heading
+      widget: string
+      required: true
+      hint: 'Không nhập lại tên dự án hoặc tiêu đề H1.'
+    - label: Nội dung layer
+      name: text
+      widget: markdown
+      required: false
+      hint: 'Nội dung chính của layer, hiển thị căn đều hai bên trên desktop.'
+    - label: Kiểu bố cục
+      name: layout
+      widget: select
+      default: split
+      options:
+      - label: 'A — Chia đôi ảnh và chữ'
+        value: split
+      - label: 'B — Tiêu đề, nội dung, hàng ảnh bên dưới'
+        value: text-gallery
+      - label: 'C — Ảnh lớn toàn chiều ngang'
+        value: full-image
+    - label: Vị trí ảnh (áp dụng kiểu A)
+      name: imageSide
+      widget: select
+      default: left
+      options:
+      - label: Ảnh bên trái
+        value: left
+      - label: Ảnh bên phải
+        value: right
+    - label: Ảnh và câu chuyện trong layer
+      name: images
+      widget: list
+      required: false
+      collapsed: true
+      summary: '{{fields.captionTitle}}'
+      hint: 'Một ảnh phủ ngang layer, hai ảnh chia đều, từ ba ảnh trở lên dùng gallery trượt. Mô tả bên dưới mỗi ảnh căn giữa.'
+      fields:
+      - label: Ảnh
+        name: image
+        widget: image
+        required: true
+      - label: Tiêu đề câu chuyện
+        name: captionTitle
+        widget: string
+        required: false
+      - label: Mô tả dưới ảnh
+        name: caption
+        widget: text
+        required: false
+      - label: Alt Text ảnh
+        name: imageAlt
+        widget: string
+        required: false
   - label: Nội dung tiến độ dự án (chèn ảnh trực tiếp)
     name: progressText
     widget: markdown
