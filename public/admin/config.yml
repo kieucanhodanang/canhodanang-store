@@ -456,6 +456,28 @@ collections:
       widget: string
       required: false
       hint: 'Ví dụ: Sơ đồ mặt bằng tầng 5 dự án Capital Square.'
+  - label: Slogan mở đầu dự án (giao diện mới)
+    name: introSlogan
+    widget: object
+    required: false
+    collapsed: true
+    hint: 'Mỗi dự án có slogan riêng. Ba phần sẽ ghép thành một tiêu đề lớn, phần nhấn mạnh có màu vàng đồng. Để trống sẽ dùng slogan mặc định.'
+    fields:
+    - label: Dòng mở đầu
+      name: firstLine
+      widget: string
+      required: false
+      hint: 'Ví dụ: Một góc nhìn'
+    - label: Cụm từ nhấn mạnh màu vàng đồng
+      name: highlight
+      widget: string
+      required: false
+      hint: 'Ví dụ: không gian'
+    - label: Dòng kết
+      name: lastLine
+      widget: string
+      required: false
+      hint: 'Ví dụ: sống.'
   - label: Các layer nội dung tùy chỉnh (giao diện dự án mới)
     name: contentLayers
     widget: list
