@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
 const projects = (await getCollection('du-an')).filter(p => p.data.status === 'published');
-const project = projects.find(p => p.id === 'sun-saphia-residence-da-nang') || projects[0];
+const project = projects.find(p => p.id === 'capital-square') || projects[0];
 const d = project?.data;
 const images = [...new Set([d?.image, ...(d?.gallery || [])].filter((x): x is string => !!x))];
 const facts = [
@@ -15,7 +15,13 @@ const facts = [
   ['Mật độ xây dựng', d?.buildingDensity],
 ].filter((x): x is string[] => !!x[1]);
 const listings = project ? (await getCollection('can-ho')).filter(p => p.data.project === project.id && p.data.status === 'published' && p.data.listingStatus === 'available').slice(0,6) : [];
-const floorPlanItems = (d?.floorPlanItems?.length ? d.floorPlanItems : (d?.floorPlanImages || []).map((image, i) => ({ image, title: 'Mặt bằng ' + String(i+1).padStart(2,'0'), description: d?.description || '', imageAlt: 'Mặt bằng '+(i+1) }))).filter(item=>item.image);
+const legacyPlanImages = [...String(d?.floorPlanText || '').matchAll(/!\[([^\]]*)\]\((\/[^\s)]+)(?:\s+["'][^"']*["'])?\)/g)].map((match,i)=>({
+  image: match[2],
+  title: match[1] || 'Mặt bằng '+String(i+1).padStart(2,'0'),
+  description: match[1] || d?.description || '',
+  imageAlt: match[1] || 'Mặt bằng '+(i+1)
+}));
+const floorPlanItems = (d?.floorPlanItems?.length ? d.floorPlanItems : (d?.floorPlanImages?.length ? d.floorPlanImages.map((image,i)=>({image,title:'Mặt bằng '+String(i+1).padStart(2,'0'),description:d?.description||'',imageAlt:'Mặt bằng '+(i+1)})) : legacyPlanImages)).filter(item=>item.image);
 const contentLayers = (d?.contentLayers || []).filter(layer=>layer.heading?.trim());
 const highlights = [
   d?.location && 'Vị trí: ' + d.location,
