@@ -81,6 +81,11 @@ const duAn = defineCollection({
     buildingDensity: optionalText,
     googleMapsEmbed: optionalText,
     showGoogleMap: z.boolean().default(true),
+    introSlogan: z.object({
+      firstLine: optionalText,
+      highlight: optionalText,
+      lastLine: optionalText,
+    }).nullish(),
     nearbyAmenities: z.array(z.object({
       name: z.string(),
       distance: optionalText,
