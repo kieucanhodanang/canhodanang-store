@@ -222,6 +222,14 @@ const unitPrice = (item: typeof listings[number]) => {
     .price-meta strong{color:#c92d2d;font-weight:800}
     .home-info .unit-price{font-size:clamp(15px,1.2vw,18px);font-weight:650;color:#c92d2d;margin:7px 0 0;min-height:0}
     .home-info .updated{margin-top:12px;font-size:11px}
+    /* Refined card typography and balanced metric spacing */
+    .home-info h3{font-size:17px;line-height:1.42}
+    .price-meta{justify-content:space-between;gap:8px;flex-wrap:nowrap;align-items:baseline}
+    .price-meta strong{font-size:21px;font-weight:800;white-space:nowrap}
+    .price-meta span{font-size:15px;font-weight:650;white-space:nowrap}
+    .home-info .unit-price{font-size:15px;font-weight:400;font-style:italic;color:#c92d2d}
+    @media(max-width:1200px){.price-meta{gap:5px}.price-meta strong{font-size:18px}.price-meta span{font-size:13px}}
+    @media(max-width:600px){.home-info h3{font-size:14px}.price-meta{flex-wrap:wrap;justify-content:space-between}.price-meta strong{font-size:17px}.price-meta span{font-size:13px}.home-info .unit-price{font-size:13px}}
     /* Project location */
     .location-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:5%;align-items:stretch}
     .location-map{min-height:430px;background:#e9e7e1}
