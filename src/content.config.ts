@@ -81,6 +81,12 @@ const duAn = defineCollection({
     buildingDensity: optionalText,
     googleMapsEmbed: optionalText,
     showGoogleMap: z.boolean().default(true),
+    nearbyAmenities: z.array(z.object({
+      name: z.string(),
+      distance: optionalText,
+      travelTime: optionalText,
+      note: optionalText,
+    })).nullish(),
     floorPlanText: optionalText,
     floorPlanImages: z.array(z.string()).nullish(),
     // Bộ mặt bằng 2D: từng tab có ảnh và nội dung riêng.
