@@ -60,11 +60,15 @@ const mapEmbedUrl = (() => {
 })();
 const nearbyAmenities = (d?.nearbyAmenities || []).filter(item=>item.name?.trim());
 const unitPrice = (item: typeof listings[number]) => {
-  const price = String(item.data.price || '').trim().toLowerCase();
-  const area = Number(String(item.data.area || '').replace(',','.').match(/[0-9]+(?:\.[0-9]+)?/)?.[0]);
-  const match = price.replace(',','.').match(/([0-9]+(?:\.[0-9]+)?)\s*(tỷ|triệu)/);
-  if (!match || !area || area <= 0) return '';
-  const millions = Number(match[1]) * (match[2] === 'tỷ' ? 1000 : 1);
+  const rawPrice = String(item.data.price ?? '').trim().toLowerCase();
+  const rawArea = String(item.data.area ?? '').trim();
+  const area = Number(rawArea.replace(/\s/g,'').replace(/\.(?=\d{3}(?:\D|$))/g,'').replace(',','.').match(/\d+(?:\.\d+)?/)?.[0]);
+  const priceText = rawPrice.replace(/\s/g,'');
+  const matched = priceText.match(/(\d+(?:[.,]\d+)?)\s*(tỷ|triệu)/);
+  if (!matched || !area || area <= 0) return '';
+  const value = Number(matched[1].replace(',','.'));
+  if (!Number.isFinite(value)) return '';
+  const millions = value * (matched[2] === 'tỷ' ? 1000 : 1);
   return (millions / area).toLocaleString('vi-VN',{maximumFractionDigits:1}) + ' triệu/m²';
 };
 ---
