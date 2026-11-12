@@ -83,6 +83,26 @@ const duAn = defineCollection({
     showGoogleMap: z.boolean().default(true),
     floorPlanText: optionalText,
     floorPlanImages: z.array(z.string()).nullish(),
+    // Bộ mặt bằng 2D: từng tab có ảnh và nội dung riêng.
+    floorPlanItems: z.array(z.object({
+      title: z.string(),
+      image: z.string(),
+      description: optionalText,
+      imageAlt: optionalText,
+    })).nullish(),
+    // Các layer tùy chỉnh của giao diện dự án mới.
+    contentLayers: z.array(z.object({
+      heading: z.string(),
+      text: optionalText,
+      layout: z.enum(['split', 'text-gallery', 'full-image']).default('split'),
+      imageSide: z.enum(['left', 'right']).default('left'),
+      images: z.array(z.object({
+        image: z.string(),
+        captionTitle: optionalText,
+        caption: optionalText,
+        imageAlt: optionalText,
+      })).nullish(),
+    })).nullish(),
     progressText: optionalText,
     progressItems: z.array(z.object({
       title: z.string(),
