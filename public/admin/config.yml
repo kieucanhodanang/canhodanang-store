@@ -478,29 +478,29 @@ collections:
       widget: string
       required: false
       hint: 'Ví dụ: sống.'
-  - label: Layer Builder — Nội dung trang dự án
-    name: contentLayers
+  - label: SECTION BUILDER — Nội dung dự án
+    name: contentSections
     widget: list
     required: false
     collapsed: true
-    summary: '{{fields.adminLabel}} — {{fields.type}}'
-    hint: 'Thêm layer, chọn kiểu hiển thị và kéo thả đổi thứ tự. Các trường không dùng cho kiểu đã chọn có thể để trống. Dữ liệu cũ được giữ nguyên.'
+    summary: '{{fields.heading}} — {{fields.type}}'
+    hint: 'Tự tạo Section, đặt tiêu đề H2 và kéo thả thứ tự. Hero, form tư vấn, sản phẩm và tin tức là các phần cố định, không tạo ở đây.'
     fields:
-    - label: Hiển thị layer
+    - label: Hiển thị Section
       name: enabled
       widget: boolean
       default: true
       required: false
-    - label: Tên layer trong CMS
+    - label: Tên Section trong CMS
       name: adminLabel
       widget: string
       required: false
       hint: 'Chỉ dùng để quản trị, không hiển thị ngoài website.'
-    - label: Kiểu layer
+    - label: Kiểu Section
       name: type
       widget: select
       required: false
-      hint: 'Chọn kiểu bố cục. Layer cũ chưa có trường này vẫn được giữ nguyên.'
+      hint: 'Chọn kiểu bố cục. Section cũ chưa có trường này vẫn được giữ nguyên.'
       options:
       - { label: 'A — Ảnh và nội dung trái/phải', value: split }
       - { label: 'B — Nội dung trên, gallery dưới', value: text-gallery }
@@ -509,22 +509,20 @@ collections:
       - { label: 'E — Văn bản chuyên sâu', value: rich-text }
       - { label: 'F — Google Maps và tiện ích', value: map-amenities }
       - { label: 'G — Tab mặt bằng / tiến độ', value: tabs }
-      - { label: 'H — Thẻ bất động sản', value: property-cards }
-      - { label: 'I — Thẻ tin tức / dự án liên quan', value: related-cards }
-    - label: Tiêu đề layer (H2)
+    - label: Tiêu đề Section (H2)
       name: heading
       widget: string
       required: false
       hint: 'Không nhập lại tên dự án hoặc tiêu đề H1.'
-    - label: Phụ đề layer (H3)
+    - label: Phụ đề Section (H3)
       name: subheading
       widget: string
       required: false
-    - label: Nội dung layer
+    - label: Nội dung Section
       name: text
       widget: markdown
       required: false
-      hint: 'Nội dung chính của layer, hiển thị căn đều hai bên trên desktop.'
+      hint: 'Nội dung chính của Section, hiển thị căn đều hai bên trên desktop.'
     - label: Kiểu bố cục
       name: layout
       widget: select
@@ -547,13 +545,13 @@ collections:
         value: left
       - label: Ảnh bên phải
         value: right
-    - label: Ảnh và câu chuyện trong layer
+    - label: Ảnh và câu chuyện trong Section
       name: images
       widget: list
       required: false
       collapsed: true
       summary: '{{fields.captionTitle}}'
-      hint: 'Một ảnh phủ ngang layer, hai ảnh chia đều, từ ba ảnh trở lên dùng gallery trượt. Mô tả bên dưới mỗi ảnh căn giữa.'
+      hint: 'Một ảnh phủ ngang Section, hai ảnh chia đều, từ ba ảnh trở lên dùng gallery trượt. Mô tả bên dưới mỗi ảnh căn giữa.'
       fields:
       - label: Ảnh
         name: image
@@ -598,22 +596,6 @@ collections:
       - { label: Khoảng cách, name: distance, widget: string, required: false }
       - { label: Thời gian di chuyển, name: travelTime, widget: string, required: false }
       - { label: Ghi chú, name: note, widget: text, required: false }
-    - label: Nguồn thẻ dữ liệu (kiểu H/I)
-      name: dataSource
-      widget: select
-      required: false
-      options:
-      - { label: Căn hộ đang bán, value: sale }
-      - { label: Căn hộ cho thuê, value: rent }
-      - { label: Tin tức dự án, value: news }
-      - { label: Dự án liên quan, value: related-projects }
-    - label: Số thẻ hiển thị ban đầu
-      name: initialCount
-      widget: number
-      required: false
-      value_type: int
-      min: 1
-      max: 30
   - label: Nội dung tiến độ dự án (chèn ảnh trực tiếp)
     name: progressText
     widget: markdown
