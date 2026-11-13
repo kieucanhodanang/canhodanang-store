@@ -388,6 +388,27 @@ collections:
     name: buildingDensity
     widget: string
     required: false
+  - label: MỞ ĐẦU CỐ ĐỊNH — Tổng quan dự án (giao diện 2 cột)
+    name: introSlogan
+    widget: object
+    required: false
+    collapsed: false
+    hint: 'Tiêu đề hai màu ở phần mở đầu. Đoạn văn lấy từ trường Mô tả dự án; cột phải lấy tự động từ thông số dự án.'
+    fields:
+    - label: Dòng tiêu đề màu xanh
+      name: firstLine
+      widget: string
+      required: false
+      hint: 'Ví dụ: Một góc nhìn khác về'
+    - label: Dòng tiêu đề màu vàng
+      name: highlight
+      widget: string
+      required: false
+      hint: 'Ví dụ: không gian sống.'
+    - label: Dòng tiêu đề bổ sung
+      name: lastLine
+      widget: string
+      required: false
   - label: SECTION BUILDER — Tạo và sắp xếp các Section
     name: contentLayers
     widget: list
