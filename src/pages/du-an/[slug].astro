@@ -102,7 +102,12 @@ const navigationHref = (key: NavKey): string => {
   if (explicit) return explicit;
   if (!contentLayers.length) return defaultNavigation[key];
   // Product/contact blocks are rendered outside the Section Builder.
-  if (key === 'products') return listings.length ? productAnchor : '';
+  if (key === 'products') {
+  if (project.id === 'vinhomes-hai-van-bay' && haiVanZones.length > 0) {
+    return '#phan-khu-hai-van-bay';
+  }
+  return listings.length ? productAnchor : '';
+}
   if (key === 'contact') return '#lien-he';
   const index = contentLayers.findIndex(layer =>
     navKeywords[key].some(word => String(layer.heading || '').toLocaleLowerCase('vi-VN').includes(word))
