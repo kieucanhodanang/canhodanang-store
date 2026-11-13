@@ -62,6 +62,13 @@ const legacyPlanImages = [...String(d?.floorPlanText || '').matchAll(/!\[([^\]]*
 }));
 const floorPlanItems = (d?.floorPlanItems?.length ? d.floorPlanItems : (d?.floorPlanImages?.length ? d.floorPlanImages.map((image,i)=>({image,title:'Mặt bằng '+String(i+1).padStart(2,'0'),description:d?.description||'',imageAlt:'Mặt bằng '+(i+1)})) : legacyPlanImages)).filter(item=>item.image);
 const contentLayers = (d?.contentLayers || []).filter(layer=>layer.enabled !== false && !['property-cards','related-cards'].includes(layer.type || ''));
+const previewAnchor = (keywords: string[], legacyId: string) => {
+  if (!contentLayers.length) return '#' + legacyId;
+  const index = contentLayers.findIndex(layer => keywords.some(word =>
+    String(layer.heading || '').toLocaleLowerCase('vi-VN').includes(word)
+  ));
+  return '#layer-' + (index >= 0 ? index : 0);
+};
 const highlights = [
   d?.location && 'Vị trí: ' + d.location,
   d?.developer && 'Chủ đầu tư: ' + d.developer,
@@ -127,10 +134,10 @@ const unitPrice = (item: typeof listings[number]) => {
       </div>
       <div class="cinema-shade"></div>
       <div class="cinema-top"><span>CANHO<span class="gold">DANANG</span>.STORE</span><span>PROJECT EXPERIENCE / 01</span></div>
-      <div class="cinema-body"><span class="eyebrow">KHÁM PHÁ KHÔNG GIAN SỐNG</span><h1>{d?.title || 'Dự án bất động sản Đà Nẵng'}</h1><p>{d?.location || 'Đà Nẵng, Việt Nam'}</p><div class="cinema-actions"><a href="#tong-quan" class="primary">Khám phá dự án <span>↗</span></a><a href="#mat-bang" class="outline">Xem mặt bằng ↓</a></div></div>
+      <div class="cinema-body"><span class="eyebrow">KHÁM PHÁ KHÔNG GIAN SỐNG</span><h1>{d?.title || 'Dự án bất động sản Đà Nẵng'}</h1><p>{d?.location || 'Đà Nẵng, Việt Nam'}</p><div class="cinema-actions"><a href={previewAnchor(['tổng quan','giới thiệu'], 'tong-quan')} class="primary">Khám phá dự án <span>↗</span></a><a href={previewAnchor(['mặt bằng','thiết kế'], 'mat-bang')} class="outline">Xem mặt bằng ↓</a></div></div>
       <div class="cinema-bottom"><span>CUỘN ĐỂ KHÁM PHÁ ↓</span><div class="slide-controls"><button type="button" data-prev aria-label="Ảnh trước">←</button><span data-slide-count>01 / {String(Math.max(1,images.length)).padStart(2,'0')}</span><button type="button" data-next aria-label="Ảnh sau">→</button></div></div>
     </section>
-    <nav class="section-nav" aria-label="Điều hướng nội dung dự án"><a href="#tong-quan">Tổng quan</a><a href="#bo-suu-tap">Hình ảnh</a><a href="#mat-bang">Mặt bằng</a><a href="#vi-tri">Vị trí</a><a href="#can-ho-dang-ban">Sản phẩm</a><a href="#lien-he">Liên hệ</a></nav>
+    <nav class="section-nav" aria-label="Điều hướng nội dung dự án"><a href={previewAnchor(['tổng quan','giới thiệu'], 'tong-quan')}>Tổng quan</a><a href={previewAnchor(['hình ảnh','thư viện','bộ sưu tập'], 'bo-suu-tap')}>Hình ảnh</a><a href={previewAnchor(['mặt bằng','thiết kế'], 'mat-bang')}>Mặt bằng</a><a href={previewAnchor(['vị trí','kết nối'], 'vi-tri')}>Vị trí</a><a href="#can-ho-dang-ban">Sản phẩm</a><a href="#lien-he">Liên hệ</a></nav>
     {contentLayers.length ? contentLayers.map((layer,i)=><section class:list={['cms-layer','section','cms-layout-'+(layer.type || layer.layout || 'split'),{'cms-image-right':(layer.type || layer.layout || 'split')==='split' && (layer.imageSide==='right'||(layer.imageSide!=='left'&&i%2===1))}]} id={'layer-'+i}>
       <div class="cms-layer-copy">{layer.heading && <h2 id={'cms-heading-'+i}>{layer.heading}</h2>}{layer.subheading && <h3>{layer.subheading}</h3>}{layer.text && <div class="cms-layer-text" set:html={layerMarkdown(layer.text)} />}</div>
       {(['split','text-gallery','full-image','four-images'].includes((layer.type || layer.layout || 'split'))) && !!layer.images?.length && <div class:list={['cms-layer-images',{'cms-images-single':layer.images.length===1,'cms-images-double':layer.images.length===2}]} data-cms-gallery><div class="cms-image-track">{layer.images.map((item,j)=><figure class="cms-image-item"><button type="button" class="cms-zoom-button" data-full={item.image} aria-label={'Phóng to ảnh '+(j+1)}><img src={item.image} alt={item.imageAlt || item.captionTitle || layer.heading || 'Ảnh dự án'} loading="lazy"/></button>{(item.captionTitle || item.caption) && <figcaption>{item.captionTitle && <strong>{item.captionTitle}</strong>}{item.caption && <span>{item.caption}</span>}</figcaption>}</figure>)}</div>{layer.images.length>2 && <div class="cms-image-controls"><button type="button" data-cms-prev aria-label="Ảnh trước">←</button><button type="button" data-cms-next aria-label="Ảnh tiếp theo">→</button></div>}</div>}
