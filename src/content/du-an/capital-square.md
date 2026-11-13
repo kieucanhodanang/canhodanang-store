@@ -10,17 +10,104 @@ description: Capital Square Đà Nẵng là tổ hợp căn hộ cao cấp và t
   canhodanang.store.
 developer: BRG Group
 location: Trần Hưng Đạo – Nguyễn Công Trứ – Ngô Quyền, phường An Hải, Đà Nẵng
+ownership: Sở hữu lâu dài
 district: Sơn Trà
 totalArea: 6,14 ha
 towerCount: "14"
-unitCount: "3391"
-handoverDate: Quỹ I 2027
+unitCount: 3391 căn hộ
+handoverDate: Tháng 3 2027
 buildingDensity: 34%
-googleMapsEmbed: <iframe
-  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.943211236969!2d108.22904957576046!3d16.068436439458452!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752bfbfff66083%3A0xb8cb8a1e16de6f11!2zQ2FwaXRhbCBTcXVhcmUgxJDDoCBO4bq1bmc!5e0!3m2!1sen!2s!4v1794299552928!5m2!1sen!2s"
-  width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-  referrerpolicy="strict-origin-when-cross-origin"></iframe>
-showGoogleMap: true
+introSlogan:
+  firstLine: Căn hộ hạng sang
+  highlight: bên bờ sông Hàn
+contentLayers:
+  - enabled: true
+    navTarget: gallery
+    adminLabel: góc nhìn
+    type: four-images
+    heading: Bốn giá trị kiến tạo không gian sống đẳng cấp
+    images:
+      - image: /uploads/khong-gian-can-ho-capital-square-ben-bo-song-han.webp
+        captionTitle: Dấu ấn sống sang bên bờ sông Hàn
+        caption: Capital Square tọa lạc tại khu vực ven sông Hàn, nơi cảnh quan mặt nước
+          hòa quyện cùng nhịp sống đô thị. Vị trí này mang đến lợi thế về không
+          gian, tầm nhìn và khả năng kết nối hai bờ thành phố, tạo nên trải
+          nghiệm sống đặc trưng giữa trung tâm Đà Nẵng.
+        imageAlt: Capital Square Đà Nẵng bên bờ sông Hàn
+      - image: /uploads/khong-gian-can-ho-hang-sang-capital-square.webp
+        captionTitle: Không gian căn hộ hạng sang, tối ưu trải nghiệm lưu trú
+        caption: Những căn hộ được đầu tư nội thất chỉn chu có thể đáp ứng nhu cầu sinh
+          sống và khai thác cho thuê cao cấp. Cách bố trí phòng khách, khu bếp,
+          phòng ngủ và hệ thống ánh sáng tạo nên không gian tiện nghi, phù hợp
+          với khách hàng ưu tiên chất lượng sống và sự riêng tư.
+        imageAlt: Không gian nội thất căn hộ cao cấp tại Capital Square Đà Nẵng
+      - image: /uploads/loi-trung-tam-thanh-pho-capital-square.webp
+        captionTitle: Kết nối lõi trung tâm, tận hưởng nhịp sống Đà Nẵng
+        caption: Từ Capital Square, cư dân thuận tiện tiếp cận các tuyến đường Trần Hưng
+          Đạo, Nguyễn Công Trứ và Ngô Quyền, đồng thời kết nối đến trung tâm Hải
+          Châu qua hệ thống cầu bắc qua sông Hàn. Lợi thế vị trí giúp việc di
+          chuyển đến các khu thương mại, dịch vụ, giải trí và bãi biển trở nên
+          linh hoạt.
+        imageAlt: Vị trí Capital Square kết nối trung tâm thành phố Đà Nẵng
+      - image: /uploads/mo-hinh-city-in-city-trong-capital-square.webp
+        captionTitle: City in City – Hệ sinh thái tiện ích trong lòng đô thị
+        imageAlt: Phối cảnh mô hình city in city trong capital square
+        caption: Định hướng phát triển City in City kết hợp không gian ở với thương mại,
+          giải trí, cảnh quan và tiện ích cộng đồng. Cư dân có thể tiếp cận
+          nhiều nhu cầu sinh hoạt ngay trong quần thể dự án, từ thư giãn, rèn
+          luyện sức khỏe đến mua sắm và gặp gỡ, góp phần hình thành môi trường
+          sống thuận tiện, đa trải nghiệm.
+    tabs: []
+  - enabled: true
+    navTarget: location
+    adminLabel: Vị trí
+    type: map-amenities
+    heading: Vị trí Capital Square Đà Nẵng – Tâm điểm kết nối bên bờ sông Hàn
+    text: Capital Square tọa lạc tại giao điểm các tuyến đường Trần Hưng Đạo, Nguyễn
+      Công Trứ và Ngô Quyền, bên bờ Đông sông Hàn. Vị trí thuận tiện kết nối
+      trung tâm Hải Châu, cầu Sông Hàn, cầu Rồng và bãi biển Mỹ Khê, đồng thời
+      mang đến lợi thế về cảnh quan, giao thông và khả năng khai thác căn hộ tại
+      Đà Nẵng.
+    mapEmbed: <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.943211236969!2d108.22904957576046!3d16.068436439458452!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752bfbfff66083%3A0xb8cb8a1e16de6f11!2zQ2FwaXRhbCBTcXVhcmUgxJDDoCBO4bq1bmc!5e0!3m2!1sen!2s!4v1794566309537!5m2!1sen!2s"
+      width="600" height="450" style="border:0;" allowfullscreen=""
+      loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    amenities:
+      - name: Sông Hàn
+        note: Cảnh quan ven sông.
+      - name: Cầu sông Hàn
+        distance: 100m
+        travelTime: 1 phút
+        note: Kết nối trung tâm Thành Phố.
+      - name: Biển Mỹ Khê
+        distance: 0,5km
+        travelTime: 5 phút
+        note: Nghỉ dưỡng, giải trí.
+      - name: Sân bay Đà Nẵng
+        distance: 15km
+        travelTime: 15 phút
+        note: Kết nối di chuyển linh hoạt.
+      - name: Đường Ngô Quyền
+        note: Kết nối Cảng, Logistics.
+  - enabled: true
+    navTarget: floorplan
+    adminLabel: Mặt bằng
+    type: tabs
+    heading: Layout mặt bằng và thiết kế căn hộ Capital Square
+    tabs:
+      - title: Mặt bằng tổng thể
+    text: Thiết kế căn hộ Capital Square hướng đến việc tối ưu công năng sử dụng,
+      khả năng đón sáng, thông gió và bố trí không gian sinh hoạt, tòa điển hình
+      được giới thiệu với khoảng 9–14 căn hộ mỗi tầng, hướng đến sự riêng tư cho
+      cư dân.
+ogImage: /uploads/capital-square-da-nang-banner.webp
+image: /uploads/capital-square-da-nang-banner.webp
+imageAlt: căn hộ hạng sang capital square sông Hàn
+logo: /uploads/logo-capital-square-1-1-.png
+showLogoInFooter: true
+logoOrder: 1
+showInMenu: true
+featuredOrder: 1
 floorPlanText: >-
   ![Thiết kế layout tòa điển hình của Capital
   Square](/uploads/mat-bang-layout-toa-dien-hinh-2-cua-capital-square.webp
@@ -31,29 +118,28 @@ floorPlanText: >-
 
 
   ![Mặt bằng tòa điển hình của Capital Square](/uploads/mat-bang-layout-toa-dien-hinh-cua-capital-square.webp "Mặt bằng tòa điển hình của Capital Square")
+propertyTypes:
+  - can-ho
+  - shophouse
+showGoogleMap: true
+googleMapsEmbed: <iframe
+  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.943211236969!2d108.22904957576046!3d16.068436439458452!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752bfbfff66083%3A0xb8cb8a1e16de6f11!2zQ2FwaXRhbCBTcXVhcmUgxJDDoCBO4bq1bmc!5e0!3m2!1sen!2s!4v1794299552928!5m2!1sen!2s"
+  width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+  referrerpolicy="strict-origin-when-cross-origin"></iframe>
+logoAlt: logo dự án Capital Square
+distributionStatus: dang-phan-phoi
+date: 2026-11-05T11:12:00
+updatedAt: 2026-11-10T16:12:00
+status: published
+showOnHome: true
+featured: true
+progressItems: []
 progressText: >-
   Cập nhật tiến độ Capital Square tháng 11/2026, chú trọng đẩy mạnh thi công kết
   cấu.
 
 
   ![Cập nhật tiến độ Capital Square tháng 11/2026](/uploads/tien-do-thi-cong-capital-square-thang-11.png "Cập nhật tiến độ Capital Square tháng 11/2026")
-propertyTypes:
-  - can-ho
-  - shophouse
-image: /uploads/capital-square-da-nang.webp
-logo: /uploads/logo-capital-square-1-1-.png
-logoAlt: logo dự án Capital Square
-distributionStatus: dang-phan-phoi
-showLogoInFooter: true
-logoOrder: 1
-showInMenu: true
-date: 2026-11-05T11:12:00
-updatedAt: 2026-11-10T16:12:00
-status: published
-showOnHome: true
-featured: true
-featuredOrder: 1
-progressItems: []
 ---
 Capital Square Đà Nẵng là tổ hợp căn hộ cao cấp và thương mại dịch vụ tọa lạc bên bờ Đông sông Hàn, tại khu vực giao thoa giữa các tuyến đường Trần Hưng Đạo, Nguyễn Công Trứ và Ngô Quyền. Dự án mang đến một lựa chọn nhà ở đô thị hiện đại ngay khu vực trung tâm, nơi cư dân có thể tận hưởng nhịp sống sôi động của Đà Nẵng nhưng vẫn gần gũi với cảnh quan sông nước.
 
