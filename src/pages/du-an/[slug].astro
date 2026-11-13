@@ -1,746 +1,467 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { formatListingPrice } from '../../utils/formatListingPrice';
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const projects = await getCollection('du-an');
-  return projects.filter((entry) => entry.data.status === 'published')
-    .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  const entries = await getCollection('du-an');
+  return entries.filter(item => item.data.status === 'published').map(entry => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
-const { entry } = Astro.props;
-const data = entry.data;
-const { Content } = await render(entry);
-// Gộp căn hộ và nhà đất thổ cư thuộc dự án, tránh hiển thị trùng.
-const groups = await Promise.all([
-  getCollection('can-ho'),
-  getCollection('nha-dat-tho-cu'),
-]);
-const linkedProperties = groups.flatMap((entries, groupIndex) =>
-  entries.filter(item => item.data.status !== 'draft'
-    && item.data.listingStatus === 'available'
-    && item.data.project === entry.id)
-    .map(item => ({
-      id: item.id,
-      data: item.data,
-      href: groupIndex === 0 ? `/can-ho/${item.id}/` : `/nha-dat-tho-cu/${item.id}/`,
-    }))
-);
-const properties = linkedProperties;
-const isHaiVanBay = entry.id === 'vinhomes-hai-van-bay';
-const haiVanZoneImages = data.haiVanZoneImages;
-const haiVanZoneImage = (zone: string): string | undefined => {
-  const key = ({
-    'tinh-van': 'tinhVan',
-    'bach-van': 'bachVan',
-    'dao-ngoc': 'daoNgoc',
-    'vinh-may': 'vinhMay',
-  } as Record<string, keyof NonNullable<typeof haiVanZoneImages>>)[zone];
-  return key ? haiVanZoneImages?.[key] ?? undefined : undefined;
-};
-const haiVanZones = [
-  { value: 'tinh-van', label: 'Tinh Vân' },
-  { value: 'bach-van', label: 'Bạch Vân' },
-  { value: 'dao-ngoc', label: 'Đảo Ngọc' },
-  { value: 'vinh-may', label: 'Vịnh Mây' },
-];
-const haiVanTypes = [
-  { value: 'biet-thu-don-lap', label: 'Biệt thự đơn lập' },
-  { value: 'biet-thu-song-lap', label: 'Biệt thự song lập' },
-  { value: 'biet-thu-lien-ke', label: 'Biệt thự liền kề' },
-  { value: 'shophouse', label: 'Shophouse' },
-  { value: 'can-ho-cao-tang', label: 'Căn hộ cao tầng' },
-  { value: 'resort', label: 'Resort' },
-];
-const haiVanLabel = (options: {value:string;label:string}[], value?: string | null) =>
-  options.find(option => option.value === value)?.label || '';
 
-const propertyCategory = (item: (typeof properties)[number]) => {
-  const type = String('propertyType' in item.data ? item.data.propertyType || '' : '')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  if (/shophouse|shop house|nha pho thuong mai/.test(type)) return 'shophouse';
-  if (/biet thu|villa/.test(type)) return 'villa';
-  return 'other';
+// Escape CMS-authored Markdown before converting supported formatting to HTML.
+const escapeHtml = (value: string) => value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const layerMarkdown = (value: unknown) => {
+  const source=String(value||'').replace(/\r\n?/g,'\n');
+  const inline=(v:string)=>escapeHtml(v)
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,(_m,label,url)=>'<a href="'+url.replace(/&amp;/g,'&')+'" target="_blank" rel="noopener noreferrer">'+label+'</a>');
+  const lines=source.split('\n');const result:string[]=[];let list='';
+  const closeList=()=>{if(list){result.push('</'+list+'>');list='';}};
+  for(const raw of lines){
+    const line=raw.trim();
+    if(!line){closeList();continue;}
+    const heading=line.match(/^(#{1,6})\s+(.+)$/);
+    if(heading){closeList();const level=Math.min(6,heading[1].length+2);result.push('<h'+level+'>'+inline(heading[2])+'</h'+level+'>');continue;}
+    const bullet=line.match(/^[-*+]\s+(.+)$/),numbered=line.match(/^\d+[.)]\s+(.+)$/);
+    if(bullet||numbered){const next=bullet?'ul':'ol';if(list!==next){closeList();result.push('<'+next+'>');list=next;}result.push('<li>'+inline((bullet||numbered)![1])+'</li>');continue;}
+    closeList();result.push('<p>'+inline(line)+'</p>');
+  }
+  closeList();return result.join('\n');
 };
-const forSale = properties.filter(item => item.data.transaction === 'ban');
-const forRent = properties.filter(item => item.data.transaction !== 'ban');
-const saleVillas = forSale.filter(item => propertyCategory(item) === 'villa');
-const saleShophouses = forSale.filter(item => propertyCategory(item) === 'shophouse');
-const saleOther = forSale.filter(item => propertyCategory(item) === 'other');
-const rentVillas = forRent.filter(item => propertyCategory(item) === 'villa');
-const rentShophouses = forRent.filter(item => propertyCategory(item) === 'shophouse');
-const rentOther = forRent.filter(item => propertyCategory(item) === 'other');
-const extra = data as typeof data & {
-  district?: string; totalArea?: string; towerCount?: string | number;
-  unitCount?: string | number; handoverDate?: string; buildingDensity?: string;
-  floorPlanText?: string; floorPlanImages?: string[];
-  googleMapsEmbed?: string; showGoogleMap?: boolean;
-  progressText?: string; progressItems?: { title?: string; image?: string; videoUrl?: string; videoFile?: string; description?: string }[];
+
+const { entry } = Astro.props;
+const projects = (await getCollection('du-an')).filter(p => p.data.status === 'published');
+const project = entry;
+const d = project.data;
+const images = [...new Set([d?.image, ...(d?.gallery || [])].filter((x): x is string => !!x))];
+const facts = [
+  ['Chủ đầu tư', d?.developer],
+  ['Quy mô', d?.totalArea],
+  ['Số tòa', d?.towerCount],
+  ['Sản phẩm', d?.unitCount],
+  ['Bàn giao dự kiến', d?.handoverDate],
+  ['Mật độ xây dựng', d?.buildingDensity],
+].filter((x): x is string[] => !!x[1]);
+const apartmentListings = project ? (await getCollection('can-ho')).filter(p => p.data.project === project.id && p.data.status === 'published' && p.data.listingStatus === 'available') : [];
+const specialListings = project?.id === 'vinhomes-hai-van-bay'
+  ? (await getCollection('nha-dat-tho-cu')).filter(p => p.data.project === project.id && p.data.status === 'published' && p.data.listingStatus === 'available')
+  : [];
+// Mỗi sản phẩm xuất hiện tối đa một lần, kể cả khi dữ liệu CMS trùng.
+const listings = [...new Map([
+  ...apartmentListings.map(item => ({ id:item.id, data:item.data, href:`/can-ho/${item.id}/`, kind:'can-ho' })),
+  ...specialListings.map(item => ({ id:item.id, data:item.data, href:`/nha-dat-tho-cu/${item.id}/`, kind:'nha-dat' })),
+].map(item => [item.href, item] as const)).values()];
+const listingGroups = [
+  { key:'ban', title:'Căn hộ đang bán', items:listings.filter(item=>item.data.transaction === 'ban') },
+  { key:'cho-thue', title:'Căn hộ cho thuê', items:listings.filter(item=>item.data.transaction !== 'ban') },
+].filter(group=>group.items.length);
+// Tin tức liên quan được lấy một lần, tự động theo slug dự án.
+const relatedNews = project ? [...new Map((await getCollection('bai-viet'))
+  .filter(item => item.data.status !== 'draft' && item.data.project === project.id)
+  .map(item => [item.id, item] as const)).values()]
+  .sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()) : [];
+const legacyPlanImages = [...String(d?.floorPlanText || '').matchAll(/!\[([^\]]*)\]\((\/[^\s)]+)(?:\s+["'][^"']*["'])?\)/g)].map((match,i)=>({
+  image: match[2],
+  title: match[1] || 'Mặt bằng '+String(i+1).padStart(2,'0'),
+  description: match[1] || d?.description || '',
+  imageAlt: match[1] || 'Mặt bằng '+(i+1)
+}));
+const floorPlanItems = (d?.floorPlanItems?.length ? d.floorPlanItems : (d?.floorPlanImages?.length ? d.floorPlanImages.map((image,i)=>({image,title:'Mặt bằng '+String(i+1).padStart(2,'0'),description:d?.description||'',imageAlt:'Mặt bằng '+(i+1)})) : legacyPlanImages)).filter(item=>item.image);
+const contentLayers = (d?.contentLayers || []).filter(layer=>layer.enabled !== false && !['property-cards','related-cards'].includes(layer.type || ''));
+const productAnchor = listings.some(item => item.data.transaction === 'ban') ? '#can-ho-dang-ban' : listings.length ? '#can-ho-cho-thue' : '#lien-he';
+// CMS Section Builder controls the destination of each project navigation item.
+const navKeys = ['overview','gallery','floorplan','location','products','contact'] as const;
+type NavKey = typeof navKeys[number];
+const navLabels: Record<NavKey,string> = {
+  overview:'Tổng quan', gallery:'Hình ảnh', floorplan:'Mặt bằng',
+  location:'Vị trí', products:'Sản phẩm', contact:'Liên hệ'
 };
-// Render Markdown an toàn cho Mặt bằng / Tiến độ: ảnh, liên kết, tiêu đề và đoạn văn.
-const escapeHtml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-  .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-const safeProjectUrl = (url: string, image = false) => {
-  const clean = url.trim();
-  if (/^\/(?!\/)[^\s]*$/.test(clean)) return clean;
-  if (/^https:\/\/[^\s]+$/i.test(clean)) return clean;
-  if (!image && /^http:\/\/[^\s]+$/i.test(clean)) return clean;
-  return '';
+const navKeywords: Record<NavKey,string[]> = {
+  overview:['tổng quan','giới thiệu'], gallery:['hình ảnh','thư viện','bộ sưu tập','góc nhìn'],
+  floorplan:['mặt bằng','thiết kế'], location:['vị trí','kết nối'],
+  products:['sản phẩm','đang bán','cho thuê'], contact:['liên hệ','tư vấn']
 };
-const renderProjectText = (value?: string) => {
-  if (!value) return '';
-  const source = String(value).replace(/\r\n?/g, '\n');
-  const renderInline = (line: string) => {
-    const pattern = /(!?)\[([^\]\n]*)\]\(([^\s)]+)(?:\s+\"([^\"\n]*)\")?\)/g;
-    let html = '', cursor = 0;
-    for (const match of line.matchAll(pattern)) {
-      const index = match.index ?? 0;
-      html += escapeHtml(line.slice(cursor, index));
-      const isImage = match[1] === '!';
-      const label = escapeHtml(match[2]);
-      const url = safeProjectUrl(match[3], isImage);
-      if (url && isImage) {
-        html += `<img src="${escapeHtml(url)}" alt="${label}"${match[4] ? ` title="${escapeHtml(match[4])}"` : ''} loading="lazy" decoding="async" />`;
-      } else if (url) {
-        html += `<a href="${escapeHtml(url)}">${label}</a>`;
-      } else {
-        html += escapeHtml(match[0]);
-      }
-      cursor = index + match[0].length;
-    }
-    return html + escapeHtml(line.slice(cursor));
-  };
-  return source.split(/\n\s*\n/).map(block => {
-    const trimmed = block.trim();
-    const heading = /^(#{2,4})\s+(.+)$/.exec(trimmed);
-    if (heading) {
-      const level = heading[1].length;
-      return `<h${level}>${renderInline(heading[2])}</h${level}>`;
-    }
-    return `<p>${trimmed.split('\n').map(renderInline).join('<br />')}</p>`;
-  }).join('');
+const layerId = (layer: any, index: number) =>
+  (layer.type || layer.layout) === 'hai-van-zones' && project.id === 'vinhomes-hai-van-bay'
+    ? 'phan-khu-hai-van-bay' : 'layer-' + index;
+const assignedNavigation = new Map<string,string>();
+contentLayers.forEach((layer,index) => {
+  const target = String(layer.navTarget || 'none');
+  if (navKeys.includes(target as NavKey) && !assignedNavigation.has(target)
+    && ((layer.type || layer.layout) !== 'hai-van-zones' || project.id === 'vinhomes-hai-van-bay')) {
+    assignedNavigation.set(target, '#' + layerId(layer,index));
+  }
+});
+const defaultNavigation: Record<NavKey,string> = {
+  overview:'#tong-quan',gallery:'#bo-suu-tap',floorplan:'#mat-bang',
+  location:'#vi-tri',products:productAnchor,contact:'#lien-he'
 };
-// Chỉ cho phép URL iframe nhúng Google Maps từ các hostname chính thức.
-const googleMapsSrc = (() => {
-  if (extra.showGoogleMap === false || !extra.googleMapsEmbed?.trim()) return '';
-  const match = extra.googleMapsEmbed.match(/<iframe\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1/i);
-  const candidate = match?.[2] || extra.googleMapsEmbed.trim();
-  try {
-    const url = new URL(candidate.replace(/&amp;/g, '&'));
-    const host = url.hostname.toLowerCase();
-    if (url.protocol !== 'https:' || !['www.google.com', 'google.com', 'maps.google.com'].includes(host)) return '';
-    if (!url.pathname.startsWith('/maps/embed')) return '';
-    return url.href;
-  } catch { return ''; }
-})();
-const detailRows = [
-  ['Tên gọi', data.title], ['Chủ đầu tư', data.developer],
-  ['Diện tích', extra.totalArea], ['Vị trí', data.location],
-  ['Số tòa', extra.towerCount], ['Số căn hộ / biệt thự', extra.unitCount],
-  ['Bàn giao dự kiến', extra.handoverDate], ['Mật độ xây dựng', extra.buildingDensity],
-].filter((row) => row[1] !== undefined && row[1] !== null && String(row[1]).trim() !== '');
-const normalizeDistrict = (value: unknown) => String(value || '').normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')
-  .toLowerCase().replace(/^(quan|huyen|thi xa)\s+/, '').trim();
-const districtNames = ['Hải Châu', 'Sơn Trà', 'Ngũ Hành Sơn', 'Thanh Khê', 'Liên Chiểu', 'Cẩm Lệ', 'Hòa Vang'];
-const district = extra.district || districtNames.find(name =>
-  normalizeDistrict(data.location).includes(normalizeDistrict(name))) || '';
-const relatedProjects = (await getCollection('du-an'))
-  .filter(item => item.id !== entry.id && item.data.status === 'published' && district
-    && normalizeDistrict((item.data as typeof item.data & {district?:string}).district ||
-      districtNames.find(name => normalizeDistrict(item.data.location).includes(normalizeDistrict(name))))
-       === normalizeDistrict(district)).slice(0, 6);
-const relatedNews = (await getCollection('bai-viet'))
-  .filter(item => item.data.status !== 'draft'
-    && (item.data as typeof item.data & { project?: string }).project === entry.id)
-  .sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()).slice(0, 6);
-const youtubeEmbed = (url: string) => {
-  try {
-    const parsed = new URL(url);
-    const host = parsed.hostname.replace(/^www\./, '');
-    let id = '';
-    if (host === 'youtu.be') id = parsed.pathname.slice(1).split('/')[0];
-    if (host === 'youtube.com' || host === 'm.youtube.com') {
-      id = parsed.pathname.startsWith('/shorts/') || parsed.pathname.startsWith('/embed/')
-        ? parsed.pathname.split('/')[2] : parsed.searchParams.get('v') || '';
-    }
-    return /^[a-zA-Z0-9_-]{11}$/.test(id) ? `https://www.youtube-nocookie.com/embed/${id}` : '';
-  } catch { return ''; }
+const navigationHref = (key: NavKey): string => {
+  const explicit = assignedNavigation.get(key);
+  if (explicit) return explicit;
+  if (!contentLayers.length) return defaultNavigation[key];
+  // Product/contact blocks are rendered outside the Section Builder.
+  if (key === 'products') {
+  if (project.id === 'vinhomes-hai-van-bay' && haiVanZones.length > 0) {
+    return '#phan-khu-hai-van-bay';
+  }
+  return listings.length ? productAnchor : '';
+}
+  if (key === 'contact') return '#lien-he';
+  const index = contentLayers.findIndex(layer =>
+    navKeywords[key].some(word => String(layer.heading || '').toLocaleLowerCase('vi-VN').includes(word))
+    && ((layer.type || layer.layout) !== 'hai-van-zones' || project.id === 'vinhomes-hai-van-bay')
+  );
+  return index >= 0 ? '#' + layerId(contentLayers[index],index) : '';
 };
+const visibleNavigation = navKeys.map(key=>({key,label:navLabels[key],href:navigationHref(key)})).filter(item=>item.href);
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
-const toAbsolute = (value: string) => new URL(value, siteUrl).href;
-const images = [...new Set([data.image, ...(data.gallery ?? [])]
-  .filter((value): value is string => typeof value === 'string' && value.trim().length > 0))].map(toAbsolute);
-const description = data.description || `Thông tin dự án ${data.title}${data.location ? ` tại ${data.location}` : ''}. Liên hệ 0869 437 415 để được tư vấn.`;
-// SEO động dùng chung: ưu tiên thông tin CMS, nếu trống thì tạo từ dữ liệu dự án.
-const projectSeo = data as typeof data & { seoDescription?: string };
-const seoTitle = data.seoTitle?.trim() || `${data.title}${data.location ? ` | ${data.location}` : ' | Đà Nẵng'}`;
-const seoDescription = projectSeo.seoDescription?.trim()
-  || `Khám phá dự án ${data.title}${data.location ? ` tại ${data.location}` : ' tại Đà Nẵng'}. Xem vị trí, thông tin dự án và sản phẩm liên quan. Liên hệ 0869 437 415.`;
-const formatArea = (area: string | number | undefined) => {
-  if (area === undefined || area === null || String(area).trim() === '') return '';
-  const value = String(area).trim();
-  return /(?:m²|m2|m\s*\^\s*2|mét vuông)/i.test(value) ? value : `${value} m²`;
+const projectSeo = d as typeof d & { seoDescription?: string };
+const seoTitle = d?.seoTitle?.trim() || `${d?.title}${d?.location ? ` | ${d?.location}` : ' | Đà Nẵng'}`;
+const seoDescription = projectSeo?.seoDescription?.trim()
+  || `Khám phá dự án ${d?.title}${d?.location ? ` tại ${d?.location}` : ' tại Đà Nẵng'}. Xem vị trí, thông tin dự án và sản phẩm liên quan. Liên hệ 0869 437 415.`;
+
+const structuredData = { '@context': 'https://schema.org', '@graph': [
+  { '@type': 'Place', '@id': pageUrl + '#project', name: d?.title, description: d?.description || seoDescription, url: pageUrl, image: images.map(src => new URL(src,siteUrl).href), ...(d?.location ? { address: { '@type':'PostalAddress', streetAddress:d.location, addressCountry:'VN' } } : {}) },
+  { '@type': 'BreadcrumbList', itemListElement: [
+    { '@type':'ListItem',position:1,name:'Trang chủ',item:siteUrl+'/' },
+    { '@type':'ListItem',position:2,name:'Dự án',item:siteUrl+'/du-an/' },
+    { '@type':'ListItem',position:3,name:d?.title,item:pageUrl }
+  ] }
+] };
+const highlights = [
+  d?.location && 'Vị trí: ' + d.location,
+  d?.developer && 'Chủ đầu tư: ' + d.developer,
+  d?.towerCount && 'Quy mô: ' + d.towerCount + ' tòa',
+  d?.unitCount && 'Sản phẩm: ' + d.unitCount,
+  d?.totalArea && 'Diện tích dự án: ' + d.totalArea,
+  d?.handoverDate && 'Bàn giao dự kiến: ' + d.handoverDate,
+  d?.buildingDensity && 'Mật độ xây dựng: ' + d.buildingDensity,
+  'Khám phá kiến trúc và không gian sống',
+  'Xem mặt bằng và thông tin sản phẩm',
+  'Liên hệ tư vấn trực tiếp qua Gọi điện hoặc Zalo'
+].filter(Boolean).slice(0,10);
+const dateLabel = (value: unknown) => { if (!value) return ''; const t = new Date(String(value)); return Number.isNaN(t.getTime()) ? '' : new Intl.DateTimeFormat('vi-VN').format(t); };
+const displayPrice = (value: unknown) => {
+  const raw = String(value ?? '').trim();
+  if (!raw) return 'Liên hệ';
+  if (/(tỷ|triệu|tr\b|vnđ|vnd|đồng|₫|usd|\$)/i.test(raw)) return raw;
+  if (/^\d+(?:[.,]\d+)?$/.test(raw)) {
+    const n = Number(raw.replace(',','.'));
+    if (n >= 1000000000) return (n/1000000000).toLocaleString('vi-VN',{maximumFractionDigits:3})+' tỷ';
+    if (n >= 1000000) return (n/1000000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' triệu';
+    return raw+' tỷ';
+  }
+  return raw;
 };
-const schema = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Place',
-      '@id': `${pageUrl}#project`,
-      name: data.title,
-      description,
-      url: pageUrl,
-      ...(images.length ? { image: images } : {}),
-      ...(data.location ? { address: { '@type': 'PostalAddress', streetAddress: data.location, addressCountry: 'VN' } } : {}),
-    },
-    {
-      '@type': 'BreadcrumbList',
-      '@id': `${pageUrl}#breadcrumb`,
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: `${siteUrl}/` },
-        { '@type': 'ListItem', position: 2, name: 'Dự án', item: `${siteUrl}/du-an/` },
-        { '@type': 'ListItem', position: 3, name: data.title, item: pageUrl },
-      ],
-    },
-  ],
+const safeMapUrl = (html: unknown) => {
+  const match=String(html||'').match(/<iframe\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i);
+  if(!match)return '';
+  try {const url=new URL(match[1].replace(/&amp;/g,'&'));return url.protocol==='https:' && ['www.google.com','google.com'].includes(url.hostname) && url.pathname.startsWith('/maps/embed') ? url.toString():'';}catch{return '';}
+};
+const mapEmbedUrl = (() => {
+  if (d?.showGoogleMap === false) return '';
+  const html = String(d?.googleMapsEmbed || '');
+  const match = html.match(/<iframe\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i);
+  if (!match) return '';
+  try {
+    const url = new URL(match[1].replace(/&amp;/g,'&'));
+    return url.protocol === 'https:' && (url.hostname === 'www.google.com' || url.hostname === 'google.com') && url.pathname.startsWith('/maps/embed') ? url.toString() : '';
+  } catch { return ''; }
+})();
+const nearbyAmenities = (d?.nearbyAmenities || []).filter(item=>item.name?.trim());
+const subdivisionLabels: Record<string,string> = { 'tinh-van':'Tinh Vân', 'bach-van':'Bạch Vân', 'dao-ngoc':'Đảo Ngọc', 'vinh-may':'Vịnh Mây' };
+// Four Hải Vân Bay zones: count only currently available, published sale listings.
+const haiVanZones = project.id === 'vinhomes-hai-van-bay' ? ([
+  { key:'tinh-van', name:'Tinh Vân', image:d?.haiVanZoneImages?.tinhVan, description:'Khám phá không gian sống và các dòng sản phẩm tại phân khu Tinh Vân.' },
+  { key:'bach-van', name:'Bạch Vân', image:d?.haiVanZoneImages?.bachVan, description:'Tìm hiểu khu nhà ở thấp tầng với biệt thự, nhà liền kề và shophouse tại Bạch Vân.' },
+  { key:'dao-ngoc', name:'Đảo Ngọc', image:d?.haiVanZoneImages?.daoNgoc, description:'Khám phá vị trí, cảnh quan và các lựa chọn bất động sản tại phân khu Đảo Ngọc.' },
+  { key:'vinh-may', name:'Vịnh Mây', image:d?.haiVanZoneImages?.vinhMay, description:'Tìm hiểu không gian cảnh quan và các sản phẩm thuộc phân khu Vịnh Mây.' },
+] as const).map(zone=>({ ...zone, saleCount:listings.filter(item=>item.data.transaction === 'ban' && item.data.subdivision === zone.key).length })) : [];
+const propertyTypeLabels: Record<string,string> = { 'biet-thu-don-lap':'Biệt thự đơn lập', 'biet-thu-song-lap':'Biệt thự song lập', 'biet-thu-lien-ke':'Biệt thự liền kề', 'shophouse':'Shophouse', 'can-ho-cao-tang':'Căn hộ cao tầng', 'resort':'Resort' };
+const unitPrice = (item: typeof listings[number]) => {
+  if (item.data.transaction !== 'ban') return '';
+  const rawPrice = String(item.data.price ?? '').trim().toLowerCase();
+  const rawArea = String(item.data.area ?? '').trim();
+  const area = Number(rawArea.replace(/\s/g,'').replace(/\.(?=\d{3}(?:\D|$))/g,'').replace(',','.').match(/\d+(?:\.\d+)?/)?.[0]);
+  const priceText = rawPrice.replace(/\s/g,'');
+  const matched = priceText.match(/(\d+(?:[.,]\d+)?)\s*(tỷ|triệu)/);
+  if (!matched || !area || area <= 0) return '';
+  const value = Number(matched[1].replace(',','.'));
+  if (!Number.isFinite(value)) return '';
+  const millions = value * (matched[2] === 'tỷ' ? 1000 : 1);
+  const formatted = (millions / area).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+  return formatted + ' triệu/m²';
 };
 ---
-<Base title={seoTitle} description={seoDescription} image={data.image || undefined} imageAlt={data.imageAlt || data.title}>
-  <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
-  <main class="project-page">
-    <div class="wrap">
-      <nav class="breadcrumbs" aria-label="Đường dẫn">
-        <a href="/">Trang chủ</a><span aria-hidden="true">/</span>
-        <a href="/du-an/">Dự án</a><span aria-hidden="true">/</span>
-        <span aria-current="page">{data.title}</span>
-      </nav>
-
-      <section class="project-hero" aria-label="Tổng quan dự án">
-        <div class="project-hero-info">
-          <span class="eyebrow">THÔNG TIN DỰ ÁN</span>
-          <h1>{data.title}</h1>
-          <dl class="project-hero-facts">
-            <div><dt>Tên gọi dự án</dt><dd>{data.title}</dd></div>
-            {data.developer && <div><dt>Chủ đầu tư</dt><dd>{data.developer}</dd></div>}
-            {data.location && <div><dt>Vị trí</dt><dd>{data.location}</dd></div>}
-            {extra.totalArea && <div><dt>Diện tích</dt><dd>{extra.totalArea}</dd></div>}
-            {extra.unitCount && <div><dt>Tổng căn hộ / biệt thự</dt><dd>{extra.unitCount}</dd></div>}
-            {(data as typeof data & {ownership?:string}).ownership && <div><dt>Hình thức sở hữu</dt><dd>{(data as typeof data & {ownership?:string}).ownership}</dd></div>}
-          </dl>
-          <button class="hero-quote" type="button" data-open-lead-popup>Nhận thông tin & báo giá</button>
-        </div>
-        <div class="project-hero-media">
-          {[data.image, ...(data.gallery ?? [])].filter((v, i, arr): v is string => typeof v === 'string' && v.trim().length > 0 && arr.indexOf(v) === i).length > 0
-            ? <div class="project-hero-slides" data-project-slideshow aria-label="Hình ảnh dự án">
-                {[data.image, ...(data.gallery ?? [])].filter((v, i, arr): v is string => typeof v === 'string' && v.trim().length > 0 && arr.indexOf(v) === i).map((src, index) =>
-                  <img class:list={['project-hero-slide', { active: index === 0 }]} src={src} alt={`${data.title} - ảnh ${index + 1}`} loading={index === 0 ? 'eager' : 'lazy'} />
-                )}
-              </div>
-            : <div class="project-hero-no-image">Hình ảnh dự án đang cập nhật</div>}
-        </div>
-      </section>
-      <aside class="project-hero-contact" aria-label="Liên hệ tư vấn dự án">
-        <div class="project-hero-contact-copy">
-          <strong>Nhận bảng giá và thông tin mới nhất về {data.title}</strong>
-          <p>Tư vấn sản phẩm, mặt bằng và chính sách bán hàng.</p>
-          <div class="project-hero-contact-actions">
-            <a href="tel:0869437415">Gọi 0869 437 415</a>
-            <a href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Nhắn Zalo</a>
-            {(data as typeof data & {facebookUrl?:string}).facebookUrl?.startsWith('https://') && <a href={(data as typeof data & {facebookUrl?:string}).facebookUrl} target="_blank" rel="noopener noreferrer">Facebook</a>}
-          </div>
-        </div>
-        <img class="project-hero-advisor" src="/uploads/tu-van-vien-vest.jpg" alt="Tư vấn viên bất động sản" loading="lazy" />
-      </aside>
-
-      <dialog class="project-lead-dialog" id="project-lead-dialog" aria-labelledby="project-lead-title">
-        <div class="project-lead-inner">
-          <button class="project-lead-close" type="button" data-close-lead-popup aria-label="Đóng biểu mẫu">×</button>
-          <span class="eyebrow">TƯ VẤN DỰ ÁN</span>
-          <h2 id="project-lead-title">Nhận thông tin & bảng giá</h2>
-          <p>Để lại thông tin, chuyên viên sẽ liên hệ tư vấn về <strong>{data.title}</strong>.</p>
-          <form id="project-lead-form" action="https://docs.google.com/forms/d/e/1FAIpQLScpdMvW3g0dfHdc4sx_k9Mps05ObD57aOzy1ugbEY0UBBENqQ/formResponse" method="POST" target="project-lead-frame">
-            <label for="lead-name">Họ và tên <span>*</span></label>
-            <input id="lead-name" name="entry.1817354620" type="text" autocomplete="name" maxlength="120" placeholder="Nhập họ và tên" required />
-            <label for="lead-phone">Số điện thoại <span>*</span></label>
-            <input id="lead-phone" name="entry.996658541" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9+ .()-]{9,18}" title="Nhập số điện thoại hợp lệ" placeholder="Nhập số điện thoại" required />
-            <label for="lead-interest">Thông tin quan tâm <span>*</span></label>
-            <textarea id="lead-interest" name="entry.2014010319" rows="3" maxlength="1000" required>{`Tôi muốn nhận bảng giá và thông tin dự án ${data.title}. Trang: https://canhodanang.store/du-an/${entry.id}/`}</textarea>
-            <p class="project-lead-consent">Thông tin chỉ dùng để liên hệ tư vấn theo yêu cầu của anh/chị.</p>
-            <button class="project-lead-submit" type="submit">Gửi yêu cầu tư vấn</button>
-            <p class="project-lead-status" id="project-lead-status" role="status" aria-live="polite"></p>
-          </form>
-          <iframe title="Gửi đăng ký tư vấn" name="project-lead-frame" id="project-lead-frame" hidden></iframe>
-        </div>
-      </dialog>
-
-      <section class="description" aria-label="Giới thiệu và thông tin chi tiết dự án">
-        <div class="article-content" id="project-detail-content">
-          <Content />
-        </div>
-        <button type="button" class="project-read-more" id="project-read-more" aria-controls="project-detail-content" aria-expanded="false" hidden>
-          <span class="project-read-more-label">Xem thêm</span>
-          <svg class="project-read-more-icon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-      </section>
-
-      {googleMapsSrc && <section class="description project-map" aria-label={`Bản đồ vị trí ${data.title}`}>
-        <h2>Bản đồ vị trí {data.title}</h2>
-        <p>{data.location}</p>
-        <iframe src={googleMapsSrc} title={`Google Maps vị trí ${data.title}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-      </section>}
-
-      <section class="description" aria-label="Thông số chi tiết dự án">
-        <h2>Thông số chi tiết dự án {data.title}</h2>
-        <dl class="spec-grid">
-          {detailRows.map(([label, value]) => (
-            <div class="spec-item"><dt>◈ {label}</dt><dd>{String(value)}</dd></div>
-          ))}
-        </dl>
-      </section>
-
-      <section class="description">
-        <h2>Mặt bằng dự án {data.title}</h2>
-        {extra.floorPlanText && !extra.floorPlanImages?.length && <div class="section-copy project-markdown" set:html={renderProjectText(extra.floorPlanText)} />}
-        {extra.floorPlanImages?.length ? <>
-          <div class="floor-plan-gallery">{extra.floorPlanImages.filter(Boolean).map((image, index) => (
-            <button class="floor-plan-open" type="button" data-floor-plan-src={image} data-floor-plan-alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} aria-label={`Phóng to mặt bằng ${data.title} - ảnh ${index + 1}`}>
-              <img src={image} alt={`Mặt bằng ${data.title} - ảnh ${index + 1}`} loading="lazy" />
-              <span class="floor-plan-zoom">⛶ Phóng to ảnh</span>
-            </button>
-          ))}</div>
-          <dialog class="floor-plan-dialog" aria-label="Xem mặt bằng dự án phóng to">
-            <button type="button" class="floor-plan-close" aria-label="Đóng ảnh phóng to">×</button>
-            <img class="floor-plan-full-image" alt="" />
-          </dialog>
-        </> : (!extra.floorPlanText?.trim() && <p class="empty">Thông tin mặt bằng đang được cập nhật.</p>)}
-      </section>
-
-      <section class="description">
-        <h2>Tiến độ dự án {data.title}</h2>
-        {extra.progressText && !extra.progressItems?.length && <div class="section-copy project-markdown" set:html={renderProjectText(extra.progressText)} />}
-        {extra.progressItems?.length ? extra.progressItems.map((item, index) => (
-          <article class="progress-item">
-            <h3>{item.title || `Cập nhật tiến độ ${data.title} - ${index + 1}`}</h3>
-            {item.description && <p>{item.description}</p>}
-            {item.image && <img src={item.image} alt={item.title || `Tiến độ ${data.title}`} loading="lazy" />}
-            {item.videoUrl && youtubeEmbed(item.videoUrl) && <iframe src={youtubeEmbed(item.videoUrl)} title={item.title || `Video tiến độ ${data.title}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>}
-            {item.videoFile && <video controls preload="metadata" playsinline src={item.videoFile}></video>}
-          </article>
-        )) : (!extra.progressText?.trim() && <p class="empty">Tiến độ dự án đang được cập nhật.</p>)}
-      </section>
-
-      {isHaiVanBay && (
-        <section class="listings hai-van-products" id="san-pham-hai-van">
-          <h2>Khám phá 4 phân khu Vinhomes Hải Vân Bay</h2>
-          <div class="hai-van-zones">
-            {haiVanZones.map(zone => (
-              <button type="button" class:list={['hai-van-zone', { 'has-image': Boolean(haiVanZoneImage(zone.value)) }]} data-zone-choice={zone.value} aria-pressed="false">
-                {haiVanZoneImage(zone.value) && <img class="hai-van-zone-image" src={haiVanZoneImage(zone.value)} alt={`Phân khu ${zone.label} - Vinhomes Hải Vân Bay`} loading="lazy" />}
-                <span class="hai-van-zone-info">
-                  <span class="hai-van-zone-name">{zone.label}</span>
-                  <span class="hai-van-zone-count">{properties.filter(item => item.data.subdivision === zone.value).length} sản phẩm</span>
-                </span>
-              </button>
-            ))}
-          </div>
-          <h2 class="hai-van-list-title">Bất động sản tại Vinhomes Hải Vân Bay</h2>
-          <div class="hai-van-filters">
-            <label>Phân khu
-              <select id="hai-van-zone-filter" aria-label="Lọc theo phân khu">
-                <option value="">Tất cả phân khu</option>
-                {haiVanZones.map(zone => <option value={zone.value}>{zone.label}</option>)}
-              </select>
-            </label>
-            <label>Loại hình
-              <select id="hai-van-type-filter" aria-label="Lọc theo loại hình">
-                <option value="">Tất cả loại hình</option>
-                {haiVanTypes.map(type => <option value={type.value}>{type.label}</option>)}
-              </select>
-            </label>
-            <button type="button" id="hai-van-clear-filter" class="hai-van-reset">Xóa bộ lọc</button>
-          </div>
-          <p id="hai-van-result-count" class="hai-van-result" aria-live="polite"></p>
-          <div class="cards" id="hai-van-cards">
-            {properties.map(item => (
-              <a class="card property-card hai-van-card" href={item.href}
-                data-zone={item.data.subdivision || ''} data-type={item.data.projectPropertyType || ''}>
-                <div class="hai-van-image">
-                  {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
-                  <div class="hai-van-badges">
-                    {haiVanLabel(haiVanTypes, item.data.projectPropertyType) && <span class="hai-van-badge type">{haiVanLabel(haiVanTypes, item.data.projectPropertyType)}</span>}
-                    {haiVanLabel(haiVanZones, item.data.subdivision) && <span class="hai-van-badge zone">{haiVanLabel(haiVanZones, item.data.subdivision)}</span>}
-                  </div>
-                </div>
-                <div class="card-body">
-                  <h3>{item.data.title}</h3>
-                  {item.data.productCode && <p class="hai-van-code">Mã: {item.data.productCode}</p>}
-                  <div class="card-info-row">
-                    {item.data.price && <strong class="apartment-price">{formatListingPrice(item.data.price, item.data.transaction, item.data.priceValue)}</strong>}
-                    {formatArea(item.data.area) && <span class="apartment-detail">{formatArea(item.data.area)}</span>}
-                    {item.data.bedrooms != null && <span class="apartment-detail">{item.data.bedrooms} PN</span>}
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-          <p id="hai-van-no-results" class="empty" hidden>Chưa có bất động sản phù hợp với bộ lọc.</p>
-          <button type="button" class="project-read-more" id="hai-van-more" hidden>Xem thêm sản phẩm</button>
-        </section>
-      )}
-
-      {!isHaiVanBay && [
-        { id: 'villa-sale', heading: `Biệt thự đang bán tại ${data.title}`, items: saleVillas },
-        { id: 'shophouse-sale', heading: `Shophouse đang bán tại ${data.title}`, items: saleShophouses },
-        { id: 'other-sale', heading: `Căn hộ và bất động sản khác đang bán tại ${data.title}`, items: saleOther },
-        { id: 'villa-rent', heading: `Biệt thự cho thuê tại ${data.title}`, items: rentVillas },
-        { id: 'shophouse-rent', heading: `Shophouse cho thuê tại ${data.title}`, items: rentShophouses },
-        { id: 'other-rent', heading: `Căn hộ và bất động sản khác cho thuê tại ${data.title}`, items: rentOther },
-      ].filter(group => group.items.length > 0).map(group => (
-        <section class="listings property-list" data-property-list>
-          <h2>{group.heading}</h2>
-          {group.items.length ? (
-            <>
-              <div class="cards">
-                {group.items.map((item, index) => (
-                  <a class="card property-card" href={item.href} data-card-index={index}>
-                    {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
-                    <div class="card-body">
-                      <h3>{item.data.title}</h3>
-                      <p class="property-action">{item.href === '#lien-he-du-an' ? 'Liên hệ tư vấn sản phẩm →' : 'Xem chi tiết bất động sản →'}</p>
-                      <div class="card-info-row">
-                        {item.data.price && <strong class="apartment-price">{formatListingPrice(item.data.price, item.data.transaction, item.data.priceValue)}</strong>}
-                        {formatArea(item.data.area) && <span class="apartment-detail">{formatArea(item.data.area)}</span>}
-                        {item.data.bedrooms != null && <span class="apartment-detail">{item.data.bedrooms} PN</span>}
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-              <button class="project-read-more property-more" type="button" hidden aria-label={`Xem thêm bất động sản ${group.id}`}>
-                <span>Xem thêm</span><svg class="project-read-more-icon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-              </button>
-            </>
-          ) : <p class="empty">Hiện chưa có bất động sản phù hợp được đăng trong dự án này.</p>}
-        </section>
-      ))}
-
-      {relatedNews.length > 0 && <section class="listings">
-        <h2>Tin tức về dự án {data.title}</h2>
-        <div class="cards">
-          {relatedNews.map(item => <a class="card" href={`/tin-tuc/${item.id}/`}>
-            {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
-            <div class="card-body"><h3>{item.data.title}</h3><p class="empty">Đọc bài viết chi tiết</p></div>
-          </a>)}
-        </div>
-      </section>}
-
-      {relatedProjects.length > 0 && <section class="listings">
-        <h2>Dự án liên quan</h2>
-        <div class="cards">
-          {relatedProjects.map(item => <a class="card" href={`/du-an/${item.id}/`}>
-            {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
-            <div class="card-body"><h3>{item.data.title}</h3><p class="empty">{item.data.location}</p></div>
-          </a>)}
-        </div>
-      </section>}
-
-      <div class="contact" id="lien-he-du-an">
-        <a href="tel:0869437415">Gọi tư vấn: 0869 437 415</a>
-        <a href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Liên hệ Zalo</a>
+<Base title={seoTitle} description={seoDescription} image={d?.image || undefined} imageAlt={d?.imageAlt || d?.title}>
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />
+  <main class="experience">
+    <nav class="preview-bar" aria-label="Đường dẫn"><a href="/">Trang chủ</a><span> / </span><a href="/du-an/">Dự án</a><span> / </span><span aria-current="page">{d?.title}</span></nav>
+    <section class="cinema" id="dau-trang">
+      <div class="slides">
+        {images.length ? images.map((src,i)=><img src={src} alt={`Phối cảnh ${d?.title || 'dự án'} ${i+1}`} class:list={['slide',{'active':i===0}]} loading={i===0?'eager':'lazy'} />) : <div class="no-image">Hình ảnh dự án đang cập nhật</div>}
       </div>
-    </div>
+      <div class="cinema-shade"></div>
+      <div class="cinema-top"><span>CANHO<span class="gold">DANANG</span>.STORE</span><span>PROJECT EXPERIENCE / 01</span></div>
+      <div class="cinema-body"><span class="eyebrow">KHÁM PHÁ KHÔNG GIAN SỐNG</span><h1>{d?.title || 'Dự án bất động sản Đà Nẵng'}</h1><p>{d?.location || 'Đà Nẵng, Việt Nam'}</p><div class="cinema-actions"><a href={(navigationHref('overview') || '#lien-he')} class="primary">Khám phá dự án <span>↗</span></a><a href={(navigationHref('floorplan') || '#lien-he')} class="outline">Xem mặt bằng ↓</a></div></div>
+      <div class="cinema-bottom"><span>CUỘN ĐỂ KHÁM PHÁ ↓</span><div class="slide-controls"><button type="button" data-prev aria-label="Ảnh trước">←</button><span data-slide-count>01 / {String(Math.max(1,images.length)).padStart(2,'0')}</span><button type="button" data-next aria-label="Ảnh sau">→</button></div></div>
+    </section>
+    <nav class="section-nav" aria-label="Điều hướng nội dung dự án">{visibleNavigation.map(item=><a href={item.href}>{item.label}</a>)}</nav>
+    {contentLayers.length ? contentLayers.map((layer,i)=>((layer.type || layer.layout) === 'hai-van-zones' ? (haiVanZones.length ? haiVanZones.length > 0 && <section class="hai-van-zones section" id="phan-khu-hai-van-bay"><div class="section-heading"><div><span class="kicker">KHÁM PHÁ DỰ ÁN</span><h2>4 phân khu Vinhomes Hải Vân Bay</h2></div></div><div class="hai-van-zone-grid">{haiVanZones.map(zone=><article class="hai-van-zone-card"><div class="hai-van-zone-image">{zone.image ? <img src={zone.image} alt={`Phân khu ${zone.name} Vinhomes Hải Vân Bay`} loading="lazy"/> : <div class="hai-van-zone-placeholder">Đang cập nhật hình ảnh</div>}<span class="hai-van-zone-count">{zone.saleCount} sản phẩm đang bán</span></div><h3>{zone.name}</h3><p>{zone.description}</p></article>)}</div></section> : null) : <section class:list={['cms-layer','section','cms-layout-'+(layer.type || layer.layout || 'split'),{'cms-image-right':(layer.type || layer.layout || 'split')==='split' && (layer.imageSide==='right'||(layer.imageSide!=='left'&&i%2===1))}]} id={layerId(layer,i)}>
+      <div class="cms-layer-copy">{layer.heading && <h2 id={'cms-heading-'+i}>{layer.heading}</h2>}{layer.subheading && <h3>{layer.subheading}</h3>}{layer.text && <div class="cms-layer-text" set:html={layerMarkdown(layer.text)} />}</div>
+      {(['split','text-gallery','full-image','four-images'].includes((layer.type || layer.layout || 'split'))) && !!layer.images?.length && <div class:list={['cms-layer-images',{'cms-images-single':layer.images.length===1,'cms-images-double':layer.images.length===2}]} data-cms-gallery><div class="cms-image-track">{layer.images.map((item,j)=><figure class="cms-image-item"><button type="button" class="cms-zoom-button" data-full={item.image} aria-label={'Phóng to ảnh '+(j+1)}><img src={item.image} alt={item.imageAlt || item.captionTitle || layer.heading || 'Ảnh dự án'} loading="lazy"/></button>{(item.captionTitle || item.caption) && <figcaption>{item.captionTitle && <strong>{item.captionTitle}</strong>}{item.caption && <span>{item.caption}</span>}</figcaption>}</figure>)}</div>{layer.images.length>2 && <div class="cms-image-controls"><button type="button" data-cms-prev aria-label="Ảnh trước">←</button><button type="button" data-cms-next aria-label="Ảnh tiếp theo">→</button></div>}</div>}
+      {(layer.type || layer.layout || 'split')==='map-amenities' && <div class="location-layout"><div class="location-map">{safeMapUrl(layer.mapEmbed) ? <iframe src={safeMapUrl(layer.mapEmbed)} title={'Bản đồ '+(layer.heading||d?.title||'dự án')} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> : <div class="empty">Chưa có mã nhúng Google Maps hợp lệ.</div>}</div><div class="location-nearby"><h3>Tiện ích lân cận</h3>{layer.amenities?.length ? <ul>{layer.amenities.map(item=><li><span class="nearby-dot">✦</span><div><strong>{item.name}</strong>{item.note && <p>{item.note}</p>}</div><span class="nearby-distance">{[item.distance,item.travelTime].filter(Boolean).join(' · ')}</span></li>)}</ul> : <p class="nearby-empty">Chưa có tiện ích được nhập.</p>}</div></div>}
+      {(layer.type || layer.layout || 'split')==='tabs' && <div class="builder-tabs" data-builder-tabs><div class="builder-tab-buttons" role="tablist">{(layer.tabs||[]).map((tab,j)=><button type="button" role="tab" class:list={[{'is-active':j===0}]} data-builder-tab={j} aria-selected={j===0?'true':'false'}>{tab.title}</button>)}</div>{(layer.tabs||[]).map((tab,j)=><div class="builder-tab-panel" data-builder-panel={j} hidden={j!==0} role="tabpanel">{tab.image && <button type="button" data-full={tab.image} class="builder-tab-image"><img src={tab.image} alt={tab.imageAlt||tab.title} loading="lazy"/></button>}<div><h3>{tab.title}</h3>{tab.text && <div class="cms-layer-text" set:html={layerMarkdown(tab.text)} />}</div></div>)}</div>}
+    </section>)) : <>
+    <section class="intro section" id="tong-quan"><div class="intro-copy"><span class="kicker">01 / THE VISION</span><h2>{d?.introSlogan?.firstLine?.trim() || 'Một góc nhìn khác về'} <em>{d?.introSlogan?.highlight?.trim() || 'không gian sống.'}</em>{d?.introSlogan?.lastLine?.trim() && <span class="intro-slogan-last">{d.introSlogan.lastLine.trim()}</span>}</h2><p>{d?.description || 'Khám phá kiến trúc, vị trí và những giá trị nổi bật của dự án qua trải nghiệm hình ảnh trực quan.'}</p><a class="text-link" href="#lien-he">Nhận báo giá dự án ↗</a></div><div class="highlights">{highlights.map((value,i)=><div class="highlight"><span class="twinkle" style={`animation-delay:${i*0.2}s`} aria-hidden="true">★</span><span>{value}</span></div>)}</div></section>
+    <section class="visual-section" id="bo-suu-tap"><div class="visual-heading"><span class="kicker">02 / VISUAL JOURNEY</span><h2>Chạm vào từng góc nhìn</h2><p>Mỗi hình ảnh là một câu chuyện về dự án.</p></div><div class="gallery-track" data-gallery-track>{images.map((src,i)=><article class="story-card"><button type="button" class="story-image" data-full={src} aria-label={`Phóng to ảnh ${i+1}`}><img src={src} alt={`Góc nhìn ${i+1} dự án`} loading="lazy"/></button><h3>Góc nhìn {String(i+1).padStart(2,'0')}</h3><p>{d?.description || ''}</p></article>)}</div>{images.length>3 && <div class="gallery-actions"><button type="button" data-gallery-prev aria-label="Ảnh trước">←</button><span data-gallery-count>01 / {images.length}</span><button type="button" data-gallery-next aria-label="Ảnh tiếp theo">→</button></div>}</section>
+    <section class="plans section" id="mat-bang"><div class="section-heading"><div><span class="kicker">04 / FLOOR PLANS</span><h2>Khám phá mặt bằng</h2></div></div>{floorPlanItems.length ? <div class="plan-experience" data-plan-viewer><div class="plan-visual"><div class="plan-main"><img data-plan-main src={floorPlanItems[0].image} alt={floorPlanItems[0].imageAlt || floorPlanItems[0].title} loading="lazy"/><button class="plan-zoom" type="button" data-plan-zoom aria-label="Phóng to mặt bằng và nội dung mô tả" title="Phóng to"><svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></svg></button></div><div class="plan-thumbnails" role="tablist" aria-label="Chọn mặt bằng">{floorPlanItems.map((item,i)=><button type="button" class:list={['plan-tab',{'is-active':i===0}]} role="tab" aria-selected={i===0?'true':'false'} tabindex={i===0?0:-1} aria-label={item.title} data-plan-index={i} data-plan-src={item.image} data-plan-title={item.title} data-plan-alt={item.imageAlt || item.title} data-plan-description={item.description || ''}><img src={item.image} alt="" loading="lazy"/></button>)}</div></div><div class="plan-description" data-plan-description role="tabpanel"><span class="kicker">MẶT BẰNG DỰ ÁN</span><h3 data-plan-title>{floorPlanItems[0].title}</h3><p data-plan-text>{floorPlanItems[0].description || 'Đang cập nhật mô tả mặt bằng.'}</p><span class="plan-position" data-plan-position>01 / {String(floorPlanItems.length).padStart(2,'0')}</span></div></div> : <div class="empty">Chưa có ảnh mặt bằng trong CMS. Khi anh tải lên, ảnh sẽ tự xuất hiện tại đây.</div>}</section>
+    <section class="location-section section" id="vi-tri"><div class="section-heading"><div><span class="kicker">VỊ TRÍ & KẾT NỐI</span><h2>Vị trí dự án</h2></div></div><div class="location-layout"><div class="location-map">{mapEmbedUrl ? <iframe src={mapEmbedUrl} title={'Bản đồ vị trí '+(d?.title || 'dự án')} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> : <div class="empty">Chưa có mã nhúng Google Maps hợp lệ trong CMS.</div>}</div><div class="location-nearby"><h3>Liên kết tiện ích</h3>{nearbyAmenities.length ? <ul>{nearbyAmenities.map(item=><li><span class="nearby-dot" aria-hidden="true">✦</span><div><strong>{item.name}</strong>{item.note && <p>{item.note}</p>}</div>{(item.distance || item.travelTime) && <span class="nearby-distance">{[item.distance,item.travelTime].filter(Boolean).join(' · ')}</span>}</li>)}</ul> : <p class="nearby-empty">Anh có thể thêm các địa điểm, khoảng cách và thời gian di chuyển tại CMS dự án.</p>}</div></div></section>
+    </>}
+    {haiVanZones.length > 0 && !(d?.contentLayers || []).some(layer=>layer.type === 'hai-van-zones') && <section class="hai-van-zones section" id="phan-khu-hai-van-bay"><div class="section-heading"><div><span class="kicker">KHÁM PHÁ DỰ ÁN</span><h2>4 phân khu Vinhomes Hải Vân Bay</h2></div></div><div class="hai-van-zone-grid">{haiVanZones.map(zone=><article class="hai-van-zone-card"><div class="hai-van-zone-image">{zone.image ? <img src={zone.image} alt={`Phân khu ${zone.name} Vinhomes Hải Vân Bay`} loading="lazy"/> : <div class="hai-van-zone-placeholder">Đang cập nhật hình ảnh</div>}<span class="hai-van-zone-count">{zone.saleCount} sản phẩm đang bán</span></div><h3>{zone.name}</h3><p>{zone.description}</p></article>)}</div></section>}
+    <section class="lead-and-slogan section" id="lien-he"><div class="lead-form"><h2>NHẬN BÁO GIÁ QUỸ CĂN VIP</h2><form action="https://docs.google.com/forms/d/e/1FAIpQLScpdMvW3g0dfHdc4sx_k9Mps05ObD57aOzy1ugbEY0UBBENqQ/formResponse" method="POST" target="preview-lead-target" data-lead-form><label for="preview-name">Họ và tên</label><input id="preview-name" name="entry.1817354620" placeholder="Họ và tên" required/><label for="preview-phone">Số điện thoại</label><input id="preview-phone" name="entry.996658541" type="tel" inputmode="tel" pattern="[0-9+(). -]{9,16}" placeholder="Số điện thoại" required/><fieldset><legend>Quý khách đang quan tâm tới loại hình nào?</legend>{['Studio','1PN+1','2PN','Loại hình khác'].map(type=><label><input type="radio" name="entry.2014010319" value={type} required/>{type}</label>)}</fieldset><label class="consent"><input type="checkbox" required/> Tôi đồng ý để Căn Hộ Đà Nẵng liên hệ tư vấn.</label><button type="submit">NHẬN BÁO GIÁ DỰ ÁN</button><small>Thông tin được sử dụng để liên hệ và xử lý yêu cầu tư vấn.</small><p class="form-status" role="status" aria-live="polite" hidden>Yêu cầu đã được gửi. Vui lòng chờ phản hồi từ tư vấn viên.</p></form><iframe name="preview-lead-target" title="Kết quả gửi form" hidden></iframe></div><div class="slogan"><span class="kicker">LIÊN HỆ TƯ VẤN</span><h2>Bất động sản Đà Nẵng</h2><p class="contact-number">0869 437 415</p><div class="cta-buttons"><a href="tel:0869437415">Gọi tư vấn ↗</a><a href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Nhắn Zalo ↗</a></div><blockquote>“Sự im lặng của anh chị, là thất bại của em.<br/>Hãy cảm thấy thoải mái khi đặt câu hỏi cho em.<br/>Quá trình tư vấn sẽ tạo nên kinh nghiệm của em.”</blockquote></div></section>
+    {listingGroups.length ? listingGroups.map(group=><section class="homes section product-group" id={group.key==='ban'?'can-ho-dang-ban':'can-ho-cho-thue'}><div class="section-heading"><div><span class="kicker">{group.key==='ban'?'SẢN PHẨM ĐANG BÁN':'SẢN PHẨM CHO THUÊ'}</span><h2>{project?.id==='vinhomes-hai-van-bay' ? (group.key==='ban'?'Bất động sản đang bán':'Bất động sản cho thuê') : group.title} tại {d?.title}</h2></div></div><div class="home-grid" data-listing-grid>{group.items.map((item,i)=><a class="home-card" href={item.href} data-listing-card hidden={i>=6}><div class="home-image">{item.data.image && <img src={item.data.image} alt={item.data.title} loading="lazy"/>}<span class="feature-label">{item.kind === 'nha-dat' ? propertyTypeLabels[String(item.data.projectPropertyType || '')] || 'Sản phẩm Hải Vân Bay' : ('highlightLabel' in item.data ? String(item.data.highlightLabel || '') : '') || (group.key==='ban' ? 'Đang bán' : 'Cho thuê')}</span></div><div class="home-info"><h3>{item.data.title}</h3>{project.id === 'vinhomes-hai-van-bay' && item.data.subdivision && <p class="property-subdivision">Phân khu {subdivisionLabels[item.data.subdivision]}</p>}<p class="seo-excerpt">{item.data.description}</p><div class="price-meta"><strong>{displayPrice(item.data.price)}</strong><span>{item.data.area}{/m²|m2/i.test(String(item.data.area)) ? '' : ' m²'}</span><span>{'bedrooms' in item.data ? item.data.bedrooms || '—' : '—'} PN</span></div>{group.key === 'ban' && unitPrice(item) && <p class="unit-price">{unitPrice(item)}</p>}<span class="updated">{item.data.updatedAt ? 'Cập nhật: ' : 'Đăng: '}{dateLabel(item.data.updatedAt || item.data.date) || 'Đang cập nhật'}</span></div></a>)}</div>{group.items.length>6 && <button class="listing-more" type="button" data-listing-more>Xem thêm sản phẩm</button>}</section>) : null}
+        {relatedNews.length > 0 && <section class="news-section section" id="tin-tuc-du-an"><div class="section-heading"><div><span class="kicker">TIN TỨC DỰ ÁN</span><h2>Tin tức về {d?.title}</h2></div></div><div class="news-carousel" data-news-carousel><div class="news-track" data-news-track>{relatedNews.map(item=><a class="news-card" href={`/tin-tuc/${item.id}/`}>{item.data.image ? <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy"/> : <div class="news-image-placeholder" aria-hidden="true">TIN TỨC</div>}<div class="news-card-body"><span class="news-date">{dateLabel(item.data.date)}</span><h3>{item.data.title}</h3><span class="news-read">Đọc bài viết <span aria-hidden="true">↗</span></span></div></a>)}</div>{relatedNews.length>3 && <div class="news-controls"><button type="button" data-news-prev aria-label="Xem tin tức trước">←</button><span class="news-counter" data-news-counter>01 / {String(relatedNews.length).padStart(2,'0')}</span><button type="button" data-news-next aria-label="Xem tin tức tiếp theo">→</button></div>}</div></section>}
+    <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Xem ảnh lớn"><button type="button" data-close aria-label="Đóng ảnh">✕</button><div class="lightbox-content"><img alt="Ảnh dự án phóng to"/><div class="lightbox-description" data-lightbox-description hidden><h3 data-lightbox-title></h3><p data-lightbox-text></p></div></div></div>
   </main>
   <script is:inline>
     (() => {
-      const leadDialog = document.getElementById('project-lead-dialog');
-      const leadForm = document.getElementById('project-lead-form');
-      const leadFrame = document.getElementById('project-lead-frame');
-      const leadStatus = document.getElementById('project-lead-status');
-      const leadSubmit = leadForm?.querySelector('button[type="submit"]');
-      let leadSending = false;
-      let leadSubmitted = false;
-      document.querySelectorAll('[data-open-lead-popup]').forEach(button => button.addEventListener('click', () => {
-        if (leadDialog?.showModal) leadDialog.showModal();
-      }));
-      leadDialog?.querySelector('[data-close-lead-popup]')?.addEventListener('click', () => leadDialog.close());
-      leadDialog?.addEventListener('click', event => {
-        if (event.target === leadDialog) leadDialog.close();
-      });
-      leadForm?.addEventListener('submit', event => {
-        const phone = leadForm.querySelector('#lead-phone')?.value.replace(/[^0-9]/g, '') || '';
-        if (phone.length < 9 || phone.length > 11) {
-          event.preventDefault();
-          leadStatus.textContent = 'Vui lòng nhập số điện thoại từ 9 đến 11 chữ số.';
-          return;
-        }
-        leadSending = true;
-        leadSubmitted = true;
-        leadStatus.textContent = 'Đang gửi thông tin...';
-        if (leadSubmit) leadSubmit.disabled = true;
-        window.setTimeout(() => {
-          if (leadSending) {
-            leadSending = false;
-            if (leadSubmit) leadSubmit.disabled = false;
-            leadStatus.textContent = 'Chưa xác nhận được kết quả gửi. Anh/chị vui lòng thử lại hoặc liên hệ qua Zalo.';
-          }
-        }, 12000);
-      });
-      leadFrame?.addEventListener('load', () => {
-        if (!leadSubmitted || !leadSending) return;
-        leadSending = false;
-        if (leadSubmit) leadSubmit.disabled = false;
-        leadStatus.textContent = 'Cảm ơn anh/chị! Chúng tôi đã tiếp nhận yêu cầu tư vấn và sẽ liên hệ sớm.';
-        leadForm.reset();
-        window.setTimeout(() => {
-          if (leadDialog?.open) leadDialog.close();
-          leadStatus.textContent = '';
-          leadSubmitted = false;
-        }, 2000);
-      });
-      document.querySelectorAll('[data-project-slideshow]').forEach(slideshow => {
-        const slides = Array.from(slideshow.querySelectorAll('.project-hero-slide'));
-        if (slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        let active = 0;
-        window.setInterval(() => {
-          slides[active].classList.remove('active');
-          active = (active + 1) % slides.length;
-          slides[active].classList.add('active');
-        }, 5000);
-      });
-      const content = document.getElementById('project-detail-content');
-      const button = document.getElementById('project-read-more');
-      if (content && button && content.scrollHeight > 344) {
-      const collapsedHeight = 320;
-      content.classList.add('is-collapsed');
-      button.hidden = false;
-      button.addEventListener('click', () => {
-        const expanded = button.getAttribute('aria-expanded') === 'true';
-        button.setAttribute('aria-expanded', String(!expanded));
-        content.classList.toggle('is-collapsed', expanded);
-        button.querySelector('.project-read-more-label').textContent = expanded ? 'Xem thêm' : 'Thu gọn';
-        if (expanded) content.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-      });
-      }
-      const floorPlanDialog = document.querySelector('.floor-plan-dialog');
-      if (floorPlanDialog) {
-        const fullImage = floorPlanDialog.querySelector('.floor-plan-full-image');
-        document.querySelectorAll('.floor-plan-open').forEach(button => button.addEventListener('click', () => {
-          fullImage.src = button.dataset.floorPlanSrc;
-          fullImage.alt = button.dataset.floorPlanAlt || 'Mặt bằng dự án';
-          floorPlanDialog.showModal();
-        }));
-        floorPlanDialog.querySelector('.floor-plan-close').addEventListener('click', () => floorPlanDialog.close());
-        floorPlanDialog.addEventListener('click', event => { if (event.target === floorPlanDialog) floorPlanDialog.close(); });
-        floorPlanDialog.addEventListener('close', () => { fullImage.removeAttribute('src'); });
-      }
-      const haiVanCards = document.querySelectorAll('#hai-van-cards .hai-van-card');
-      const zoneFilter = document.getElementById('hai-van-zone-filter');
-      const typeFilter = document.getElementById('hai-van-type-filter');
-      if (zoneFilter && typeFilter) {
-        const more = document.getElementById('hai-van-more');
-        const count = document.getElementById('hai-van-result-count');
-        const empty = document.getElementById('hai-van-no-results');
-        let limit = window.matchMedia('(max-width: 767px)').matches ? 3 : 6;
-        const update = () => {
-          const matched = Array.from(haiVanCards).filter(card =>
-            (!zoneFilter.value || card.dataset.zone === zoneFilter.value) &&
-            (!typeFilter.value || card.dataset.type === typeFilter.value));
-          haiVanCards.forEach(card => { card.hidden = true; });
-          matched.slice(0, limit).forEach(card => { card.hidden = false; });
-          count.textContent = matched.length + ' sản phẩm phù hợp';
-          empty.hidden = matched.length !== 0;
-          more.hidden = matched.length <= limit;
-          document.querySelectorAll('[data-zone-choice]').forEach(button => {
-            button.setAttribute('aria-pressed', String(button.dataset.zoneChoice === zoneFilter.value));
-          });
-        };
-        zoneFilter.addEventListener('change', () => { limit = 6; update(); });
-        typeFilter.addEventListener('change', () => { limit = 6; update(); });
-        document.querySelectorAll('[data-zone-choice]').forEach(button => button.addEventListener('click', () => {
-          zoneFilter.value = zoneFilter.value === button.dataset.zoneChoice ? '' : button.dataset.zoneChoice;
-          limit = 6; update();
-          document.getElementById('hai-van-result-count').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }));
-        document.getElementById('hai-van-clear-filter').addEventListener('click', () => {
-          zoneFilter.value = ''; typeFilter.value = ''; limit = 6; update();
+      document.querySelectorAll('.product-group').forEach(group=>{
+        const cards=[...group.querySelectorAll('[data-listing-card]')];
+        const button=group.querySelector('[data-listing-more]');
+        if(!button)return;
+        let visible=6;
+        button.addEventListener('click',()=>{
+          visible+=6;
+          cards.forEach((card,i)=>{card.hidden=i>=visible;});
+          if(visible>=cards.length)button.hidden=true;
         });
-        more.addEventListener('click', () => { limit += 6; update(); });
-        update();
-      }
-      document.querySelectorAll('[data-property-list]').forEach(section => {
-        const cards = Array.from(section.querySelectorAll('.property-card'));
-        const more = section.querySelector('.property-more');
-        if (!more) return;
-        let visible = window.matchMedia('(max-width: 767px)').matches ? 3 : 6;
-        const render = () => {
-          cards.forEach((card, index) => { card.hidden = index >= visible; });
-          more.hidden = visible >= cards.length;
-        };
-        more.addEventListener('click', () => { visible += 6; render(); });
-        render();
       });
+      document.querySelectorAll('[data-builder-tabs]').forEach(root=>{
+        const buttons=[...root.querySelectorAll('[data-builder-tab]')],panels=[...root.querySelectorAll('[data-builder-panel]')];
+        buttons.forEach((btn,i)=>btn.addEventListener('click',()=>{
+          buttons.forEach((b,j)=>{b.classList.toggle('is-active',i===j);b.setAttribute('aria-selected',String(i===j))});
+          panels.forEach((p,j)=>p.hidden=i!==j);
+        }));
+      });
+      const newsCarousel=document.querySelector('[data-news-carousel]');
+      if(newsCarousel){
+        const track=newsCarousel.querySelector('[data-news-track]');
+        const cards=[...newsCarousel.querySelectorAll('.news-card')];
+        const counter=newsCarousel.querySelector('[data-news-counter]');
+        const visible=()=>window.matchMedia('(max-width:600px)').matches?1:window.matchMedia('(max-width:900px)').matches?2:3;
+        const position=()=>{if(!track||!cards.length)return 0;const step=cards.length>1?cards[1].offsetLeft-cards[0].offsetLeft:1;return Math.max(0,Math.min(cards.length-visible(),Math.round(track.scrollLeft/Math.max(1,step))))};
+        const update=()=>{if(counter)counter.textContent=String(position()+1).padStart(2,'0')+' / '+String(cards.length).padStart(2,'0')};
+        const move=delta=>{if(!track||!cards.length)return;const target=Math.max(0,Math.min(cards.length-visible(),position()+delta));track.scrollTo({left:cards[target].offsetLeft-cards[0].offsetLeft,behavior:'smooth'});setTimeout(update,350)};
+        newsCarousel.querySelector('[data-news-prev]')?.addEventListener('click',()=>move(-1));
+        newsCarousel.querySelector('[data-news-next]')?.addEventListener('click',()=>move(1));
+        track?.addEventListener('scroll',update,{passive:true});
+        window.addEventListener('resize',update);
+      }
+      const slides=[...document.querySelectorAll('.experience .slide')];let active=0;
+      const counter=document.querySelector('[data-slide-count]');
+      const show=n=>{if(!slides.length)return;active=(n+slides.length)%slides.length;slides.forEach((el,i)=>el.classList.toggle('active',i===active));if(counter)counter.textContent=String(active+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0')};
+      document.querySelector('[data-prev]')?.addEventListener('click',()=>show(active-1));
+      document.querySelector('[data-next]')?.addEventListener('click',()=>show(active+1));
+      const modal=document.querySelector('[data-lightbox]');const big=modal?.querySelector('img');
+      document.querySelectorAll('[data-full]').forEach(b=>b.addEventListener('click',()=>{if(!modal||!big)return;big.src=b.dataset.full;modal.classList.remove('is-plan');const detail=modal.querySelector('[data-lightbox-description]');if(detail)detail.hidden=true;modal.hidden=false;document.body.style.overflow='hidden'}));
+      const close=()=>{if(modal){modal.hidden=true;document.body.style.overflow=''}};
+      modal?.querySelector('[data-close]')?.addEventListener('click',close);
+      modal?.addEventListener('click',e=>{if(e.target===modal)close()});
+      document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+      const planViewer=document.querySelector('[data-plan-viewer]');
+      if(planViewer){
+        const tabs=[...planViewer.querySelectorAll('[data-plan-index]')];
+        const planImg=planViewer.querySelector('[data-plan-main]');
+        const planTitle=planViewer.querySelector('[data-plan-title]');
+        const planPosition=planViewer.querySelector('[data-plan-position]');
+        const planText=planViewer.querySelector('[data-plan-text]');
+        const defaultText='Đang cập nhật mô tả mặt bằng.';
+        let selectedPlan=0;
+        const choosePlan=index=>{
+          selectedPlan=(index+tabs.length)%tabs.length;
+          const tab=tabs[selectedPlan];if(!tab)return;
+          if(planImg){planImg.src=tab.dataset.planSrc;planImg.alt=tab.dataset.planAlt || tab.dataset.planTitle;}
+          if(planTitle)planTitle.textContent=tab.dataset.planTitle;
+          if(planPosition)planPosition.textContent=String(selectedPlan+1).padStart(2,'0')+' / '+String(tabs.length).padStart(2,'0');
+          if(planText)planText.textContent=tab.dataset.planDescription || defaultText;
+          tabs.forEach((t,i)=>{t.classList.toggle('is-active',i===selectedPlan);t.setAttribute('aria-selected',String(i===selectedPlan));t.tabIndex=i===selectedPlan?0:-1});
+        };
+        tabs.forEach((tab,i)=>{tab.addEventListener('click',()=>choosePlan(i));tab.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const next=(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;choosePlan(next);tabs[next].focus()}})});
+        planViewer.querySelector('[data-plan-zoom]')?.addEventListener('click',()=>{
+          const selected=tabs[selectedPlan];if(!modal||!big||!selected)return;
+          big.src=selected.dataset.planSrc;big.alt=selected.dataset.planTitle;
+          const detail=modal.querySelector('[data-lightbox-description]');
+          if(detail){detail.hidden=false;detail.querySelector('[data-lightbox-title]').textContent=selected.dataset.planTitle;detail.querySelector('[data-lightbox-text]').textContent=selected.dataset.planDescription || defaultText;}
+          modal.classList.add('is-plan');modal.hidden=false;document.body.style.overflow='hidden';
+        });
+      }
+      document.querySelectorAll('[data-cms-gallery]').forEach(gallery=>{
+        const track=gallery.querySelector('.cms-image-track');const items=[...gallery.querySelectorAll('.cms-image-item')];let index=0;
+        const move=delta=>{if(!track||!items.length)return;index=(index+delta+items.length)%items.length;track.scrollTo({left:items[index].offsetLeft-items[0].offsetLeft,behavior:'smooth'})};
+        gallery.querySelector('[data-cms-prev]')?.addEventListener('click',()=>move(-1));
+        gallery.querySelector('[data-cms-next]')?.addEventListener('click',()=>move(1));
+      });
+      const track=document.querySelector('[data-gallery-track]');const cards=track?[...track.children]:[];let galleryIndex=0;
+      const moveGallery=delta=>{if(!track||!cards.length)return;galleryIndex=(galleryIndex+delta+cards.length)%cards.length;track.scrollTo({left:cards[galleryIndex].offsetLeft-track.offsetLeft,behavior:'smooth'});const count=document.querySelector('[data-gallery-count]');if(count)count.textContent=String(galleryIndex+1).padStart(2,'0')+' / '+cards.length};
+      document.querySelector('[data-gallery-prev]')?.addEventListener('click',()=>moveGallery(-1));
+      document.querySelector('[data-gallery-next]')?.addEventListener('click',()=>moveGallery(1));
+      let submitted=false;const form=document.querySelector('[data-lead-form]');form?.addEventListener('submit',()=>{submitted=true});
+      document.querySelector('iframe[name="preview-lead-target"]')?.addEventListener('load',()=>{if(submitted){const status=form?.querySelector('.form-status');if(status)status.hidden=false;submitted=false}});
     })();
   </script>
   <style>
-    .project-read-more[hidden]{display:none!important}
-    .project-page{background:#f5f8fb;color:#19334d;padding:28px 0 64px}
-    .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
-    .breadcrumbs{display:flex;flex-wrap:wrap;gap:9px;font-size:13px;color:#68798a;margin-bottom:28px}
-    .breadcrumbs a{color:#1a5d8c;text-decoration:none}
-    .breadcrumbs a:hover{text-decoration:underline}
-    button.hero-quote{border:0;cursor:pointer;font-family:inherit}
-    .project-lead-dialog{border:0;border-radius:18px;padding:0;width:min(94vw,470px);max-height:92vh;box-shadow:0 22px 90px #071b3280;color:#19334d}
-    .project-lead-dialog::backdrop{background:rgba(7,23,40,.68)}
-    .project-lead-inner{position:relative;padding:clamp(22px,4vw,34px)}
-    .project-lead-inner h2{font-size:25px;line-height:1.3;margin:10px 0}
-    .project-lead-inner>p{font-size:14px;line-height:1.7;color:#526a7d;margin:0 0 20px}
-    .project-lead-close{position:absolute;top:12px;right:16px;background:none;border:0;font-size:30px;color:#60768a;cursor:pointer}
-    #project-lead-form{display:flex;flex-direction:column;gap:8px}
-    #project-lead-form label{font-size:14px;font-weight:700;margin-top:6px}
-    #project-lead-form label span{color:#dc2626}
-    #project-lead-form input,#project-lead-form textarea{width:100%;box-sizing:border-box;border:1px solid #d7e1e9;border-radius:9px;padding:12px;font:inherit;font-size:16px;color:#19334d;background:#fff}
-    #project-lead-form input:focus,#project-lead-form textarea:focus{outline:2px solid #6ba9cc;outline-offset:1px}
-    .project-lead-consent{font-size:12px;color:#708497;line-height:1.5;margin:6px 0}
-    .project-lead-submit{border:0;background:#17618c;color:#fff;border-radius:9px;padding:14px 16px;font:inherit;font-weight:750;cursor:pointer}
-    .project-lead-submit:disabled{opacity:.6;cursor:wait}
-    .project-lead-status{font-size:13px;line-height:1.5;margin:4px 0 0;color:#31566d}
-    .project-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#fff;border:1px solid #e5edf3;border-radius:16px;overflow:hidden;min-height:440px}
-    .project-hero-info{padding:clamp(24px,3.5vw,42px);display:flex;flex-direction:column;align-items:flex-start}
-    .project-hero-info h1{font-size:clamp(27px,3vw,38px);line-height:1.2;margin:12px 0 24px;letter-spacing:-.025em}
-    .project-hero-facts{display:grid;gap:15px;margin:0 0 26px;width:100%}
-    .project-hero-facts>div{display:grid;grid-template-columns:145px minmax(0,1fr);gap:10px;border-bottom:1px solid #edf1f5;padding-bottom:10px}
-    .project-hero-facts dt{font-weight:750;color:#203c56;font-size:14px}
-    .project-hero-facts dd{margin:0;font-size:14px;line-height:1.6;color:#435b70;overflow-wrap:anywhere}
-    .hero-quote{display:inline-flex;align-items:center;gap:10px;background:#17618c;color:#fff;text-decoration:none;border-radius:9px;padding:13px 18px;font-size:14px;font-weight:750;margin-top:auto}
-    .project-hero-media{position:relative;min-height:440px;background:#e8eef3}
-    .project-hero-slides{position:absolute;inset:0;overflow:hidden}
-    .project-hero-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity .7s ease}
-    .project-hero-slide.active{opacity:1}
-    .project-hero-no-image{height:100%;display:grid;place-items:center;color:#61788c;padding:20px}
-    .project-hero-contact{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;background:#fff;border:1px solid #e5edf3;border-radius:14px;padding:18px 24px;overflow:hidden}
-    .project-hero-contact-copy strong{font-size:18px;color:#19334d}
-    .project-hero-contact-copy p{font-size:14px;color:#63798c;margin:8px 0 16px}
-    .project-hero-contact-actions{display:flex;gap:9px;flex-wrap:wrap}
-    .project-hero-contact-actions a{background:#17618c;color:#fff;border-radius:8px;padding:11px 15px;text-decoration:none;font-weight:750;font-size:14px}
-    .project-hero-contact-actions a:nth-child(2){background:#167b55}
-    .project-hero-advisor{width:100px;height:100px;border-radius:50%;object-fit:cover;flex:none;border:3px solid #e7eef4}
-    @media(max-width:767px){.project-hero-info .hero-quote{align-self:center;justify-content:center;text-align:center;max-width:100%}.project-hero-contact-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:100%;gap:8px}.project-hero-contact-actions a{display:flex;align-items:center;justify-content:center;text-align:center;min-width:0;padding:11px 6px;font-size:12px}.project-hero-contact-actions a:nth-child(n+3){grid-column:1/-1}.project-hero-contact-copy{min-width:0;flex:1}.project-hero{grid-template-columns:1fr}.project-hero-info{padding:22px}.project-hero-facts>div{grid-template-columns:125px minmax(0,1fr)}.project-hero-media{min-height:290px}.project-hero-contact{padding:16px}.project-hero-advisor{width:68px;height:68px}}
-    @media(max-width:440px){.project-hero-contact{align-items:flex-start}.project-hero-advisor{width:55px;height:55px}.project-hero-facts>div{grid-template-columns:115px minmax(0,1fr)}}
-    .heading{width:100%;max-width:none;margin:0 0 26px}
-    .eyebrow{display:inline-block;font-size:12px;font-weight:750;letter-spacing:.1em;color:#956a2c}
-    .heading h1{font-size:clamp(29px,3.5vw,42px);line-height:1.22;letter-spacing:-.025em;margin:10px 0 14px;font-weight:750}
-    .location{color:#60758a;font-size:15px;margin:0 0 16px;line-height:1.6}
-    .intro{font-size:clamp(16px,1.65vw,18px);line-height:1.8;color:#40556b;margin:0 0 14px;width:100%;max-width:none;text-align:justify;text-justify:inter-word;hyphens:auto}
-    .developer{font-size:14px;color:#586e82;margin:0}
-    .developer strong{color:#213e58}
-    .cover{display:block;width:100%;max-height:510px;aspect-ratio:16/8.5;object-fit:cover;border-radius:14px}
-    .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
-    .gallery img{display:block;width:100%;height:190px;object-fit:cover;border-radius:10px}
-    .description,.listings{background:#fff;border:1px solid #e8eef3;border-radius:14px;padding:clamp(20px,3vw,34px);margin-top:24px;overflow-wrap:anywhere}
-    .article-content{font-size:16px;line-height:1.85;color:#354a5d}
-    .description h2{font-size:clamp(20px,2.1vw,24px);margin:0 0 20px}
-    .spec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0}
-    .spec-item{border:1px solid #e8eef3;border-radius:10px;padding:12px 14px}
-    .spec-item dt{font-size:13px;color:#62788b;margin-bottom:5px}
-    .spec-item dd{font-size:15px;font-weight:650;margin:0}
-    .floor-plan-gallery{display:grid;grid-template-columns:1fr;gap:14px}
-    .floor-plan-open{display:block;width:100%;padding:0;border:0;background:#eef3f7;border-radius:10px;overflow:hidden;position:relative;cursor:zoom-in;text-align:left}
-    .floor-plan-open img{display:block;width:100%;height:clamp(260px,40vw,470px);object-fit:cover;object-position:center}
-    .floor-plan-zoom{position:absolute;right:14px;bottom:14px;background:rgba(16,42,64,.9);color:white;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:700}
-    .floor-plan-dialog{border:0;border-radius:12px;padding:52px 12px 12px;background:#fff;max-width:96vw;max-height:96vh;box-shadow:0 20px 70px #0006}
-    .floor-plan-dialog::backdrop{background:rgba(4,18,31,.88)}
-    .floor-plan-full-image{display:block;max-width:calc(96vw - 24px);max-height:calc(96vh - 70px);width:auto;height:auto;object-fit:contain;margin:auto}
-    .floor-plan-close{position:absolute;top:6px;right:12px;border:0;background:transparent;font-size:34px;line-height:1;cursor:pointer;color:#19334d}
-    @media(max-width:767px){.floor-plan-open img{height:260px}.floor-plan-zoom{right:10px;bottom:10px;font-size:12px;padding:8px 10px}}
-    .floor-plan-gallery img,.progress-item img{width:100%;height:auto;border-radius:10px}
-    .section-copy,.progress-item p{line-height:1.8}
-    .project-markdown :global(p){margin:0 0 12px;white-space:normal}
-    .project-markdown :global(a){color:#17628e;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
-    .progress-item{margin-top:24px}
-    .progress-item h3{font-size:18px}
-    .progress-item iframe,.progress-item video{width:100%;aspect-ratio:16/9;border:0;border-radius:10px}
-    .hai-van-zones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 30px}
-    .hai-van-zone{border:1px solid #dbe5ed;background:#f6f9fc;border-radius:12px;min-height:100px;padding:16px 10px;display:flex;flex-direction:column;justify-content:center;gap:8px;cursor:pointer;color:#19334d}
-    .hai-van-zone.has-image{padding:0;overflow:hidden;position:relative;min-height:170px;background:#193d5a;color:#fff}
-    .hai-van-zone-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .25s}
-    .hai-van-zone.has-image:hover .hai-van-zone-image{transform:scale(1.04)}
-    .hai-van-zone.has-image::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,30,50,.85),rgba(8,30,50,.06) 75%);pointer-events:none}
-    .hai-van-zone-info{display:flex;flex-direction:column;gap:8px;position:relative;z-index:1}
-    .hai-van-zone.has-image .hai-van-zone-info{margin-top:auto;width:100%;padding:15px;text-align:left}
-    .hai-van-zone.has-image .hai-van-zone-name{color:#fff}
-    .hai-van-zone.has-image .hai-van-zone-count{color:#e3ebf3}
-    .hai-van-zone.has-image[aria-pressed="true"]{outline:3px solid #17679a;outline-offset:2px}
-    .hai-van-zone[aria-pressed="true"]{border-color:#17679a;background:#eaf4fa}
-    .hai-van-zone-name{font-weight:750;font-size:17px}
-    .hai-van-zone-count{font-size:12px;color:#61788c}
-    .hai-van-list-title{margin-top:4px!important}
-    .hai-van-filters{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
-    .hai-van-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;flex:1;min-width:180px}
-    .hai-van-filters select{width:100%;padding:11px;border:1px solid #d4e0e9;border-radius:8px;background:#fff;color:#19334d;font:inherit}
-    .hai-van-reset{border:1px solid #d4e0e9;border-radius:8px;background:#fff;padding:11px 14px;cursor:pointer}
-    .hai-van-result{font-size:13px;color:#62788b;margin:0 0 14px}
-    .hai-van-image{position:relative}
-    .hai-van-badges{position:absolute;top:10px;left:10px;right:10px;display:flex;flex-wrap:wrap;gap:5px}
-    .hai-van-badge{display:inline-block;padding:5px 8px;border-radius:5px;background:#fff;color:#183c55;font-size:11px;font-weight:750;box-shadow:0 1px 5px #0002}
-    .hai-van-badge.type{background:#193d5a;color:#fff}
-    .hai-van-code{font-size:12px;color:#62788b;margin:0}
-    #hai-van-no-results[hidden],#hai-van-more[hidden]{display:none!important}
-    @media(max-width:767px){.hai-van-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.hai-van-zone{min-height:80px}}
-    .property-card[hidden]{display:none!important}
-    .article-content.is-collapsed{max-height:320px;overflow:hidden;position:relative}
-    .article-content.is-collapsed::after{content:"";position:absolute;left:0;right:0;bottom:0;height:65px;background:linear-gradient(transparent,#fff);pointer-events:none}
-    .project-read-more[hidden]{display:none!important}
-    .project-read-more{display:flex;align-items:center;justify-content:center;gap:5px;margin:15px auto 0;padding:7px 10px;border:0;background:transparent;color:#274f6d;font:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:color .2s}
-    .project-read-more-icon{opacity:0;transform:translateY(-3px);transition:opacity .2s,transform .2s;flex-shrink:0}
-    .project-read-more:hover,.project-read-more:focus-visible{color:#dc2626}
-    .project-read-more:hover .project-read-more-icon,.project-read-more:focus-visible .project-read-more-icon{opacity:1;transform:translateY(0)}
-    .project-read-more[aria-expanded="true"] .project-read-more-icon{transform:rotate(180deg) translateY(3px)}
-    .project-read-more[aria-expanded="true"]:hover .project-read-more-icon,.project-read-more[aria-expanded="true"]:focus-visible .project-read-more-icon{transform:rotate(180deg)}
-    .project-read-more:focus-visible{outline:2px solid #dc2626;outline-offset:3px;border-radius:4px}
-    .article-content :global(h1){display:none}
-    .article-content :global(h1),.article-content :global(h2){font-size:clamp(21px,2.2vw,25px);font-weight:750;line-height:1.4;color:#19334d;margin:30px 0 13px;letter-spacing:-.012em}
-    .article-content :global(h3){font-size:19px;font-weight:700;line-height:1.5;color:#234561;margin:24px 0 10px}
-    .article-content :global(h4){font-size:17px;font-weight:700;margin:20px 0 8px}
-    .article-content :global(p){margin:0 0 16px;text-align:justify;text-justify:inter-word;hyphens:auto}
-    .article-content :global(ul),.article-content :global(ol){margin:0 0 18px;padding-left:24px}
-    .article-content :global(li){margin:5px 0;text-align:justify;text-justify:inter-word}
-    .article-content :global(a){color:#17679a;text-underline-offset:3px}
-    .article-content :global(img){display:block;max-width:100%;height:auto;border-radius:10px;margin:18px auto}
-    .article-content :global(blockquote){border-left:3px solid #c9a26a;padding:10px 18px;margin:20px 0;background:#f8fafc}
-    .article-content :global(table){display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:20px 0}
-    .article-content :global(th),.article-content :global(td){border:1px solid #e2e8ef;padding:10px 12px;text-align:left}
-    .article-content :global(th){background:#f4f7fa}
-    .listings h2{font-size:clamp(20px,2.1vw,24px);line-height:1.4;margin:0 0 20px;color:#19334d}
-    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-    .card{display:block;text-decoration:none;color:inherit;border:1px solid #e0e7ed;border-radius:12px;overflow:hidden;transition:box-shadow .2s,transform .2s}
-    .card:hover{box-shadow:0 8px 22px rgba(18,49,73,.1);transform:translateY(-2px)}
-    .card img{display:block;width:100%;height:180px;object-fit:cover}
-    .card-body{padding:15px}
-    .card h3{font-size:16px;line-height:1.5;margin:0 0 9px;font-weight:700}
-    .card-info-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .project-markdown :global(img){display:block;width:auto;max-width:100%;height:auto;margin:16px auto;border-radius:10px;object-fit:contain}
-    .project-markdown :global(p){line-height:1.75}
-    .project-markdown :global(h2),.project-markdown :global(h3),.project-markdown :global(h4){margin:20px 0 10px}
-    .card .apartment-price{font-size:20px;font-weight:800;line-height:1.35;color:#dc2626;white-space:nowrap}
-    .card .apartment-detail{font-size:13px;font-weight:700;color:#62788b;line-height:1.6;white-space:nowrap}
-    .empty{font-size:15px;line-height:1.7;color:#718296;margin:0}
-    .contact{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
-    .contact a{background:#1a5d8c;color:white;padding:13px 20px;border-radius:9px;text-decoration:none;font-size:15px;font-weight:700}
-    .contact a+a{background:#167b55}
-    @media(max-width:767px){
-      .project-page{padding:20px 0 48px}.wrap{padding:0 5px}.breadcrumbs{margin-bottom:22px}
-      .heading h1{font-size:29px}.intro{font-size:16px;line-height:1.75;text-align:left}.article-content :global(p),.article-content :global(li){text-align:left}
-      .cover{aspect-ratio:16/10;max-height:340px}.gallery,.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .gallery img{height:130px}.card img{height:135px}
-      .spec-grid{grid-template-columns:1fr}.floor-plan-gallery{grid-template-columns:1fr}
-      .description,.listings{padding:20px 5px;margin-top:18px}.article-content{font-size:15.5px;line-height:1.8}
-    }
-    @media(max-width:440px){.cards{grid-template-columns:1fr}.card img{height:195px}.contact a{flex:1;text-align:center}}
-    .project-map iframe{display:block;width:100%;height:420px;border:0;border-radius:12px;margin:14px 0}
-    .project-map>a{display:inline-block;color:#1769a0;font-weight:650;text-decoration:none}
-    @media(max-width:767px){.project-map iframe{height:320px}}
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+    .experience{font-family:inherit;color:#1c2932;background:#f6f4ef}.experience *{box-sizing:border-box}.preview-bar{background:#162b38;color:#f1d8a7;padding:10px 4vw;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:11px;letter-spacing:.12em;font-weight:700}.preview-bar a{color:white;text-decoration:none}
+    .cinema{height:min(840px,calc(100svh - 80px));min-height:560px;position:relative;background:#1c2b36;color:white;overflow:hidden}.slides,.slide,.cinema-shade{position:absolute;inset:0}.slide{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .65s ease}.slide.active{opacity:1}.cinema-shade{background:linear-gradient(90deg,#0b1b2bd9 0%,#0b1b2b77 55%,#0b1b2b33 100%),linear-gradient(0deg,#091a2a9c,transparent 35%)}.cinema-top,.cinema-bottom{position:absolute;left:5%;right:5%;display:flex;justify-content:space-between;align-items:center;gap:12px}.cinema-top{top:34px;font-size:12px;font-weight:800;letter-spacing:.14em}.cinema-top>span:last-child{font-size:10px;opacity:.75}.gold{color:#dfbd80}.cinema-body{position:absolute;left:9%;top:50%;transform:translateY(-42%);max-width:850px}.eyebrow,.kicker{font-size:11px;letter-spacing:.25em;font-weight:800;color:#bb9253}.eyebrow{color:#e7c18a}.cinema h1{font-size:clamp(45px,6.8vw,106px);line-height:1.05;letter-spacing:-.045em;margin:20px 0 22px;font-weight:650}.cinema-body p{font-size:clamp(16px,1.7vw,21px);opacity:.9}.cinema-actions,.cta-buttons{display:flex;flex-wrap:wrap;gap:12px;margin-top:35px}.cinema-actions a,.cta-buttons a{display:inline-flex;align-items:center;justify-content:space-between;gap:36px;text-decoration:none;padding:16px 23px;font-weight:700;font-size:13px}.cinema-actions .primary{background:#c39a5b;color:#152330}.cinema-actions .outline{border:1px solid #ffffff99;color:white}.cinema-bottom{bottom:25px;font-size:10px;letter-spacing:.16em}.slide-controls{display:flex;align-items:center;gap:17px}.slide-controls button{background:#ffffff26;border:1px solid #ffffff66;color:white;width:38px;height:38px;border-radius:50%;cursor:pointer}.section-nav{position:sticky;top:58px;z-index:20;background:#f8f6f1ee;backdrop-filter:blur(12px);display:flex;justify-content:center;gap:clamp(12px,4vw,58px);padding:18px;overflow-x:auto;white-space:nowrap;border-bottom:1px solid #e4ded3}.section-nav a{color:#33414b;text-decoration:none;font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.1em}.section{max-width:1300px;margin:auto;padding:110px 5%}.intro{display:grid;grid-template-columns:1.1fr 1fr;gap:10%;align-items:center}.intro h2,.section-heading h2,.visual-heading h2,.cta h2{font-size:clamp(27px,3.44vw,52px);line-height:1.18;letter-spacing:-.04em;font-weight:600;margin:20px 0}.intro h2 em,.cta h2 em{font-family:Georgia,serif;font-weight:400;color:#b48b4e}.intro-copy>p{font-size:17px;line-height:1.85;color:#66747b}.text-link{display:inline-block;margin-top:20px;color:#926d37;text-decoration:none;font-weight:750;border-bottom:1px solid #b48b4e;padding-bottom:8px}.facts{display:grid;grid-template-columns:1fr 1fr;gap:0 30px}.fact{padding:24px 0;border-bottom:1px solid #d9d6ce}.fact small{display:block;color:#849095;font-size:12px;margin-bottom:10px}.fact strong{font-size:clamp(16px,1.5vw,23px);font-weight:650}.visual-section{background:#162b38;color:white;padding:90px 5%}.visual-heading{max-width:1200px;margin:0 auto 35px}.visual-heading h2{margin-bottom:10px}.visual-heading p{color:#c4cdd0}.visual-grid{max-width:1400px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:210px;gap:12px}.visual-tile{position:relative;overflow:hidden;padding:0;border:0;background:#243a49;cursor:pointer}.visual-tile.large{grid-column:span 2;grid-row:span 2}.visual-tile img{width:100%;height:100%;object-fit:cover;transition:transform .4s}.visual-tile:hover img{transform:scale(1.06)}.visual-tile span{position:absolute;left:17px;bottom:17px;color:white;font-size:11px;letter-spacing:.14em;font-weight:750;text-shadow:0 2px 8px #000}.section-heading{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:35px}.section-heading>div{flex:1;min-width:0;width:100%}.section-heading>p{max-width:330px;color:#718087;line-height:1.7}.plan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.plan-card{background:white;border:1px solid #e5e1d9;text-align:left;padding:16px;cursor:pointer}.plan-card img{width:100%;height:350px;object-fit:contain}.plan-card>span{display:flex;justify-content:space-between;padding:15px 0 4px;font-weight:700}.plan-card b{color:#a67b41}.home-card[hidden],.listing-more[hidden]{display:none!important}.product-group{margin-top:38px}.product-group>h3{font-size:24px;margin:0 0 18px}.listing-more{display:block;margin:26px auto 0;padding:12px 28px;background:transparent;border:1px solid #b27839;color:#8b632e;cursor:pointer;font-weight:700}.home-info h4{font-size:20px;margin:0 0 12px}.home-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.home-card{background:white;color:#20333e;text-decoration:none;overflow:hidden}.home-image{position:relative;height:235px;background:#e0e5e6}.home-image img{width:100%;height:100%;object-fit:cover}.home-image span{position:absolute;top:14px;left:14px;background:#f7f4ed;padding:8px;font-size:10px;letter-spacing:.08em}.home-info{padding:22px}.home-info h3{font-size:20px;margin:0 0 12px}.home-info p{color:#829095}.home-info strong{display:block;color:#b27839;font-size:23px}.home-more{display:block;margin-top:20px;padding-top:15px;border-top:1px solid #e6e6e6;font-weight:700;font-size:12px}.empty{background:#ebe8df;padding:40px;text-align:center;color:#69777c;border:1px dashed #c9bca5}.cta{text-align:center;padding:100px 5%;background:#122a39;color:white}.cta h2{margin:22px 0}.cta p{color:#c6d0d4}.cta-buttons{justify-content:center}.cta-buttons a{background:#c49b5d;color:#172a34}.cta-buttons a+a{background:transparent;border:1px solid #c49b5d;color:#f4e2c4}.lightbox[hidden]{display:none}.lightbox{position:fixed;inset:0;z-index:9999;background:#07111deb;display:grid;place-items:center;padding:55px 20px}.lightbox img{max-width:100%;max-height:90vh;object-fit:contain}.lightbox button{position:absolute;top:15px;right:22px;background:transparent;color:white;border:0;font-size:28px;cursor:pointer}section[id]{scroll-margin-top:125px}
+    @media(max-width:800px){.cinema{min-height:570px;height:75svh}.cinema-body{left:6%;right:6%}.cinema-top,.cinema-bottom{left:6%;right:6%}.section{padding:70px 6%}.intro{grid-template-columns:1fr;gap:40px}.visual-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:165px}.visual-tile.large{grid-column:span 2;grid-row:span 2}.home-grid{grid-template-columns:repeat(2,1fr)}.section-heading{display:block}.plan-card img{height:240px}.section-nav{justify-content:flex-start;top:72px}.cinema h1{font-size:clamp(42px,9vw,72px)}}
+    @media(max-width:540px){.preview-bar{font-size:9px}.cinema-top>span:last-child{display:none}.cinema-actions a{padding:14px 17px;gap:12px}.cinema-bottom>span{font-size:9px}.facts{gap:0 14px}.visual-grid{grid-auto-rows:130px}.plan-grid,.home-grid{grid-template-columns:1fr}.home-image{height:230px}.section-nav{gap:22px}.intro h2,.section-heading h2,.visual-heading h2,.cta h2{font-size:28px}}
+    @media(prefers-reduced-motion:reduce){.slide,.visual-tile img{transition:none}}
+
+    .experience{font-family:'Be Vietnam Pro',Arial,sans-serif}.experience em{font-family:'Be Vietnam Pro',Arial,sans-serif;font-style:italic}
+    .intro-copy>p,.story-copy>p{text-align:justify;line-height:1.85;overflow-wrap:anywhere}
+    .highlights{display:grid;align-content:center;gap:13px}.highlight{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.65;border-bottom:1px solid #e5dfd5;padding-bottom:9px}.twinkle{flex:none;color:#c8912e;animation:star-pulse 1.7s ease-in-out infinite;font-size:20px;line-height:1.2}@keyframes star-pulse{50%{opacity:.25;transform:scale(.8)}}
+    .gallery-track{max-width:1400px;margin:auto;display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;scroll-behavior:smooth}.gallery-track::-webkit-scrollbar{display:none}.story-card{flex:0 0 calc((100% - 36px)/3);scroll-snap-align:start;min-width:0}.story-image{display:block;width:100%;aspect-ratio:4/3;border:0;padding:0;cursor:pointer;overflow:hidden;background:transparent}.story-image img{display:block;width:100%;height:100%;object-fit:cover}.story-card h3,.story-card p{text-align:center}.story-card h3{font-size:17px;margin:18px 0 8px}.story-card p{font-size:13px;line-height:1.7;color:#c6cdd0;margin:0 5px 12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.gallery-actions{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:22px}.gallery-actions button{border:1px solid #bda06e;background:transparent;color:#fff;width:38px;height:38px;cursor:pointer}
+    .story-layer{display:grid;grid-template-columns:1fr 1fr;gap:6%;align-items:center}.story-media img{width:100%;height:430px;object-fit:cover}.story-copy h2{font-size:clamp(30px,3.4vw,50px);line-height:1.15}.story-copy p{color:#63717b}
+    .home-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.home-card{display:grid;grid-template-columns:42% 58%;height:270px;border:1px solid #ddd8cf;min-width:0}.home-image{height:270px;min-width:0}.home-info{min-width:0;padding:15px 16px;display:flex;flex-direction:column;gap:0;position:relative}.home-info h3{font-size:15px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:0 0 9px;min-height:42px}.home-info .seo-excerpt{font-size:12px;line-height:1.55;color:#77818a;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:0 0 10px;min-height:55px}.price-meta{display:flex;align-items:baseline;justify-content:space-between;gap:8px;white-space:nowrap}.price-meta strong{color:#cf2929;font-size:clamp(17px,1.55vw,22px);font-weight:800}.price-meta span{font-size:13px;font-weight:650}.home-info .unit-price{font-size:12px;color:#6b7780;margin:5px 0 0;min-height:18px}.home-info .updated{margin-top:auto;text-align:right;color:#88939b;font-size:11px}.home-image .feature-label{position:absolute;top:12px;left:12px;background:#b88435;color:#fff;padding:7px 9px;font-size:11px;font-weight:700}
+    .lead-and-slogan{max-width:none;background:#142c3c;color:white;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6%;padding:85px max(5%,calc((100vw - 1300px)/2))}.lead-form{background:white;color:#14263d;border:2px solid #d6a74c;padding:32px;min-width:0}.lead-form h2{font-size:clamp(18px,2vw,25px);text-align:center;margin:0 0 25px}.lead-form form{display:grid;gap:11px}.lead-form input:not([type=radio]):not([type=checkbox]){width:100%;height:43px;border:1px solid #607d74;border-radius:0;padding:10px;font:inherit;font-size:14px}.lead-form label{font-size:13px}.lead-form fieldset{border:1px solid #607d74;padding:14px;display:grid;gap:12px;margin:8px 0 4px}.lead-form legend{padding:0 5px;font-size:13px}.lead-form fieldset label{display:flex;gap:9px;align-items:center}.lead-form .consent{display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.6}.lead-form form>button{margin-top:10px;background:linear-gradient(#143ab0,#061e72);border:0;border-radius:0;color:white;padding:15px;font-weight:800;cursor:pointer}.lead-form small{font-size:11px;font-style:italic;text-align:center;color:#66717b}.lead-form .form-status{font-size:12px;color:#27634a}.slogan{display:flex;flex-direction:column;justify-content:center}.slogan h2{font-size:clamp(30px,4vw,55px);margin:12px 0}.contact-number{font-size:24px;font-weight:700;color:#e5c58e}.slogan blockquote{border-left:2px solid #c9a267;padding-left:22px;margin:40px 0 0;font-size:clamp(15px,1.5vw,19px);font-style:italic;line-height:2;color:#f5ebdd}
+    @media(max-width:1024px){.story-card{flex-basis:calc((100% - 18px)/2)}.home-grid{grid-template-columns:1fr}.home-card{max-width:760px}.lead-and-slogan{grid-template-columns:1fr}.story-layer{gap:25px}}
+    @media(max-width:767px){.intro,.story-layer{grid-template-columns:1fr}.story-media{order:0}.story-copy{order:1}.story-media img{height:auto;aspect-ratio:4/3;object-fit:cover}.story-card{flex-basis:100%}.home-card{grid-template-columns:40% 60%;height:260px}.home-image{height:260px}.home-info{padding:12px}.home-info h3{font-size:14px}.home-info .seo-excerpt{font-size:11px}.price-meta{gap:5px}.price-meta strong{font-size:17px}.price-meta span{font-size:12px}.lead-and-slogan{padding:60px 5%}.intro-copy>p,.story-copy>p{text-align:left}}
+    @media(max-width:420px){.home-card{grid-template-columns:39% 61%;height:260px}.home-image{height:260px}.home-info{padding:10px}.home-info .seo-excerpt{-webkit-line-clamp:2;min-height:37px}.price-meta{flex-wrap:wrap;justify-content:flex-start}.price-meta strong{font-size:17px}.price-meta span{font-size:11px}.lead-form{padding:22px 15px}}
+    @media(prefers-reduced-motion:reduce){.twinkle{animation:none}.gallery-track{scroll-behavior:auto}}
+
+    /* Fix Vietnamese typography, prevent title clipping, and style CTAs */
+    .experience{font-family:'Be Vietnam Pro',Arial,sans-serif;font-synthesis:none}
+    .intro h2,.story-copy h2{overflow:visible;word-break:normal;overflow-wrap:normal;line-height:1.28;letter-spacing:-.025em}
+    .intro h2 em{display:inline;color:#b48b4e;font-family:'Be Vietnam Pro',Arial,sans-serif;font-weight:500;font-style:normal;line-height:inherit}
+    .intro-copy .text-link,.story-copy .text-link{display:inline-flex;align-items:center;justify-content:center;padding:15px 23px;margin-top:22px;background:#b68b4b;color:#fff;border:0;text-decoration:none;font-size:13px;font-weight:750;letter-spacing:0}
+    .slogan h2{color:#fff !important;line-height:1.25}
+    .intro-copy>p,.story-copy>p{hyphens:none;word-break:normal;overflow-wrap:break-word}
+    @media(max-width:767px){.intro h2,.story-copy h2{font-size:clamp(29px,7.5vw,43px);line-height:1.3}}
+
+    /* Floor plan tabbed image and synchronized description */
+    .plan-experience{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:5%;align-items:start}
+    .plan-visual,.plan-description{min-width:0}.plan-main{position:relative;aspect-ratio:1/1;background:#edeae3;overflow:hidden}.plan-main>img{display:block;width:100%;height:100%;object-fit:contain}
+    .plan-zoom{position:absolute;right:14px;bottom:14px;display:grid;place-items:center;width:43px;height:43px;background:#b68b4b;color:#fff;border:0;border-radius:0;cursor:pointer}
+    .plan-thumbnails{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+    .plan-tab{aspect-ratio:1/1;min-width:0;border:2px solid transparent;padding:0;background:#eeeae2;cursor:pointer;border-radius:0}.plan-tab.is-active,.plan-tab:focus-visible{border-color:#b68b4b;outline-offset:2px}.plan-tab img{width:100%;height:100%;object-fit:contain;display:block}
+    .plan-description{padding-top:16px}.plan-description h3{font-size:clamp(25px,3vw,43px);line-height:1.3;margin:20px 0}.plan-description p{font-size:16px;line-height:1.85;text-align:justify;color:#62727d;overflow-wrap:break-word}.plan-position{display:block;margin-top:26px;color:#a47d46;font-size:13px;font-weight:700}
+    .lightbox.is-plan .lightbox-content{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:24px;align-items:center;max-width:min(1300px,92vw);max-height:85vh}.lightbox.is-plan .lightbox-content>img{max-width:100%;max-height:82vh;object-fit:contain}.lightbox-description{color:#fff;max-height:75vh;overflow:auto}.lightbox-description h3{font-size:clamp(23px,3vw,38px);margin:0 0 18px}.lightbox-description p{line-height:1.85;font-size:15px;text-align:justify}
+    @media(max-width:900px){.plan-experience{grid-template-columns:1fr;gap:24px}.plan-description{padding-top:0}.lightbox.is-plan .lightbox-content{grid-template-columns:1fr;overflow:auto;max-height:85vh}.lightbox.is-plan .lightbox-content>img{max-height:55vh}.lightbox-description{max-height:none}.plan-description p,.lightbox-description p{text-align:left}}
+
+    .cms-layer{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6%;align-items:center}
+    .cms-layer h2{font-size:clamp(30px,3.5vw,51px);line-height:1.2;margin:16px 0 20px}
+    .cms-layer-text{font-size:16px;line-height:1.85;color:#61717b;white-space:pre-line;text-align:justify;overflow-wrap:break-word}
+    .cms-image-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin}
+    .cms-image-item{margin:0;flex:0 0 calc((100% - 24px)/3);scroll-snap-align:start;min-width:0}
+    .cms-image-item img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+    .cms-image-item figcaption{text-align:center;padding:13px 8px;line-height:1.65;font-size:14px;color:#62717a}
+    .cms-image-item figcaption strong,.cms-image-item figcaption span{display:block}
+    .cms-image-item figcaption strong{color:#233544}
+    .cms-images-single .cms-image-item{flex-basis:100%}.cms-images-double .cms-image-item{flex-basis:calc((100% - 12px)/2)}
+    .cms-images-single .cms-image-item img{aspect-ratio:16/9}
+    .cms-image-controls{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+    .cms-image-controls button{width:39px;height:39px;border:1px solid #c8bca8;background:transparent;color:#293f4d;cursor:pointer}
+    /* Alternate split layers automatically; explicit CMS imageSide takes precedence. */
+    .cms-image-right .cms-layer-images{order:2}.cms-image-right .cms-layer-copy{order:1}
+    .cms-layout-split:not(.cms-image-right) .cms-layer-images{order:1}.cms-layout-split:not(.cms-image-right) .cms-layer-copy{order:2}
+    .cms-layout-text-gallery,.cms-layout-full-image{display:flex;flex-direction:column;align-items:stretch}
+    .cms-layout-text-gallery .cms-layer-copy{order:1}.cms-layout-text-gallery .cms-layer-images{order:2}
+    .cms-layout-full-image .cms-layer-images{order:1}.cms-layout-full-image .cms-layer-copy{order:2;text-align:center}
+    .cms-layout-full-image .cms-layer-text{text-align:center}
+    .cms-layout-full-image .cms-image-item{flex-basis:100%}
+    .cms-layout-full-image .cms-image-item img{aspect-ratio:16/9}
+    @media(max-width:900px){.cms-layer{grid-template-columns:1fr;gap:22px}.cms-layer-copy,.cms-layer-images{order:initial!important}.cms-layout-full-image .cms-layer-images{order:1!important}.cms-layout-full-image .cms-layer-copy{order:2!important}.cms-layer-text{text-align:left}.cms-image-item{flex-basis:calc((100% - 12px)/2)}}
+    @media(max-width:600px){.cms-image-item,.cms-images-double .cms-image-item{flex-basis:100%}.cms-layer{gap:18px}}
+
+    /* Product cards: centered content and legible key metrics */
+    .home-card{grid-template-columns:minmax(0,42%) minmax(0,58%);min-height:270px;height:auto}
+    .home-image{height:100%;min-height:270px}
+    .home-info{justify-content:center;padding:17px 19px}
+    .home-info h3{min-height:0;margin:0 0 10px}
+    .home-info .seo-excerpt{min-height:0;margin:0 0 13px;color:#a0a9af;font-size:12px}
+    .price-meta{gap:10px;flex-wrap:wrap;justify-content:flex-start;align-items:baseline;white-space:normal}
+    .price-meta strong,.price-meta span{font-size:clamp(16px,1.35vw,19px);font-weight:750;line-height:1.45}
+    .price-meta strong{color:#c92d2d;font-weight:800}
+    .home-info .unit-price{font-size:clamp(15px,1.2vw,18px);font-weight:650;color:#c92d2d;margin:7px 0 0;min-height:0}
+    .home-info .updated{margin-top:12px;font-size:11px}
+    /* Refined card typography and balanced metric spacing */
+    .home-info h3{font-size:17px;line-height:1.42}
+    .price-meta{justify-content:space-between;gap:8px;flex-wrap:nowrap;align-items:baseline}
+    .price-meta strong{font-size:21px;font-weight:800;white-space:nowrap}
+    .price-meta span{font-size:15px;font-weight:650;white-space:nowrap}
+    .home-info .unit-price{font-size:15px;font-weight:400;font-style:italic;color:#c92d2d}
+    @media(max-width:1200px){.price-meta{gap:5px}.price-meta strong{font-size:18px}.price-meta span{font-size:13px}}
+    @media(max-width:600px){.home-info h3{font-size:14px}.price-meta{flex-wrap:wrap;justify-content:space-between}.price-meta strong{font-size:17px}.price-meta span{font-size:13px}.home-info .unit-price{font-size:13px}}
+    .intro-slogan-last{display:block;color:inherit}
+    /* Project location */
+    .location-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:5%;align-items:stretch}
+    .location-map{min-height:430px;background:#e9e7e1}
+    .location-map iframe{display:block;width:100%;height:100%;min-height:430px;border:0}
+    .location-map .empty{height:100%;display:grid;place-items:center}
+    .location-nearby{min-width:0}.location-nearby h3{font-size:clamp(23px,2.6vw,34px);margin:0 0 19px}
+    .location-nearby ul{list-style:none;margin:0;padding:0}
+    .location-nearby li{display:flex;align-items:flex-start;gap:12px;padding:16px 0;border-bottom:1px solid #e0ddd5}
+    .nearby-dot{color:#b68b4b;font-size:17px;flex:none}.location-nearby li>div{flex:1;min-width:0}
+    .location-nearby strong{font-size:15px}.location-nearby li p,.nearby-empty{font-size:13px;line-height:1.7;color:#89959b;margin:6px 0 0}
+    .nearby-distance{color:#9b753d;font-weight:700;font-size:13px;text-align:right;max-width:38%}
+    @media(max-width:900px){.location-layout{grid-template-columns:1fr;gap:25px}.home-info{padding:16px}.price-meta strong,.price-meta span{font-size:16px}}
+    @media(max-width:600px){.home-card{grid-template-columns:42% 58%;min-height:250px}.home-image{min-height:250px}.home-info{padding:11px}.home-info h3{font-size:13px}.home-info .seo-excerpt{font-size:11px;-webkit-line-clamp:2}.price-meta{gap:5px 10px}.price-meta strong,.price-meta span{font-size:14px}.home-info .unit-price{font-size:13px}.location-map,.location-map iframe{min-height:310px}}
+    /* News related to this project: three visible cards with carousel navigation */
+    .news-track{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;padding-bottom:5px}
+    .news-track::-webkit-scrollbar{display:none}
+    .news-card{flex:0 0 calc((100% - 40px)/3);min-width:0;background:#fff;border:1px solid #dedbd3;text-decoration:none;color:#1a3142;scroll-snap-align:start}
+    .news-card>img,.news-image-placeholder{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#e7e3dc}
+    .news-image-placeholder{display:grid;place-items:center;color:#ae8a55;letter-spacing:.15em}
+    .news-card-body{padding:20px 19px 22px}.news-date{font-size:12px;color:#929da5}
+    .news-card h3{font-size:18px;line-height:1.5;margin:10px 0 18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .news-read{font-size:13px;font-weight:700;color:#ac8248}
+    .news-controls{display:flex;justify-content:center;align-items:center;gap:20px;margin-top:24px}
+    .news-controls button{width:40px;height:40px;background:transparent;border:1px solid #bd9b69;color:#1a3142;cursor:pointer}
+    .news-counter{font-size:12px;letter-spacing:.12em;color:#7a838a}
+    @media(max-width:900px){.news-card{flex-basis:calc((100% - 20px)/2)}}
+    @media(max-width:600px){.news-card{flex-basis:100%}.news-card h3{font-size:16px}}
+    .cms-layout-four-images .cms-image-track{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow:visible}
+    .cms-layout-four-images .cms-image-item{width:auto!important;min-width:0!important}
+    .cms-layout-four-images .cms-image-controls{display:none}
+    .cms-zoom-button,.builder-tab-image{display:block;width:100%;border:0;padding:0;background:transparent;cursor:zoom-in}
+    .cms-zoom-button img,.builder-tab-image img{display:block;width:100%;height:auto}
+    .cms-layout-rich-text .cms-layer-copy{max-width:100%;width:100%}
+    .cms-layout-map-amenities,.cms-layout-tabs,.cms-layout-property-cards,.cms-layout-related-cards{display:block}
+    .builder-tab-buttons{display:flex;gap:8px;overflow-x:auto;margin:20px 0}
+    .builder-tab-buttons button{padding:12px 18px;border:1px solid #d3c8b8;background:transparent;color:#1a3142;cursor:pointer;white-space:nowrap}
+    .builder-tab-buttons button.is-active{background:#1a3142;color:#fff}
+    .builder-tab-panel{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+    .builder-tab-panel[hidden]{display:none}
+    .builder-tab-panel h3{font-size:24px}
+    @media(max-width:700px){.builder-tab-panel{grid-template-columns:1fr}.cms-layout-four-images .cms-image-track{gap:6px}}
+    .cms-layer-text p{margin:0 0 14px;line-height:1.85}
+    .cms-layer-text h3,.cms-layer-text h4,.cms-layer-text h5{margin:20px 0 10px;line-height:1.45}
+    .cms-layer-text ul,.cms-layer-text ol{padding-left:23px;margin:12px 0 20px}
+    .cms-layer-text li{margin:6px 0;line-height:1.75}
+    .cms-layer-text a{color:#ad7d3f;text-decoration:underline;text-underline-offset:3px}
+    .builder-project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:28px}
+    .builder-project-card{display:block;color:inherit;text-decoration:none;border:1px solid #e7e2d9;overflow:hidden}
+    .builder-project-card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+    .builder-project-info{padding:20px}
+    .builder-project-info h3{font-size:19px;line-height:1.4;margin:0 0 10px}
+    .builder-project-info p{margin:0 0 14px;opacity:.75}
+    .builder-project-info span{color:#b08b50}
+    @media(max-width:900px){.builder-project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.builder-project-grid{grid-template-columns:1fr}}
+    /* Hải Vân Bay: four-zone image cards, sale count overlay, centered captions. */
+    .hai-van-zones.section{max-width:none!important;width:100vw!important;position:relative;left:50%;margin-left:-50vw!important;margin-right:0!important;padding:90px 10px!important;box-sizing:border-box}.hai-van-zones .section-heading{padding:0 max(18px,calc((100vw - 1300px)/2))}.hai-van-zone-grid{width:100%;max-width:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .hai-van-zone-card{min-width:0;text-align:center}
+    .hai-van-zone-image{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:0!important;background:#dfe5e9}
+    .hai-van-zone-image img{display:block;width:100%;height:100%;object-fit:cover;border-radius:0!important}
+    .hai-van-zone-placeholder{height:100%;display:grid;place-items:center;color:#667781;font-size:13px}
+    .hai-van-zone-count{position:absolute;left:12px;bottom:12px;padding:9px 12px;border-radius:6px;background:rgba(15,43,65,.88);color:#fff;font-size:12px;font-weight:700;line-height:1.4}
+    .hai-van-zone-card h3{font-size:20px;line-height:1.3;margin:18px 0 8px;color:#152f47;font-weight:700}
+    .hai-van-zone-card p{font-size:14px;line-height:1.7;color:#6b7b83;margin:0 auto;max-width:310px}
+    @media(max-width:760px){.hai-van-zone-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}.hai-van-zone-count{left:6px;bottom:6px;padding:6px 8px;font-size:10px}.hai-van-zone-card h3{font-size:17px;margin-top:12px}.hai-van-zone-card p{font-size:12px}}
+    .property-subdivision{font-size:.82rem;color:#967444;margin:.35rem 0}
   </style>
 </Base>
