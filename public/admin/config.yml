@@ -416,7 +416,7 @@ collections:
     required: false
     collapsed: true
     summary: '{{fields.heading}} — {{fields.type}}'
-    hint: 'Tự tạo Section H2 và kéo thả thứ tự. Hero, form tư vấn, sản phẩm, tin tức là phần cố định. Các trường [Dữ liệu cũ] chỉ dùng cho giao diện cũ, không cần nhập lại.'
+    hint: 'Tự tạo Section H2 và kéo thả thứ tự. Kiểu H là toàn bộ 4 phân khu Hải Vân Bay; kéo cả Section để chọn vị trí. Hero, form tư vấn, sản phẩm, tin tức là phần cố định. Các trường [Dữ liệu cũ] chỉ dùng cho giao diện cũ, không cần nhập lại.'
     fields:
     - label: Hiển thị Section
       name: enabled
@@ -441,6 +441,21 @@ collections:
       - { label: 'E — Văn bản chuyên sâu', value: rich-text }
       - { label: 'F — Google Maps và tiện ích', value: map-amenities }
       - { label: 'G — Tab mặt bằng / tiến độ', value: tabs }
+      - { label: 'H — 4 phân khu Vinhomes Hải Vân Bay', value: hai-van-zones }
+    - label: Liên kết với menu điều hướng
+      name: navTarget
+      widget: select
+      required: false
+      default: none
+      hint: 'Chọn mục menu sẽ cuộn đến Section này. Mỗi mục menu chỉ nên gán cho một Section.'
+      options:
+      - { label: 'Không gắn menu', value: none }
+      - { label: 'Tổng quan', value: overview }
+      - { label: 'Hình ảnh', value: gallery }
+      - { label: 'Mặt bằng', value: floorplan }
+      - { label: 'Vị trí', value: location }
+      - { label: 'Sản phẩm', value: products }
+      - { label: 'Liên hệ', value: contact }
     - label: Tiêu đề Section (H2)
       name: heading
       widget: string
@@ -612,17 +627,17 @@ collections:
   - *id013
   - *id014
   - *id015
-  - label: [Dữ liệu cũ] Google Maps
+  - label: '[Dữ liệu cũ] Google Maps'
     name: googleMapsEmbed
     widget: text
     required: false
     hint: 'Google Maps → Chia sẻ → Nhúng bản đồ → Sao chép HTML. Chỉ dán mã iframe Google Maps; website sẽ kiểm tra đường dẫn hợp lệ.'
-  - label: [Dữ liệu cũ] Hiển thị bản đồ
+  - label: '[Dữ liệu cũ] Hiển thị bản đồ'
     name: showGoogleMap
     widget: boolean
     default: true
     required: false
-  - label: [Dữ liệu cũ] Tiện ích xung quanh
+  - label: '[Dữ liệu cũ] Tiện ích xung quanh'
     name: nearbyAmenities
     widget: list
     required: false
@@ -648,12 +663,12 @@ collections:
       name: note
       widget: text
       required: false
-  - label: [Dữ liệu cũ] Nội dung mặt bằng
+  - label: '[Dữ liệu cũ] Nội dung mặt bằng'
     name: floorPlanText
     widget: markdown
     required: false
     hint: 'Chèn ảnh bằng nút hình ảnh trong trình soạn thảo; ảnh, chữ và liên kết có thể xen kẽ.'
-  - label: [Dữ liệu cũ] Bộ sưu tập mặt bằng
+  - label: '[Dữ liệu cũ] Bộ sưu tập mặt bằng'
     name: floorPlanItems
     widget: list
     required: false
@@ -680,7 +695,7 @@ collections:
       widget: string
       required: false
       hint: 'Ví dụ: Sơ đồ mặt bằng tầng 5 dự án Capital Square.'
-  - label: [Dữ liệu cũ] Nội dung tiến độ
+  - label: '[Dữ liệu cũ] Nội dung tiến độ'
     name: progressText
     widget: markdown
     required: false
