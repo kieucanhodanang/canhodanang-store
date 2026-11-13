@@ -219,6 +219,15 @@ const unitPrice = (item: typeof listings[number]) => {
       <div class="cinema-shade"></div>
       <div class="cinema-top"><span>CANHO<span class="gold">DANANG</span>.STORE</span><span>PROJECT EXPERIENCE / 01</span></div>
       <div class="cinema-body"><span class="eyebrow">KHÁM PHÁ KHÔNG GIAN SỐNG</span><h1>{d?.title || 'Dự án bất động sản Đà Nẵng'}</h1><p>{d?.location || 'Đà Nẵng, Việt Nam'}</p><div class="cinema-actions"><a href={(navigationHref('overview') || '#lien-he')} class="primary">Khám phá dự án <span>↗</span></a><a href={(navigationHref('floorplan') || '#lien-he')} class="outline">Xem mặt bằng ↓</a></div></div>
+      <aside class="cinema-consultant" aria-label="Tư vấn dự án">
+        <div class="cinema-consultant-heading"><span>Nhận thông tin dự án</span><strong>{d?.title || 'Bất động sản Đà Nẵng'}</strong></div>
+        <div class="cinema-consultant-body">
+          <div class="cinema-consultant-avatar"><img src="/uploads/tu-van-vien-vest.jpg" alt="Chuyên viên tư vấn Mr. Kiều Nguyễn" loading="lazy" /></div>
+          <p class="cinema-consultant-name">Mr. Kiều Nguyễn</p><p class="cinema-consultant-note">Hỗ trợ thông tin dự án và căn hộ</p>
+          <a class="cinema-consultant-zalo" href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Chat qua Zalo</a>
+          <a class="cinema-consultant-call" href="tel:0869437415">☎ 0869 437 415</a>
+        </div>
+      </aside>
       <div class="cinema-bottom"><span>CUỘN ĐỂ KHÁM PHÁ ↓</span><div class="slide-controls"><button type="button" data-prev aria-label="Ảnh trước">←</button><span data-slide-count>01 / {String(Math.max(1,images.length)).padStart(2,'0')}</span><button type="button" data-next aria-label="Ảnh sau">→</button></div></div>
     </section>
     <nav class="section-nav" aria-label="Điều hướng nội dung dự án">{visibleNavigation.map(item=><a href={item.href}>{item.label}</a>)}</nav>
@@ -436,8 +445,31 @@ const unitPrice = (item: typeof listings[number]) => {
     .news-counter{font-size:12px;letter-spacing:.12em;color:#7a838a}
     @media(max-width:900px){.news-card{flex-basis:calc((100% - 20px)/2)}}
     @media(max-width:600px){.news-card{flex-basis:100%}.news-card h3{font-size:16px}}
-    .cms-layout-four-images .cms-image-track{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow:visible}
+    .cms-layout-four-images .cms-image-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;overflow:visible}
     .cms-layout-four-images .cms-image-item{width:auto!important;min-width:0!important}
+    /* Reuse the news consultant card dimensions and styling inside the hero; never sticky. */
+    .cinema-body{right:390px;max-width:calc(100% - 500px)}
+    .cinema h1{font-size:clamp(40px,5.1vw,82px)}
+    .cinema-consultant{position:absolute;z-index:3;right:5%;top:50%;transform:translateY(-50%);width:300px;background:#fff;color:#17334d;border:1px solid #e0e7ef;border-radius:0;overflow:hidden;box-shadow:0 6px 22px #102c4915}
+    .cinema-consultant-heading{background:linear-gradient(125deg,#10365e,#185d8c);color:#fff;padding:17px 14px;text-align:center;display:grid;gap:5px;font-size:16px}
+    .cinema-consultant-heading strong{font-size:20px;color:#f4c16b;line-height:1.35}
+    .cinema-consultant-body{padding:20px 16px;text-align:center}
+    .cinema-consultant-avatar{width:150px;height:150px;margin:0 auto 14px;border:2px solid #b88b41;border-radius:50%;overflow:hidden;background:#edf3f8}
+    .cinema-consultant-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
+    .cinema-consultant-name{font-size:17px!important;font-weight:700;margin:0 0 7px!important;color:#17334d;opacity:1!important}
+    .cinema-consultant-note{font-size:13px!important;color:#718092;margin:0 0 16px!important;opacity:1!important}
+    .cinema-consultant-zalo,.cinema-consultant-call{display:block;padding:12px;border-radius:0;font-weight:700;text-decoration:none;margin-top:9px}
+    .cinema-consultant-zalo{border:1px solid #b9c9dc;color:#135c99;background:#fff}
+    .cinema-consultant-call{background:#009d9f;color:#fff}
+    /* HTML reading order: H3, image, description. Visual order: image, H3, description. */
+    .cms-image-item{display:flex;flex-direction:column}
+    .cms-image-item .cms-zoom-button{order:1}
+    .cms-image-item .cms-image-heading{order:2;text-align:center;margin:14px 8px 0;font-size:17px;line-height:1.45;color:inherit}
+    .cms-image-item figcaption{order:3}
+    @media(max-width:1100px){.cinema-body{left:5%;right:355px;max-width:calc(100% - 415px)}.cinema h1{font-size:clamp(36px,4.5vw,65px)}.cinema-consultant{right:4%}}
+    @media(max-width:800px){.cinema{height:auto;min-height:0;padding:90px 6% 75px;display:flex;flex-direction:column;gap:28px}.cinema-body{position:relative;left:auto;right:auto;top:auto;transform:none;max-width:100%;z-index:2}.cinema h1{font-size:clamp(38px,8vw,65px)}.cinema-consultant{position:relative;right:auto;top:auto;transform:none;width:min(300px,100%);margin:0 auto}.cinema-bottom{bottom:15px}}
+    @media(max-width:1000px){.cms-layout-four-images .cms-image-track{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.cms-layout-four-images .cms-image-track{grid-template-columns:1fr;gap:18px}}
     .cms-layout-four-images .cms-image-controls{display:none}
     .cms-zoom-button,.builder-tab-image{display:block;width:100%;border:0;padding:0;background:transparent;cursor:zoom-in}
     .cms-zoom-button img,.builder-tab-image img{display:block;width:100%;height:auto}
