@@ -106,7 +106,9 @@ const duAn = defineCollection({
       // Legacy CMS layers retain their original layout; new layers use type.
       enabled: z.boolean().optional(),
       adminLabel: optionalText,
-      type: z.enum(['split', 'text-gallery', 'four-images', 'full-image', 'rich-text', 'map-amenities', 'tabs', 'property-cards', 'related-cards']).optional(),
+      // Anchor for in-page project navigation; independent of headings for SEO.
+      navTarget: z.enum(['none', 'overview', 'gallery', 'floorplan', 'location', 'products', 'contact']).nullish(),
+      type: z.enum(['split', 'text-gallery', 'four-images', 'full-image', 'rich-text', 'map-amenities', 'tabs', 'hai-van-zones', 'property-cards', 'related-cards']).optional(),
       heading: optionalText,
       subheading: optionalText,
       text: optionalText,
