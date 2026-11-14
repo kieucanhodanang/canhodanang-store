@@ -127,7 +127,7 @@ const duAn = defineCollection({
       richTextRegions: z.array(z.object({
         heading: z.string(),
         text: optionalText,
-      })).max(4).nullish(),
+      })).max(5).nullish(),
       images: z.array(z.object({
         image: z.string(),
         captionTitle: optionalText,
