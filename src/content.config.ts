@@ -26,6 +26,9 @@ const seoFields = {
 const propertyFields = {
   ...seoFields,
   project: optionalText,
+  // Ghim riêng trong từng dự án; không thay đổi cờ featured của trang chủ.
+  pinOnProject: z.boolean().default(false),
+  projectPinOrder: optionalNumber,
   // Phân loại riêng cho sản phẩm thuộc Vinhomes Hải Vân Bay.
   subdivision: z.enum(['tinh-van', 'bach-van', 'dao-ngoc', 'vinh-may']).nullish(),
   projectPropertyType: z.enum([
@@ -116,6 +119,15 @@ const duAn = defineCollection({
       text: optionalText,
       layout: z.enum(['split', 'text-gallery', 'full-image']).optional(),
       imageSide: z.enum(['auto', 'left', 'right']).optional(),
+      // Kiểu A: URL bài báo, chỉ tạo CTA khi có link hợp lệ.
+      articleUrl: optionalText,
+      // Kiểu B: ảnh nổi chữ hoặc gallery tiến độ 3 ảnh/hàng.
+      galleryStyle: z.enum(['overlay', 'progress-three']).optional(),
+      // Kiểu E: tối đa 4 vùng nội dung độc lập, mỗi vùng có H2 và văn bản.
+      richTextRegions: z.array(z.object({
+        heading: z.string(),
+        text: optionalText,
+      })).max(4).nullish(),
       images: z.array(z.object({
         image: z.string(),
         captionTitle: optionalText,
@@ -124,6 +136,8 @@ const duAn = defineCollection({
       })).nullish(),
       tabs: z.array(z.object({
         title: z.string(),
+        // Nhãn ngắn trên nút; title giữ làm H3 đầy đủ.
+        tabLabel: optionalText,
         image: optionalText,
         imageAlt: optionalText,
         text: optionalText,
