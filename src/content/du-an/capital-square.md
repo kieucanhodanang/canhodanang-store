@@ -97,85 +97,17 @@ contentLayers:
         travelTime: 10 phút
         note: Kết nối di chuyển linh hoạt.
   - enabled: true
-    navTarget: floorplan
-    adminLabel: Mặt bằng
-    type: tabs
-    heading: Layout mặt bằng và thiết kế căn hộ Capital Square
-    tabs:
-      - title: Mặt bằng tổng thể Capital Square – Quy hoạch 14 tòa tháp bên sông Hàn
-        image: /uploads/mat-bang-layout-tong-the-cua-capital-square.png
-        imageAlt: Mặt bằng tổng thể Capital Square Đà Nẵng với 14 tòa tháp căn hộ, Grand
-          Central Mall và các trục đường ven sông Hàn
-        text: Mặt bằng tổng thể Capital Square thể hiện vị trí 14 tòa tháp căn hộ cùng
-          trung tâm thương mại Grand Central Mall, được bố trí trong quần thể
-          ven sông Hàn, tiếp giáp các tuyến đường Trần Hưng Đạo, Ngô Quyền và
-          Nguyễn Công Trứ. Quy hoạch kết hợp các khối công trình, cảnh quan xanh
-          và không gian tiện ích nội khu, tạo nên hệ sinh thái sống, mua sắm và
-          giải trí đồng bộ tại trung tâm Đà Nẵng.
-      - image: /uploads/mat-bang-layout-toa-dien-hinh-cua-capital-square.webp
-        title: Mặt bằng tầng điển hình Capital Square – 9 đến 14 căn hộ mỗi tầng
-        imageAlt: Mặt bằng tầng điển hình Capital Square Đà Nẵng bố trí 9 đến 14 căn hộ
-          mỗi tầng, sơ đồ vị trí căn hộ và hệ thống thang máy
-        text: Mặt bằng tầng điển hình Capital Square được bố trí từ 9–14 căn hộ/tầng tùy
-          theo từng tòa tháp, với các dòng sản phẩm đa dạng từ 1PN đến 3PN.
-          Thiết kế chú trọng phân bổ vị trí căn hộ, hệ thống thang máy, hành
-          lang và khả năng đón ánh sáng tự nhiên. Khách hàng có thể tham khảo sơ
-          đồ để lựa chọn mã căn, hướng ban công và tầm nhìn phù hợp với nhu cầu
-          an cư hoặc đầu tư.
-      - image: /uploads/thiet-ke-layout-can-ho-2pn-capital-square.jpg
-        title: Layout căn hộ điển hình Capital Square – Thiết kế tối ưu không gian sống
-        imageAlt: Layout mặt bằng căn hộ điển hình Capital Square Đà Nẵng thể hiện cách
-          bố trí phòng khách, phòng ngủ, bếp và ban công
-        text: Layout căn hộ điển hình Capital Square Đà Nẵng giới thiệu cách bố trí
-          không gian phòng khách, bếp, phòng ngủ và ban công trong từng loại căn
-          hộ. Các phương án thiết kế hướng đến sự tiện nghi, tối ưu công năng sử
-          dụng và khả năng đón ánh sáng tự nhiên, giúp khách hàng dễ dàng hình
-          dung không gian sinh hoạt và lựa chọn căn hộ phù hợp với nhu cầu.
-    text: Thiết kế căn hộ Capital Square hướng đến việc tối ưu công năng sử dụng,
-      khả năng đón sáng, thông gió và bố trí không gian sinh hoạt, tòa điển hình
-      được giới thiệu với khoảng 9–14 căn hộ mỗi tầng, hướng đến sự riêng tư cho
-      cư dân.
-  - enabled: true
-    navTarget: none
-    adminLabel: Tiến độ
-    type: text-gallery
-    heading: Tiến độ Capital Square Đà Nẵng – Cập nhật thi công mới nhất 2026
-    text: >-
-      Tiến độ Capital Square Đà Nẵng là một trong những yếu tố quan trọng được
-      khách hàng quan tâm khi lựa chọn căn hộ bên sông Hàn. Dự án được phát
-      triển với quy mô 14 tòa tháp, kết hợp hệ thống tiện ích nội khu, hai tầng
-      hầm liên thông và trung tâm thương mại Grand Central Mall.
-
-
-      Các hạng mục xây dựng được triển khai theo kế hoạch của từng phân khu và tòa tháp. Tiến độ thực tế cần được đánh giá thông qua hình ảnh công trường, mức độ hoàn thiện kết cấu, các hạng mục kỹ thuật và thông báo từ chủ đầu tư.
-
-
-      Căn Hộ Đà Nẵng cập nhật hình ảnh thi công Capital Square nhằm giúp khách hàng theo dõi quá trình xây dựng, đối chiếu tiến độ từng tòa và chủ động kế hoạch tài chính trước các đợt thanh toán.
-
-
-      **Thời gian bàn giao dự kiến:** Quý I/2027 theo dữ liệu dự án đang công bố. Mốc bàn giao cụ thể cần đối chiếu với hợp đồng mua bán và tiến độ từng tòa.
-    images:
-      - image: /uploads/cap-nhat-tien-do-capital-square-thang-8-2026.webp
-        captionTitle: Tiến độ thi công Capital Square tháng 08/2026
-        imageAlt: Tiến độ thi công tòa căn hộ Capital Square tháng 08/2026
-      - image: /uploads/cap-nhat-tien-do-capital-square-thang-9.webp
-        captionTitle: Tiến độ thi công Capital Square tháng 09/2026
-        imageAlt: Tiến độ thi công tòa căn hộ Capital Square tháng 09/2026
-      - image: /uploads/cap-nhat-tien-do-capital-square-thang-10.webp
-        captionTitle: Tiến độ thi công Capital Square tháng 10/2026
-        imageAlt: Tiến độ thi công tòa căn hộ Capital Square tháng 10/2026
-  - enabled: true
     navTarget: none
     adminLabel: Nội dung
     type: rich-text
     richTextRegions:
-      - heading: "Quy hoạch Capital Square – Tổ hợp đô thị bên sông Hàn"
+      - heading: Quy hoạch Capital Square – Tổ hợp đô thị đa chức năng bên sông Hàn
         text: >-
-          Capital Square Đà Nẵng được định hướng trở thành tổ hợp căn hộ cao cấp và
-          thương mại dịch vụ quy mô lớn bên bờ sông Hàn. Không đơn thuần cung cấp
-          không gian nhà ở, dự án hướng đến hình thành một cộng đồng cư dân hiện
-          đại, nơi các hoạt động sinh hoạt, thương mại, giải trí và chăm sóc sức
-          khỏe được tích hợp trong cùng một quần thể.
+          Capital Square Đà Nẵng được định hướng trở thành tổ hợp căn hộ cao cấp
+          và thương mại dịch vụ quy mô lớn bên bờ sông Hàn. Không đơn thuần cung
+          cấp không gian nhà ở, dự án hướng đến hình thành một cộng đồng cư dân
+          hiện đại, nơi các hoạt động sinh hoạt, thương mại, giải trí và chăm
+          sóc sức khỏe được tích hợp trong cùng một quần thể.
 
 
           Với quy mô khoảng 6,14 ha, gồm 14 tòa căn hộ và 3.391 sản phẩm, Capital Square là một trong những dự án có quy mô đáng chú ý tại khu vực trung tâm Đà Nẵng. Giá trị khác biệt của dự án được xây dựng từ sự kết hợp giữa quy hoạch đô thị, hệ sinh thái hơn 88 tiện ích, trung tâm thương mại Grand Central Mall và định hướng phát triển dòng căn hộ sở hữu lâu dài.
@@ -217,9 +149,9 @@ contentLayers:
 
 
           Đối với người mua nhà, giá trị của một khu đô thị không chỉ được thể hiện qua quy mô xây dựng mà còn nằm ở khả năng duy trì môi trường sống ổn định, tiện nghi và thuận tiện trong dài hạn.
-      - heading: "Hạ tầng Capital Square – Hai tầng hầm liên thông"
+      - heading: Hạ tầng Capital Square – Hai tầng hầm liên thông
         text: >-
-
+          
 
           Hạ tầng đỗ xe là một trong những yếu tố ảnh hưởng trực tiếp đến trải nghiệm sinh hoạt tại các tổ hợp căn hộ cao tầng.
 
@@ -255,9 +187,9 @@ contentLayers:
 
 
           Đối với người mua để ở lâu dài, chất lượng quản lý những hạng mục này có ý nghĩa không kém hệ thống tiện ích hay thiết kế bên trong căn hộ.
-      - heading: "Chất lượng sống và thiết kế căn hộ Capital Square"
+      - heading: Chất lượng sống và thiết kế căn hộ Capital Square
         text: >-
-
+          
 
           Đối với người mua nhà, một căn hộ có thiết kế phù hợp mới chỉ là một phần của trải nghiệm sống.
 
@@ -347,11 +279,10 @@ contentLayers:
 
 
           Với các dòng sản phẩm này, khách hàng nên đánh giá kỹ chi phí sở hữu, hoàn thiện nội thất và vận hành bên cạnh giá mua ban đầu.
-      - heading: "Pháp lý, giá bán và lựa chọn căn hộ Capital Square"
+      - heading: Pháp lý, giá bán và lựa chọn căn hộ Capital Square
         text: >-
-
-
-          Capital Square được giới thiệu với dòng căn hộ nhà ở có hình thức sở hữu lâu dài dành cho người Việt Nam đáp ứng điều kiện pháp luật.
+          Capital Square được giới thiệu với dòng căn hộ nhà ở có hình thức sở
+          hữu lâu dài dành cho người Việt Nam đáp ứng điều kiện pháp luật.
 
 
           Dự án gồm hai phân khu do các pháp nhân khác nhau làm chủ đầu tư:
@@ -372,86 +303,7 @@ contentLayers:
 
 
           Những nội dung này cần được làm rõ bằng hồ sơ và hợp đồng, không chỉ thông qua tài liệu quảng bá sản phẩm.
-
-
-          # Giá bán Capital Square – Đánh giá giá trị căn hộ từ nhiều yếu tố
-
-
-          Giá bán căn hộ Capital Square phụ thuộc vào phân khu, tòa tháp, tầng cao, loại hình sản phẩm, diện tích, hướng nhìn và chính sách bán hàng tại từng thời điểm.
-
-
-          Ngay trong cùng một dự án, hai căn hộ có diện tích tương đương vẫn có thể chênh lệch đáng kể về giá trị do khác biệt về vị trí, tầng cao, đặc điểm căn góc hoặc tầm nhìn.
-
-
-          ## Đơn giá trên mét vuông và tổng chi phí sở hữu
-
-
-          Khi so sánh căn hộ, khách hàng nên xem xét đồng thời giá bán tổng và đơn giá trên diện tích thông thủy.
-
-
-          Bên cạnh giá mua, tổng chi phí sở hữu còn có thể bao gồm các khoản thuế phí, chi phí hoàn thiện nội thất, phí quản lý và chi phí sử dụng các dịch vụ liên quan.
-
-
-          Đối với khách hàng sử dụng vốn vay, việc tính toán khả năng trả nợ sau giai đoạn ưu đãi lãi suất đặc biệt quan trọng.
-
-
-          ## Giá trị sử dụng và khả năng khai thác cho thuê
-
-
-          Một căn hộ có vị trí phù hợp, công năng dễ sử dụng và chi phí vận hành hợp lý thường có lợi thế hơn khi đáp ứng nhu cầu ở thực hoặc cho thuê dài hạn.
-
-
-          Với Capital Square, hệ thống tiện ích và dịch vụ thương mại là những yếu tố có thể góp phần tăng sức hấp dẫn đối với người thuê.
-
-
-          Tuy nhiên, hiệu quả khai thác cần được tính toán bằng dòng tiền thực tế, bao gồm doanh thu thuê, tỷ lệ trống phòng, chi phí nội thất, phí quản lý và các nghĩa vụ tài chính.
-
-
-          ## Giá trị tài sản trong dài hạn
-
-
-          Đối với khách hàng có mục tiêu tích lũy tài sản, chất lượng công trình, tính pháp lý, năng lực vận hành và nhu cầu nhà ở thực tế là những yếu tố cần được ưu tiên.
-
-
-          Khả năng tăng giá của căn hộ không chỉ phụ thuộc vào quy hoạch hay danh tiếng của dự án mà còn chịu ảnh hưởng từ diễn biến thị trường, nguồn cung cạnh tranh và mức giá mua ban đầu.
-
-
-          # Có nên mua căn hộ Capital Square Đà Nẵng?
-
-
-          Capital Square là dự án đáng nghiên cứu đối với những khách hàng muốn sở hữu căn hộ trong một tổ hợp đô thị có quy mô lớn, hệ sinh thái tiện ích đa dạng và định hướng phát triển thương mại dịch vụ đồng bộ.
-
-
-          Đối với gia đình mua để ở, những lợi thế cần xem xét là công năng căn hộ, môi trường sinh hoạt, khả năng sử dụng tiện ích và chất lượng quản lý trong dài hạn.
-
-
-          Đối với khách hàng mua để cho thuê, cần ưu tiên sản phẩm có tổng vốn đầu tư phù hợp, công năng dễ khai thác và khả năng tiếp cận nhóm khách thuê mục tiêu.
-
-
-          Với khách hàng tích lũy tài sản, hồ sơ pháp lý, giá mua, chi phí sở hữu và khả năng chuyển nhượng là những tiêu chí cần được đánh giá kỹ trước khi quyết định.
-
-
-          Giá trị của Capital Square không chỉ nằm ở quy mô 14 tòa căn hộ hay danh mục hơn 88 tiện ích, mà còn phụ thuộc vào khả năng hoàn thiện, vận hành và duy trì chất lượng của toàn bộ quần thể trong tương lai.
-
-
-          # Tư vấn lựa chọn căn hộ Capital Square Đà Nẵng
-
-
-          Căn Hộ Đà Nẵng hỗ trợ khách hàng tìm hiểu và so sánh các căn hộ Capital Square theo phân khu, tòa tháp, diện tích, số phòng ngủ, hướng ban công, tầm nhìn và tổng giá trị sản phẩm.
-
-
-          Khách hàng có thể tham khảo danh sách căn hộ đang bán và cho thuê trên website, lựa chọn mã căn phù hợp với nhu cầu an cư hoặc đầu tư, đồng thời nhận tư vấn về chính sách thanh toán và hồ sơ sản phẩm.
     text: >-
-      Capital Square Đà Nẵng được định hướng trở thành tổ hợp căn hộ cao cấp và
-      thương mại dịch vụ quy mô lớn bên bờ sông Hàn. Không đơn thuần cung cấp
-      không gian nhà ở, dự án hướng đến hình thành một cộng đồng cư dân hiện
-      đại, nơi các hoạt động sinh hoạt, thương mại, giải trí và chăm sóc sức
-      khỏe được tích hợp trong cùng một quần thể.
-
-
-      Với quy mô khoảng 6,14 ha, gồm 14 tòa căn hộ và 3.391 sản phẩm, Capital Square là một trong những dự án có quy mô đáng chú ý tại khu vực trung tâm Đà Nẵng. Giá trị khác biệt của dự án được xây dựng từ sự kết hợp giữa quy hoạch đô thị, hệ sinh thái hơn 88 tiện ích, trung tâm thương mại Grand Central Mall và định hướng phát triển dòng căn hộ sở hữu lâu dài.
-
-
       ## Quy hoạch Capital Square – Tổ hợp đô thị đa chức năng bên sông Hàn
 
 
@@ -716,6 +568,202 @@ contentLayers:
 
 
       Khách hàng có thể tham khảo danh sách căn hộ đang bán và cho thuê trên website, lựa chọn mã căn phù hợp với nhu cầu an cư hoặc đầu tư, đồng thời nhận tư vấn về chính sách thanh toán và hồ sơ sản phẩm.
+  - enabled: true
+    navTarget: floorplan
+    adminLabel: Mặt bằng
+    type: tabs
+    heading: Layout mặt bằng và thiết kế căn hộ Capital Square
+    tabs:
+      - title: Mặt bằng tổng thể Capital Square – Quy hoạch 14 tòa tháp bên sông Hàn
+        image: /uploads/mat-bang-layout-tong-the-cua-capital-square.png
+        imageAlt: Mặt bằng tổng thể Capital Square Đà Nẵng với 14 tòa tháp căn hộ, Grand
+          Central Mall và các trục đường ven sông Hàn
+        text: Mặt bằng tổng thể Capital Square thể hiện vị trí 14 tòa tháp căn hộ cùng
+          trung tâm thương mại Grand Central Mall, được bố trí trong quần thể
+          ven sông Hàn, tiếp giáp các tuyến đường Trần Hưng Đạo, Ngô Quyền và
+          Nguyễn Công Trứ. Quy hoạch kết hợp các khối công trình, cảnh quan xanh
+          và không gian tiện ích nội khu, tạo nên hệ sinh thái sống, mua sắm và
+          giải trí đồng bộ tại trung tâm Đà Nẵng.
+      - image: /uploads/mat-bang-layout-toa-dien-hinh-cua-capital-square.webp
+        title: Mặt bằng tầng điển hình Capital Square – 9 đến 14 căn hộ mỗi tầng
+        imageAlt: Mặt bằng tầng điển hình Capital Square Đà Nẵng bố trí 9 đến 14 căn hộ
+          mỗi tầng, sơ đồ vị trí căn hộ và hệ thống thang máy
+        text: Mặt bằng tầng điển hình Capital Square được bố trí từ 9–14 căn hộ/tầng tùy
+          theo từng tòa tháp, với các dòng sản phẩm đa dạng từ 1PN đến 3PN.
+          Thiết kế chú trọng phân bổ vị trí căn hộ, hệ thống thang máy, hành
+          lang và khả năng đón ánh sáng tự nhiên. Khách hàng có thể tham khảo sơ
+          đồ để lựa chọn mã căn, hướng ban công và tầm nhìn phù hợp với nhu cầu
+          an cư hoặc đầu tư.
+      - image: /uploads/thiet-ke-layout-can-ho-2pn-capital-square.jpg
+        title: Layout căn hộ điển hình Capital Square – Thiết kế tối ưu không gian sống
+        imageAlt: Layout mặt bằng căn hộ điển hình Capital Square Đà Nẵng thể hiện cách
+          bố trí phòng khách, phòng ngủ, bếp và ban công
+        text: Layout căn hộ điển hình Capital Square Đà Nẵng giới thiệu cách bố trí
+          không gian phòng khách, bếp, phòng ngủ và ban công trong từng loại căn
+          hộ. Các phương án thiết kế hướng đến sự tiện nghi, tối ưu công năng sử
+          dụng và khả năng đón ánh sáng tự nhiên, giúp khách hàng dễ dàng hình
+          dung không gian sinh hoạt và lựa chọn căn hộ phù hợp với nhu cầu.
+    text: Thiết kế căn hộ Capital Square hướng đến việc tối ưu công năng sử dụng,
+      khả năng đón sáng, thông gió và bố trí không gian sinh hoạt, tòa điển hình
+      được giới thiệu với khoảng 9–14 căn hộ mỗi tầng, hướng đến sự riêng tư cho
+      cư dân.
+  - enabled: true
+    navTarget: none
+    adminLabel: Tiến độ
+    type: text-gallery
+    heading: Tiến độ Capital Square Đà Nẵng – Cập nhật thi công mới nhất 2026
+    text: >-
+      Tiến độ Capital Square Đà Nẵng là một trong những yếu tố quan trọng được
+      khách hàng quan tâm khi lựa chọn căn hộ bên sông Hàn. Dự án được phát
+      triển với quy mô 14 tòa tháp, kết hợp hệ thống tiện ích nội khu, hai tầng
+      hầm liên thông và trung tâm thương mại Grand Central Mall.
+
+
+      Các hạng mục xây dựng được triển khai theo kế hoạch của từng phân khu và tòa tháp. Tiến độ thực tế cần được đánh giá thông qua hình ảnh công trường, mức độ hoàn thiện kết cấu, các hạng mục kỹ thuật và thông báo từ chủ đầu tư.
+
+
+      Căn Hộ Đà Nẵng cập nhật hình ảnh thi công Capital Square nhằm giúp khách hàng theo dõi quá trình xây dựng, đối chiếu tiến độ từng tòa và chủ động kế hoạch tài chính trước các đợt thanh toán.
+
+
+      **Thời gian bàn giao dự kiến:** Quý I/2027 theo dữ liệu dự án đang công bố. Mốc bàn giao cụ thể cần đối chiếu với hợp đồng mua bán và tiến độ từng tòa.
+    images:
+      - image: /uploads/cap-nhat-tien-do-capital-square-thang-8-2026.webp
+        captionTitle: Tiến độ thi công Capital Square tháng 08/2026
+        imageAlt: Tiến độ thi công tòa căn hộ Capital Square tháng 08/2026
+      - image: /uploads/cap-nhat-tien-do-capital-square-thang-9.webp
+        captionTitle: Tiến độ thi công Capital Square tháng 09/2026
+        imageAlt: Tiến độ thi công tòa căn hộ Capital Square tháng 09/2026
+      - image: /uploads/cap-nhat-tien-do-capital-square-thang-10.webp
+        captionTitle: Tiến độ thi công Capital Square tháng 10/2026
+        imageAlt: Tiến độ thi công tòa căn hộ Capital Square tháng 10/2026
+  - type: rich-text
+    enabled: true
+    navTarget: none
+    richTextRegions:
+      - heading: Giá bán Capital Square – Đánh giá giá trị căn hộ từ nhiều yếu tố
+        text: >-
+          Giá bán căn hộ Capital Square phụ thuộc vào phân khu, tòa tháp, tầng
+          cao, loại hình sản phẩm, diện tích, hướng nhìn và chính sách bán hàng
+          tại từng thời điểm.
+
+
+          Ngay trong cùng một dự án, hai căn hộ có diện tích tương đương vẫn có thể chênh lệch đáng kể về giá trị do khác biệt về vị trí, tầng cao, đặc điểm căn góc hoặc tầm nhìn.
+
+
+          ### Đơn giá trên mét vuông và tổng chi phí sở hữu
+
+
+          Khi so sánh căn hộ, khách hàng nên xem xét đồng thời giá bán tổng và đơn giá trên diện tích thông thủy.
+
+
+          Bên cạnh giá mua, tổng chi phí sở hữu còn có thể bao gồm các khoản thuế phí, chi phí hoàn thiện nội thất, phí quản lý và chi phí sử dụng các dịch vụ liên quan.
+
+
+          Đối với khách hàng sử dụng vốn vay, việc tính toán khả năng trả nợ sau giai đoạn ưu đãi lãi suất đặc biệt quan trọng.
+
+
+          ### Giá trị sử dụng và khả năng khai thác cho thuê
+
+
+          Một căn hộ có vị trí phù hợp, công năng dễ sử dụng và chi phí vận hành hợp lý thường có lợi thế hơn khi đáp ứng nhu cầu ở thực hoặc cho thuê dài hạn.
+
+
+          Với Capital Square, hệ thống tiện ích và dịch vụ thương mại là những yếu tố có thể góp phần tăng sức hấp dẫn đối với người thuê.
+
+
+          Tuy nhiên, hiệu quả khai thác cần được tính toán bằng dòng tiền thực tế, bao gồm doanh thu thuê, tỷ lệ trống phòng, chi phí nội thất, phí quản lý và các nghĩa vụ tài chính.
+
+
+          ### Giá trị tài sản trong dài hạn
+
+
+          Đối với khách hàng có mục tiêu tích lũy tài sản, chất lượng công trình, tính pháp lý, năng lực vận hành và nhu cầu nhà ở thực tế là những yếu tố cần được ưu tiên.
+
+
+          Khả năng tăng giá của căn hộ không chỉ phụ thuộc vào quy hoạch hay danh tiếng của dự án mà còn chịu ảnh hưởng từ diễn biến thị trường, nguồn cung cạnh tranh và mức giá mua ban đầu.
+      - heading: Có nên mua căn hộ Capital Square Đà Nẵng?
+        text: >-
+          Capital Square là dự án đáng nghiên cứu đối với những khách hàng muốn
+          sở hữu căn hộ trong một tổ hợp đô thị có quy mô lớn, hệ sinh thái tiện
+          ích đa dạng và định hướng phát triển thương mại dịch vụ đồng bộ.
+
+
+          Đối với gia đình mua để ở, những lợi thế cần xem xét là công năng căn hộ, môi trường sinh hoạt, khả năng sử dụng tiện ích và chất lượng quản lý trong dài hạn.
+
+
+          Đối với khách hàng mua để cho thuê, cần ưu tiên sản phẩm có tổng vốn đầu tư phù hợp, công năng dễ khai thác và khả năng tiếp cận nhóm khách thuê mục tiêu.
+
+
+          Với khách hàng tích lũy tài sản, hồ sơ pháp lý, giá mua, chi phí sở hữu và khả năng chuyển nhượng là những tiêu chí cần được đánh giá kỹ trước khi quyết định.
+
+
+          Giá trị của Capital Square không chỉ nằm ở quy mô 14 tòa căn hộ hay danh mục hơn 88 tiện ích, mà còn phụ thuộc vào khả năng hoàn thiện, vận hành và duy trì chất lượng của toàn bộ quần thể trong tương lai.
+      - heading: Tư vấn lựa chọn căn hộ Capital Square Đà Nẵng
+        text: >-
+          Căn Hộ Đà Nẵng hỗ trợ khách hàng tìm hiểu và so sánh các căn hộ
+          Capital Square theo phân khu, tòa tháp, diện tích, số phòng ngủ, hướng
+          ban công, tầm nhìn và tổng giá trị sản phẩm.
+
+
+          Khách hàng có thể tham khảo danh sách căn hộ đang bán và cho thuê trên website, lựa chọn mã căn phù hợp với nhu cầu an cư hoặc đầu tư, đồng thời nhận tư vấn về chính sách thanh toán và hồ sơ sản phẩm.
+      - heading: Kế hoạch tài chính khi mua căn hộ Capital Square – Chủ động dòng tiền
+          và tối ưu giá trị sở hữu
+        text: >-
+          Mua căn hộ tại Capital Square Đà Nẵng không chỉ là quyết định lựa chọn
+          một không gian sống bên sông Hàn mà còn là bài toán phân bổ nguồn vốn
+          trong trung và dài hạn. Với những khách hàng mua để ở, đầu tư hoặc
+          tích lũy tài sản, việc xây dựng kế hoạch tài chính phù hợp sẽ giúp chủ
+          động trước các đợt thanh toán và hạn chế áp lực trong quá trình sở
+          hữu.
+
+
+          **Xác định ngân sách phù hợp với khả năng tài chính**
+
+
+          Trước khi lựa chọn căn hộ, người mua cần xác định tổng ngân sách có thể sử dụng, bao gồm vốn tự có, nguồn tài chính dự phòng và khả năng tiếp cận vốn vay ngân hàng.
+
+
+          Thay vì chỉ tập trung vào giá bán ban đầu, khách hàng nên tính toán toàn bộ chi phí liên quan như các khoản thanh toán theo hợp đồng, thuế và lệ phí áp dụng, chi phí hoàn thiện nội thất, phí quản lý và những khoản phát sinh sau khi nhận bàn giao.
+
+
+          Một phương án tài chính được chuẩn bị kỹ lưỡng sẽ giúp người mua lựa chọn loại căn hộ, diện tích và mức giá phù hợp mà vẫn duy trì sự ổn định cho các nhu cầu sinh hoạt khác.
+
+
+          **Đánh giá tiến độ thanh toán và phương án sử dụng vốn vay**
+
+
+          Đối với căn hộ hình thành trong tương lai, tiến độ thanh toán là yếu tố quan trọng ảnh hưởng trực tiếp đến khả năng cân đối dòng tiền. Người mua nên đối chiếu các mốc thanh toán trong hợp đồng với kế hoạch thu nhập, tích lũy và các nghĩa vụ tài chính hiện có.
+
+
+          Trường hợp sử dụng vốn vay, cần đánh giá cả lãi suất trong thời gian ưu đãi và phương án trả nợ sau khi kết thúc ưu đãi. Việc dự trù những tình huống thay đổi về thu nhập hoặc chi phí sinh hoạt sẽ giúp hạn chế rủi ro tài chính.
+
+
+          Các chương trình hỗ trợ lãi suất, giãn tiến độ thanh toán hoặc chính sách ưu đãi, nếu được áp dụng, cần được xem xét dựa trên điều kiện cụ thể của từng đợt bán hàng và hợp đồng giao dịch.
+
+
+          **Cân nhắc giá trị sử dụng và khả năng khai thác tài sản**
+
+
+          Đối với khách hàng mua để ở, giá trị căn hộ cần được đánh giá thông qua công năng thiết kế, môi trường sống, khả năng kết nối giao thông, tiện ích nội khu và chất lượng quản lý vận hành.
+
+
+          Với khách hàng đầu tư, những yếu tố như vị trí tòa tháp, diện tích, số phòng ngủ, hướng nhìn, mức độ hoàn thiện và nhu cầu thuê thực tế có thể ảnh hưởng đến khả năng khai thác cũng như tính thanh khoản của sản phẩm.
+
+
+          Hiệu quả đầu tư không nên chỉ dựa trên kỳ vọng tăng giá trong tương lai. Người mua cần so sánh tổng chi phí sở hữu với doanh thu cho thuê dự kiến, chi phí vận hành, thời gian trống khách và khả năng chuyển nhượng khi cần thiết.
+
+
+          **Lựa chọn căn hộ dựa trên mục tiêu sở hữu dài hạn**
+
+
+          Một căn hộ phù hợp không nhất thiết là sản phẩm có tổng giá thấp nhất, mà là sản phẩm đáp ứng được sự cân bằng giữa khả năng tài chính, nhu cầu sử dụng và giá trị tài sản.
+
+
+          Tại Capital Square, việc so sánh các phương án căn hộ theo từng tòa, tầng cao, diện tích, hướng ban công và tổng giá trị thanh toán sẽ giúp khách hàng đưa ra lựa chọn có cơ sở hơn.
+
+
+          Khi kế hoạch tài chính được xây dựng đồng bộ với mục tiêu sở hữu, người mua có thể chủ động hơn trong quá trình giao dịch và khai thác giá trị căn hộ trong dài hạn.
+    adminLabel: Văn bản chuyên sâu 2
 ogImage: /uploads/capital-square-da-nang-banner.webp
 image: /uploads/capital-square-da-nang-banner.webp
 imageAlt: căn hộ hạng sang capital square sông Hàn
