@@ -46,6 +46,19 @@ collections:
     value_field: '{{slug}}'
     display_fields: &id029
     - title
+  - label: Ghim nổi bật trong dự án
+    name: pinOnProject
+    widget: boolean
+    default: false
+    required: false
+    hint: 'Chỉ áp dụng khi sản phẩm thuộc một dự án. Độc lập với ghim trang chủ.'
+  - label: Thứ tự ghim trong dự án
+    name: projectPinOrder
+    widget: number
+    required: false
+    value_type: int
+    min: 1
+    hint: 'Số nhỏ ưu tiên trước; bỏ trống để sắp xếp theo ngày.'
   - label: Phân khu Vinhomes Hải Vân Bay
     name: subdivision
     condition: { field: project, value: vinhomes-hai-van-bay }
@@ -409,130 +422,295 @@ collections:
       name: lastLine
       widget: string
       required: false
-  - label: SECTION BUILDER — Tạo và sắp xếp các Section
+  - label: SECTION BUILDER — Chọn kiểu A–H
     name: contentLayers
     widget: list
     required: false
     collapsed: true
-    summary: '{{fields.heading}} — {{fields.type}}'
-    hint: 'Tạo các section nội dung, kéo thả thứ tự và gán menu. Sản phẩm, tin tức, form liên hệ được hiển thị tự động.'
-    fields:
-    - label: Hiển thị Section
-      name: enabled
-      widget: boolean
-      default: true
-      required: false
-    - label: Tên Section trong CMS
-      name: adminLabel
-      widget: string
-      required: false
-      hint: 'Chỉ dùng để quản trị, không hiển thị ngoài website.'
-    - label: Kiểu Section
-      name: type
-      widget: select
-      required: false
-      hint: 'Chọn kiểu bố cục. Section cũ chưa có trường này vẫn được giữ nguyên.'
-      options:
-      - { label: 'A — Ảnh và nội dung trái/phải', value: split }
-      - { label: 'B — Nội dung trên, gallery dưới', value: text-gallery }
-      - { label: 'C — Bộ sưu tập 4 ảnh', value: four-images }
-      - { label: 'D — Ảnh lớn toàn chiều ngang', value: full-image }
-      - { label: 'E — Văn bản chuyên sâu', value: rich-text }
-      - { label: 'F — Google Maps và tiện ích', value: map-amenities }
-      - { label: 'G — Tab mặt bằng / tiến độ', value: tabs }
-      - { label: 'H — 4 phân khu Vinhomes Hải Vân Bay', value: hai-van-zones }
-    - label: Liên kết với menu điều hướng
-      name: navTarget
-      widget: select
-      required: false
-      default: none
-      hint: 'Chọn mục menu sẽ cuộn đến Section này. Mỗi mục menu chỉ nên gán cho một Section.'
-      options:
-      - { label: 'Không gắn menu', value: none }
-      - { label: 'Tổng quan', value: overview }
-      - { label: 'Hình ảnh', value: gallery }
-      - { label: 'Mặt bằng', value: floorplan }
-      - { label: 'Vị trí', value: location }
-      - { label: 'Sản phẩm', value: products }
-      - { label: 'Liên hệ', value: contact }
-    - label: Tiêu đề Section (H2)
-      name: heading
-      widget: string
-      required: false
-      hint: 'Không nhập lại tên dự án hoặc tiêu đề H1.'
-    - label: Phụ đề Section (H3)
-      name: subheading
-      widget: string
-      required: false
-    - label: Nội dung Section
-      name: text
-      widget: markdown
-      required: false
-      hint: 'Nội dung chính của Section, hiển thị căn đều hai bên trên desktop.'
-    - label: Vị trí ảnh (áp dụng kiểu A)
-      name: imageSide
-      widget: select
-      required: false
-      options:
-      - label: Tự động xen kẽ
-        value: auto
-      - label: Ảnh bên trái
-        value: left
-      - label: Ảnh bên phải
-        value: right
-    - label: Ảnh và câu chuyện trong Section
-      name: images
-      widget: list
-      required: false
-      collapsed: true
-      summary: '{{fields.captionTitle}}'
-      hint: 'Một ảnh phủ ngang Section, hai ảnh chia đều, từ ba ảnh trở lên dùng gallery trượt. Mô tả bên dưới mỗi ảnh căn giữa.'
+    typeKey: type
+    summary: '{{fields.adminLabel}} — {{fields.heading}}'
+    hint: 'Khi thêm Section, chọn A–H; chỉ trường phù hợp kiểu được chọn hiển thị. Giữ nguyên dữ liệu Section cũ.'
+    types:
+    - label: 'A — Ảnh trái/phải, 1 ảnh'
+      name: split
+      widget: object
+      summary: '{{fields.adminLabel}} — {{fields.heading}}'
       fields:
-      - label: Ảnh
-        name: image
-        widget: image
-        required: true
-      - label: Tiêu đề câu chuyện
-        name: captionTitle
-        widget: string
+      - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
+      - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
+      - label: Liên kết menu điều hướng
+        name: navTarget
+        widget: select
+        default: none
         required: false
-      - label: Mô tả dưới ảnh
-        name: caption
-        widget: text
+        options:
+        - { label: Không gắn menu, value: none }
+        - { label: Tổng quan, value: overview }
+        - { label: Hình ảnh, value: gallery }
+        - { label: Mặt bằng, value: floorplan }
+        - { label: Vị trí, value: location }
+        - { label: Sản phẩm, value: products }
+        - { label: Liên hệ, value: contact }
+      - { label: Tiêu đề Section H2, name: heading, widget: string, required: false }
+      - { label: Phụ đề Section H3, name: subheading, widget: string, required: false }
+      - { label: Nội dung Section, name: text, widget: markdown, required: false }
+      - { label: URL bài báo cho nút Xem thêm, name: articleUrl, widget: string, required: false, hint: 'Bỏ trống để ẩn nút Xem thêm.' }
+      - label: Vị trí ảnh
+        name: imageSide
+        widget: select
         required: false
-      - label: Alt Text ảnh
-        name: imageAlt
-        widget: string
+        default: auto
+        options:
+        - { label: Tự động xen kẽ, value: auto }
+        - { label: Bên trái, value: left }
+        - { label: Bên phải, value: right }
+      - label: 'Ảnh chính (tối đa 1)'
+        name: images
+        widget: list
         required: false
-    - label: Các tab mặt bằng hoặc tiến độ (kiểu G)
+        collapsed: true
+        min: 0
+        max: 1
+        summary: '{{fields.captionTitle}}'
+        fields:
+        - { label: Ảnh, name: image, widget: image }
+        - { label: Alt Text ảnh, name: imageAlt, widget: string, required: false }
+    - label: 'B — Gallery nổi chữ hoặc tiến độ'
+      name: text-gallery
+      widget: object
+      summary: '{{fields.adminLabel}} — {{fields.heading}}'
+      fields:
+      - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
+      - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
+      - label: Liên kết menu điều hướng
+        name: navTarget
+        widget: select
+        default: none
+        required: false
+        options:
+        - { label: Không gắn menu, value: none }
+        - { label: Tổng quan, value: overview }
+        - { label: Hình ảnh, value: gallery }
+        - { label: Mặt bằng, value: floorplan }
+        - { label: Vị trí, value: location }
+        - { label: Sản phẩm, value: products }
+        - { label: Liên hệ, value: contact }
+      - { label: Tiêu đề Section H2, name: heading, widget: string, required: false }
+      - label: Kiểu gallery
+        name: galleryStyle
+        widget: select
+        required: false
+        hint: 'Nếu để trống, dữ liệu tiến độ cũ vẫn hiển thị dạng 3 ảnh.'
+        options:
+        - { label: Chữ H3 và mô tả nổi trên ảnh trượt, value: overlay }
+        - { label: Tiến độ 3 ảnh trên hàng, hơn 3 ảnh mới trượt, value: progress-three }
+      - { label: Nội dung Section, name: text, widget: markdown, required: false }
+      - label: 'Ảnh gallery, H3 và mô tả từng ảnh'
+        name: images
+        widget: list
+        required: false
+        collapsed: true
+        summary: '{{fields.captionTitle}}'
+        fields:
+        - { label: Ảnh, name: image, widget: image }
+        - { label: Tiêu đề ảnh H3, name: captionTitle, widget: string, required: false }
+        - { label: Mô tả ảnh, name: caption, widget: text, required: false }
+        - { label: Alt Text ảnh, name: imageAlt, widget: string, required: false }
+    - label: 'C — 4 ảnh tràn toàn chiều ngang'
+      name: four-images
+      widget: object
+      summary: '{{fields.adminLabel}} — {{fields.heading}}'
+      fields:
+      - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
+      - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
+      - label: Liên kết menu điều hướng
+        name: navTarget
+        widget: select
+        default: none
+        required: false
+        options:
+        - { label: Không gắn menu, value: none }
+        - { label: Tổng quan, value: overview }
+        - { label: Hình ảnh, value: gallery }
+        - { label: Mặt bằng, value: floorplan }
+        - { label: Vị trí, value: location }
+        - { label: Sản phẩm, value: products }
+        - { label: Liên hệ, value: contact }
+      - { label: Tiêu đề Section H2, name: heading, widget: string, required: false }
+      - { label: Mô tả chung, name: text, widget: markdown, required: false }
+      - label: 'Bộ đúng 4 ảnh'
+        name: images
+        widget: list
+        required: false
+        collapsed: true
+        min: 4
+        max: 4
+        summary: '{{fields.captionTitle}}'
+        fields:
+        - { label: Ảnh, name: image, widget: image }
+        - { label: Tiêu đề ảnh H3, name: captionTitle, widget: string, required: false }
+        - { label: Mô tả ảnh, name: caption, widget: text, required: false }
+        - { label: Alt Text ảnh, name: imageAlt, widget: string, required: false }
+    - label: 'D — Ảnh lớn toàn chiều ngang'
+      name: full-image
+      widget: object
+      summary: '{{fields.adminLabel}} — {{fields.heading}}'
+      fields:
+      - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
+      - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
+      - label: Liên kết menu điều hướng
+        name: navTarget
+        widget: select
+        default: none
+        required: false
+        options:
+        - { label: Không gắn menu, value: none }
+        - { label: Tổng quan, value: overview }
+        - { label: Hình ảnh, value: gallery }
+        - { label: Mặt bằng, value: floorplan }
+        - { label: Vị trí, value: location }
+        - { label: Sản phẩm, value: products }
+        - { label: Liên hệ, value: contact }
+      - { label: Tiêu đề Section H2, name: heading, widget: string, required: false }
+      - { label: Nội dung Section, name: text, widget: markdown, required: false }
+      - label: 'Ảnh lớn duy nhất'
+        name: images
+        widget: list
+        required: false
+        collapsed: true
+        min: 0
+        max: 1
+        summary: '{{fields.captionTitle}}'
+        fields:
+        - { label: Ảnh, name: image, widget: image }
+        - { label: Alt Text ảnh, name: imageAlt, widget: string, required: false }
+    - label: 'E — Văn bản bốn vùng 2×2'
+      name: rich-text
+      widget: object
+      summary: '{{fields.adminLabel}} — {{fields.heading}}'
+      fields:
+      - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
+      - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
+      - label: Liên kết menu điều hướng
+        name: navTarget
+        widget: select
+        default: none
+        required: false
+        options:
+        - { label: Không gắn menu, value: none }
+        - { label: Tổng quan, value: overview }
+        - { label: Hình ảnh, value: gallery }
+        - { label: Mặt bằng, value: floorplan }
+        - { label: Vị trí, value: location }
+        - { label: Sản phẩm, value: products }
+        - { label: Liên hệ, value: contact }
+      - label: Bốn vùng nội dung
+        name: richTextRegions
+        widget: list
+        required: false
+        collapsed: true
+        min: 0
+        max: 4
+        summary: '{{fields.heading}}'
+        hint: 'Mỗi vùng có H2 riêng; nút Xem thêm tự xuất hiện nếu nội dung dài.'
+        fields:
+        - { label: Tiêu đề vùng H2, name: heading, widget: string }
+        - { label: Nội dung vùng, name: text, widget: markdown, required: false }
+      - { label: Tiêu đề Section cũ (dự phòng), name: heading, widget: string, required: false }
+      - { label: Văn bản chuyên sâu cũ (không xóa), name: text, widget: markdown, required: false }
+    - label: 'F — Google Maps và tiện ích'
+      name: map-amenities
+      widget: object
+      summary: '{{fields.adminLabel}} — {{fields.heading}}'
+      fields:
+      - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
+      - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
+      - label: Liên kết menu điều hướng
+        name: navTarget
+        widget: select
+        default: none
+        required: false
+        options:
+        - { label: Không gắn menu, value: none }
+        - { label: Tổng quan, value: overview }
+        - { label: Hình ảnh, value: gallery }
+        - { label: Mặt bằng, value: floorplan }
+        - { label: Vị trí, value: location }
+        - { label: Sản phẩm, value: products }
+        - { label: Liên hệ, value: contact }
+      - { label: Tiêu đề Section H2, name: heading, widget: string, required: false }
+      - { label: Phụ đề Section H3, name: subheading, widget: string, required: false }
+      - { label: Nội dung Section, name: text, widget: markdown, required: false }
+      - { label: HTML nhúng Google Maps, name: mapEmbed, widget: text, required: false }
+      - label: Danh sách tiện ích
+        name: amenities
+        widget: list
+        required: false
+        collapsed: true
+        summary: '{{fields.name}}'
+        fields:
+        - { label: Tên địa điểm, name: name, widget: string }
+        - { label: Khoảng cách, name: distance, widget: string, required: false }
+        - { label: Thời gian di chuyển, name: travelTime, widget: string, required: false }
+        - { label: Ghi chú, name: note, widget: text, required: false }
+    - label: 'G — Mặt bằng dạng TAB'
       name: tabs
-      widget: list
-      required: false
-      collapsed: true
-      summary: '{{fields.title}}'
+      widget: object
+      summary: '{{fields.adminLabel}} — {{fields.heading}}'
       fields:
-      - { label: Tên tab, name: title, widget: string }
-      - { label: Ảnh tab, name: image, widget: image, required: false }
-      - { label: Alt ảnh, name: imageAlt, widget: string, required: false }
-      - { label: Nội dung tab, name: text, widget: markdown, required: false }
-    - label: Mã HTML nhúng Google Maps (kiểu F)
-      name: mapEmbed
-      widget: text
-      required: false
-      hint: 'Chỉ dán iframe nhúng Google Maps hợp lệ.'
-    - label: Danh sách tiện ích (kiểu F)
-      name: amenities
-      widget: list
-      required: false
-      collapsed: true
-      summary: '{{fields.name}}'
+      - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
+      - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
+      - label: Liên kết menu điều hướng
+        name: navTarget
+        widget: select
+        default: none
+        required: false
+        options:
+        - { label: Không gắn menu, value: none }
+        - { label: Tổng quan, value: overview }
+        - { label: Hình ảnh, value: gallery }
+        - { label: Mặt bằng, value: floorplan }
+        - { label: Vị trí, value: location }
+        - { label: Sản phẩm, value: products }
+        - { label: Liên hệ, value: contact }
+      - { label: Tiêu đề Section H2, name: heading, widget: string, required: false }
+      - { label: Nội dung Section, name: text, widget: markdown, required: false }
+      - label: Danh sách Tab
+        name: tabs
+        widget: list
+        collapsed: true
+        required: false
+        summary: '{{fields.title}}'
+        fields:
+        - { label: Tên nút Tab ngắn, name: tabLabel, widget: string, required: false, hint: 'Ví dụ Tổng thể, Tầng điển hình, Căn hộ.' }
+        - { label: Tiêu đề nội dung H3, name: title, widget: string }
+        - { label: Ảnh Tab, name: image, widget: image, required: false }
+        - { label: Alt ảnh, name: imageAlt, widget: string, required: false }
+        - { label: Nội dung Tab, name: text, widget: markdown, required: false }
+    - label: 'H — 4 phân khu Vinhomes Hải Vân Bay'
+      name: hai-van-zones
+      widget: object
+      summary: '{{fields.adminLabel}} — {{fields.heading}}'
       fields:
-      - { label: Tên địa điểm, name: name, widget: string }
-      - { label: Khoảng cách, name: distance, widget: string, required: false }
-      - { label: Thời gian di chuyển, name: travelTime, widget: string, required: false }
-      - { label: Ghi chú, name: note, widget: text, required: false }
+      - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
+      - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
+      - label: Liên kết menu điều hướng
+        name: navTarget
+        widget: select
+        default: none
+        required: false
+        options:
+        - { label: Không gắn menu, value: none }
+        - { label: Tổng quan, value: overview }
+        - { label: Hình ảnh, value: gallery }
+        - { label: Mặt bằng, value: floorplan }
+        - { label: Vị trí, value: location }
+        - { label: Sản phẩm, value: products }
+        - { label: Liên hệ, value: contact }
+      - { label: Ghi chú quản trị, name: adminNote, widget: string, required: false, hint: 'Chỉ sử dụng tại dự án Vinhomes Hải Vân Bay. Các ảnh phân khu nhập tại nhóm bên dưới.' }
   - label: Ảnh 4 phân khu Vinhomes Hải Vân Bay (chỉ dành cho Hải Vân Bay)
     name: haiVanZoneImages
+    condition: { field: slug, value: vinhomes-hai-van-bay }
     widget: object
     required: false
     collapsed: true
@@ -627,6 +805,19 @@ collections:
     search_fields: *id028
     value_field: '{{slug}}'
     display_fields: *id029
+  - label: Ghim nổi bật trong dự án
+    name: pinOnProject
+    widget: boolean
+    default: false
+    required: false
+    hint: 'Chỉ áp dụng khi sản phẩm thuộc một dự án. Độc lập với ghim trang chủ.'
+  - label: Thứ tự ghim trong dự án
+    name: projectPinOrder
+    widget: number
+    required: false
+    value_type: int
+    min: 1
+    hint: 'Số nhỏ ưu tiên trước; bỏ trống để sắp xếp theo ngày.'
   - label: Phân khu Vinhomes Hải Vân Bay
     name: subdivision
     condition: { field: project, value: vinhomes-hai-van-bay }
