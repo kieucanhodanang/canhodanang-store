@@ -85,6 +85,35 @@ contentLayers:
     navTarget: location
     adminLabel: googlemap
     heading: Vị trí dự án FourS Tower - Tâm điểm giữa lòng Ngũ Hành Sơn
+    mapEmbed: <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3835.074705513428!2d108.23966707575859!3d16.00962614102951!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421100032b7cc7%3A0x94f22bb7541ff2a7!2sFours%20Tower%20-%20Sun!5e0!3m2!1sen!2s!4v1794657564375!5m2!1sen!2s"
+      width="600" height="450" style="border:0;" allowfullscreen=""
+      loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    amenities:
+      - name: Bãi tắm Sơn Thủy
+        distance: 2km
+        travelTime: 5 phút
+        note: Đi dạo, tắm biển
+      - name: Danh thắng núi Ngũ Hành Sơn
+        distance: 3km
+        travelTime: 7 phút
+        note: Cắm trại, leo núi
+      - name: Bệnh viện Đa khoa Tâm Trí
+        distance: 3,5km
+        travelTime: 8 phút
+        note: An sinh đầy đủ
+      - name: Aeon Mall Hòa Xuân
+        distance: 2km
+        travelTime: 5 phút
+        note: Mua sắm, sinh hoạt
+      - name: Sân bay Quốc tế Đà Nẵng
+        distance: 8km
+        travelTime: 10 phút
+        note: Kết nối giao thông
+    text: FourS Tower tọa lạc tại giao lộ **Nguyễn Phước Lan – Minh Mạng**, thuộc
+      khu đô thị sinh thái Sun Riverpolis, khu vực phía Nam Đà Nẵng. Dự án sở
+      hữu vị trí kết nối thuận tiện đến biển Sơn Thủy, danh thắng Ngũ Hành Sơn,
+      trung tâm thành phố và các tuyến giao thông hướng về Hội An.
   - type: rich-text
     enabled: true
     navTarget: none
