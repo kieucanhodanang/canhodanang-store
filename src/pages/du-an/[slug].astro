@@ -579,20 +579,29 @@ const unitPrice = (item: typeof listings[number]) => {
     .cms-layout-text-gallery .cms-image-controls{justify-content:center;align-items:center;margin-top:14px}
     .cms-image-count{font-size:12px;color:#806b53;min-width:60px;text-align:center;font-weight:750}
     /* C: four full-width, equally sized photo stories; never two 50% columns. */
-    .cms-layout-four-images.section{display:flex;flex-direction:column;align-items:stretch;max-width:none;width:100%;padding-left:max(22px,calc((100vw - 1380px)/2));padding-right:max(22px,calc((100vw - 1380px)/2))}
-    .cms-layout-four-images .cms-layer-copy{width:100%;order:0;text-align:center;margin-bottom:22px}
-    .cms-layout-four-images .cms-layer-copy h2{font-size:clamp(27px,3.2vw,42px);max-width:920px;margin:0 auto}
+    .cms-layout-four-images.section{display:flex;flex-direction:column;align-items:stretch;max-width:none!important;width:100vw!important;position:relative;left:50%;margin-left:-50vw!important;margin-right:0!important;padding-left:20px!important;padding-right:20px!important}
+    .cms-layout-four-images .cms-layer-copy{width:100%;max-width:none;order:0;text-align:center;margin-bottom:22px}
+    .cms-layout-four-images .cms-layer-copy h2{font-size:clamp(28px,3.2vw,42px);max-width:none;width:100%;margin:0 auto}
     .cms-layout-four-images .cms-layer-copy .cms-layer-text{max-width:850px;margin:12px auto 0;text-align:center}
-    .cms-layout-four-images .cms-layer-images{width:100%;order:1;min-width:0}
-    .cms-layout-four-images .cms-image-track{width:100%;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-    .cms-layout-four-images .cms-image-item{display:flex;flex-direction:column;background:#fff;border:1px solid #dfd9ce;min-width:0;align-self:stretch}
+    .cms-layout-four-images .cms-layer-images{width:100%;max-width:none;order:1;min-width:0}
+    .cms-layout-four-images .cms-image-track{width:100%;max-width:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .cms-layout-four-images .cms-image-item{display:flex;flex-direction:column;background:transparent;border:0;box-shadow:none;padding:0;min-width:0;align-self:stretch}
     .cms-layout-four-images .cms-image-item .cms-zoom-button img{width:100%;aspect-ratio:4/3;object-fit:cover}
-    .cms-layout-four-images .cms-image-item .cms-image-heading{font-size:16px;line-height:1.5;min-height:4.5em;margin:12px 12px 7px;text-align:center}
-    .cms-layout-four-images .cms-image-item figcaption{padding:0 13px 10px;text-align:left}
+    .cms-layout-four-images .cms-image-item .cms-image-heading{font-size:16px;line-height:1.5;min-height:4.5em;margin:12px 4px 7px;text-align:center}
+    .cms-layout-four-images .cms-image-item figcaption{padding:0 4px 10px;text-align:left}
     .cms-layout-four-images .cms-image-item figcaption span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
     .cms-layout-four-images .cms-image-item.is-expanded figcaption span{display:block;overflow:visible}
-    .cms-caption-more{order:4;align-self:flex-start;margin:auto 13px 12px;padding:3px 0;border:0;border-bottom:1px solid #b68b4b;background:transparent;color:#926d37;font:700 12px 'Be Vietnam Pro',Arial,sans-serif;cursor:pointer}
+    .cms-caption-more{order:4;align-self:flex-start;margin:auto 4px 12px;padding:3px 0;border:0;border-bottom:1px solid #b68b4b;background:transparent;color:#926d37;font:700 12px 'Be Vietnam Pro',Arial,sans-serif;cursor:pointer}
     .cms-caption-more[hidden]{display:none!important}
+
+    /* One consistent size for section H2 headings across project pages. */
+    .experience .intro h2,
+    .experience .section-heading h2,
+    .experience .visual-heading h2,
+    .experience .cms-layer .cms-layer-copy > h2{
+      font-size:clamp(28px,3.2vw,42px);
+      line-height:1.22;
+    }
     /* E: centered headings, justified body text in a readable column. */
     .cms-layout-rich-text.section{display:block}
     .cms-layout-rich-text .cms-layer-copy{width:100%;max-width:950px;margin:0 auto}
