@@ -168,6 +168,279 @@ contentLayers:
     navTarget: none
     adminLabel: Nội dung
     type: rich-text
+    richTextRegions:
+      - heading: "Quy hoạch Capital Square – Tổ hợp đô thị bên sông Hàn"
+        text: >-
+          Capital Square Đà Nẵng được định hướng trở thành tổ hợp căn hộ cao cấp và
+          thương mại dịch vụ quy mô lớn bên bờ sông Hàn. Không đơn thuần cung cấp
+          không gian nhà ở, dự án hướng đến hình thành một cộng đồng cư dân hiện
+          đại, nơi các hoạt động sinh hoạt, thương mại, giải trí và chăm sóc sức
+          khỏe được tích hợp trong cùng một quần thể.
+
+
+          Với quy mô khoảng 6,14 ha, gồm 14 tòa căn hộ và 3.391 sản phẩm, Capital Square là một trong những dự án có quy mô đáng chú ý tại khu vực trung tâm Đà Nẵng. Giá trị khác biệt của dự án được xây dựng từ sự kết hợp giữa quy hoạch đô thị, hệ sinh thái hơn 88 tiện ích, trung tâm thương mại Grand Central Mall và định hướng phát triển dòng căn hộ sở hữu lâu dài.
+
+
+
+
+          Capital Square được phát triển theo mô hình **City in City – Thành phố trong lòng thành phố**, trong đó không gian căn hộ, thương mại và tiện ích được tổ chức thành một hệ sinh thái có tính kết nối.
+
+
+          Thay vì chỉ tập trung phát triển các tòa nhà độc lập, mô hình này hướng đến việc hình thành môi trường sống đồng bộ với hệ thống giao thông nội khu, cảnh quan, không gian sinh hoạt cộng đồng và các khu chức năng phục vụ nhu cầu thường ngày.
+
+
+          Toàn dự án được quy hoạch thành hai phân khu chính: Capital Square 2 – Capital State và Capital Square 3 – Square District.
+
+
+          ## Capital Square 2 – Capital State
+
+
+          Capital Square 2 có quy mô khoảng 31.960 m², gồm 7 tòa căn hộ và một tòa thương mại dịch vụ, cung cấp khoảng 1.681 căn hộ.
+
+
+          Phân khu được phát triển bởi Công ty TNHH Mega Assets, với định hướng hình thành không gian sống cao cấp kết hợp các hoạt động thương mại và dịch vụ đô thị.
+
+
+          Điểm đáng chú ý của Capital State là sự kết hợp giữa chức năng nhà ở và hệ thống tiện ích trong một tổng thể quy hoạch thống nhất. Cách tổ chức này góp phần tạo điều kiện để cư dân tiếp cận các hoạt động sinh hoạt, mua sắm và giải trí ngay trong khu vực sinh sống.
+
+
+          ## Capital Square 3 – Square District
+
+
+          Capital Square 3 có diện tích khoảng 29.427 m², được quy hoạch với 7 tòa căn hộ, cung cấp khoảng 1.710 sản phẩm.
+
+
+          Phân khu do Công ty TNHH Bất động sản SIH làm chủ đầu tư, phát triển theo định hướng hình thành cộng đồng cư dân hiện đại với các chức năng nhà ở, thương mại và tiện ích đô thị.
+
+
+          Sự kết hợp giữa Capital State và Square District tạo nên quần thể căn hộ có quy mô đáng kể, đồng thời đặt ra yêu cầu cao về tổ chức giao thông, chất lượng vận hành và quản lý các không gian sử dụng chung.
+
+
+          Đối với người mua nhà, giá trị của một khu đô thị không chỉ được thể hiện qua quy mô xây dựng mà còn nằm ở khả năng duy trì môi trường sống ổn định, tiện nghi và thuận tiện trong dài hạn.
+      - heading: "Hạ tầng Capital Square – Hai tầng hầm liên thông"
+        text: >-
+
+
+          Hạ tầng đỗ xe là một trong những yếu tố ảnh hưởng trực tiếp đến trải nghiệm sinh hoạt tại các tổ hợp căn hộ cao tầng.
+
+
+          Capital Square được giới thiệu với **hai tầng hầm liên thông có tổng diện tích khoảng 119.048 m²**, phục vụ nhu cầu tổ chức giao thông và đỗ phương tiện trong quần thể.
+
+
+          Quy mô này cho thấy sự chú trọng đối với hạ tầng kỹ thuật, đặc biệt khi dự án phát triển đồng thời nhiều tòa căn hộ và khu vực thương mại dịch vụ.
+
+
+          ## Tổ chức không gian đỗ xe và giao thông nội bộ
+
+
+          Đối với cư dân sinh sống tại chung cư, khu vực đỗ xe không chỉ là nơi bảo quản phương tiện mà còn là một phần quan trọng của hành trình di chuyển mỗi ngày.
+
+
+          Hệ thống tầng hầm liên thông tạo điều kiện tổ chức các khu vực đỗ xe và kết nối đến những tòa nhà trong dự án.
+
+
+          Tuy nhiên, trải nghiệm sử dụng thực tế còn phụ thuộc vào số lượng chỗ đỗ được phân bổ, chiều rộng đường lưu thông, khả năng tiếp cận thang máy và phương án quản lý phương tiện.
+
+
+          Đây là những tiêu chí người mua căn hộ nên tìm hiểu kỹ, nhất là những gia đình sở hữu ô tô hoặc có nhu cầu sử dụng nhiều phương tiện cá nhân.
+
+
+          ## An ninh, phòng cháy chữa cháy và quản lý vận hành
+
+
+          Với tổ hợp có quy mô hàng nghìn căn hộ, công tác quản lý hạ tầng đóng vai trò quan trọng đối với chất lượng sống.
+
+
+          Các yếu tố như hệ thống kiểm soát ra vào, giám sát an ninh, thông gió tầng hầm, thoát nước và phòng cháy chữa cháy cần được vận hành đồng bộ.
+
+
+          Đối với người mua để ở lâu dài, chất lượng quản lý những hạng mục này có ý nghĩa không kém hệ thống tiện ích hay thiết kế bên trong căn hộ.
+      - heading: "Chất lượng sống và thiết kế căn hộ Capital Square"
+        text: >-
+
+
+          Đối với người mua nhà, một căn hộ có thiết kế phù hợp mới chỉ là một phần của trải nghiệm sống.
+
+
+          Chất lượng cư trú còn phụ thuộc vào khả năng tiếp cận tiện ích, tổ chức giao thông, mức độ riêng tư, môi trường cộng đồng và chất lượng quản lý tòa nhà.
+
+
+          ## Sự thuận tiện trong sinh hoạt hằng ngày
+
+
+          Với định hướng tích hợp nhiều chức năng, Capital Square hướng đến giảm sự phân tán của các hoạt động thường nhật.
+
+
+          Cư dân có thêm lựa chọn trong việc tập luyện, thư giãn, mua sắm và sử dụng dịch vụ ngay trong quần thể.
+
+
+          Sự thuận tiện này đặc biệt có ý nghĩa đối với những gia đình có con nhỏ, người thường xuyên làm việc tại nhà hoặc khách hàng đề cao việc tối ưu thời gian.
+
+
+          ## Môi trường sống dành cho nhiều thế hệ
+
+
+          Capital Square phát triển các dòng căn hộ phục vụ nhu cầu sử dụng đa dạng, từ cá nhân, cặp đôi đến gia đình nhiều thành viên.
+
+
+          Khi kết hợp với hệ thống tiện ích nội khu, dự án hướng đến xây dựng môi trường sinh hoạt phù hợp với nhiều nhóm tuổi.
+
+
+          Đây là yếu tố quan trọng đối với khách hàng mua để ở lâu dài, bởi nhu cầu sử dụng nhà ở thường thay đổi theo từng giai đoạn của cuộc sống.
+
+
+          ## Chất lượng quản lý quyết định trải nghiệm lâu dài
+
+
+          Với quần thể gồm 14 tòa căn hộ, công tác vận hành có vai trò đặc biệt quan trọng.
+
+
+          Hệ thống thang máy, an ninh, vệ sinh, cảnh quan, bãi đỗ xe và bảo trì cần được quản lý hiệu quả để duy trì chất lượng công trình.
+
+
+          Người mua nên tìm hiểu rõ các khoản phí quản lý, quy định sử dụng tiện ích, phương án vận hành và quyền lợi đối với phần sở hữu chung.
+
+
+          Một dự án có hệ thống tiện ích phong phú chỉ phát huy đầy đủ giá trị khi các tiện ích được duy trì ổn định và sử dụng thuận tiện.
+
+
+          # Các dòng căn hộ Capital Square và nhu cầu sử dụng thực tế
+
+
+          Capital Square phát triển nhiều loại hình căn hộ, từ sản phẩm phục vụ nhu cầu ở cơ bản đến những dòng căn hộ có diện tích lớn và thiết kế đặc biệt.
+
+
+          Sự đa dạng này giúp khách hàng có thêm lựa chọn phù hợp với ngân sách, quy mô gia đình và mục tiêu sở hữu.
+
+
+          ## Căn hộ 1PN và 1PN+ – Linh hoạt cho người trẻ
+
+
+          Nhóm căn hộ một phòng ngủ phù hợp với người độc thân, cặp đôi hoặc khách hàng tìm kiếm không gian sống tại khu vực trung tâm.
+
+
+          Đối với sản phẩm 1PN+, phần diện tích mở rộng có thể đáp ứng thêm nhu cầu làm việc hoặc sinh hoạt đa năng tùy theo thiết kế cụ thể.
+
+
+          Nhóm sản phẩm này cũng đáng nghiên cứu đối với khách hàng quan tâm đến thị trường cho thuê dài hạn.
+
+
+          ## Căn hộ 2PN và 2PN+ – Lựa chọn cho gia đình trẻ
+
+
+          Căn hộ hai phòng ngủ là nhóm sản phẩm phù hợp với nhu cầu sử dụng phổ biến của các gia đình nhỏ.
+
+
+          Không gian hai phòng ngủ cho phép phân chia khu vực sinh hoạt của bố mẹ và con cái, đồng thời mang lại sự linh hoạt khi nhu cầu gia đình thay đổi.
+
+
+          Đối với các căn 2PN+, phần công năng bổ sung có thể đáp ứng nhu cầu làm việc tại nhà hoặc sử dụng làm không gian đa năng.
+
+
+          ## Căn hộ 3PN và các sản phẩm cao cấp
+
+
+          Các căn hộ ba phòng ngủ hướng đến gia đình đông thành viên hoặc khách hàng có nhu cầu sử dụng diện tích lớn.
+
+
+          Bên cạnh đó, những sản phẩm đặc biệt như Duplex và Penthouse mang đến lựa chọn cho nhóm khách hàng ưu tiên không gian sống khác biệt, sự riêng tư và trải nghiệm sử dụng cao cấp.
+
+
+          Với các dòng sản phẩm này, khách hàng nên đánh giá kỹ chi phí sở hữu, hoàn thiện nội thất và vận hành bên cạnh giá mua ban đầu.
+      - heading: "Pháp lý, giá bán và lựa chọn căn hộ Capital Square"
+        text: >-
+
+
+          Capital Square được giới thiệu với dòng căn hộ nhà ở có hình thức sở hữu lâu dài dành cho người Việt Nam đáp ứng điều kiện pháp luật.
+
+
+          Dự án gồm hai phân khu do các pháp nhân khác nhau làm chủ đầu tư:
+
+
+          * **Capital Square 2 – Capital State:** Công ty TNHH Mega Assets.
+
+          * **Capital Square 3 – Square District:** Công ty TNHH Bất động sản SIH.
+
+
+          Đối với khách hàng, việc phân biệt thương hiệu phát triển dự án và pháp nhân ký hợp đồng mua bán là yêu cầu quan trọng.
+
+
+          Trước khi giao dịch, người mua cần đối chiếu hồ sơ pháp lý của tòa nhà và căn hộ cụ thể, điều kiện bán nhà ở hình thành trong tương lai, hợp đồng mua bán, nghĩa vụ tài chính và tình trạng thế chấp nếu có.
+
+
+          Quyền sở hữu của người nước ngoài được xác định theo điều kiện, thời hạn và giới hạn số lượng nhà ở mà pháp luật cho phép.
+
+
+          Những nội dung này cần được làm rõ bằng hồ sơ và hợp đồng, không chỉ thông qua tài liệu quảng bá sản phẩm.
+
+
+          # Giá bán Capital Square – Đánh giá giá trị căn hộ từ nhiều yếu tố
+
+
+          Giá bán căn hộ Capital Square phụ thuộc vào phân khu, tòa tháp, tầng cao, loại hình sản phẩm, diện tích, hướng nhìn và chính sách bán hàng tại từng thời điểm.
+
+
+          Ngay trong cùng một dự án, hai căn hộ có diện tích tương đương vẫn có thể chênh lệch đáng kể về giá trị do khác biệt về vị trí, tầng cao, đặc điểm căn góc hoặc tầm nhìn.
+
+
+          ## Đơn giá trên mét vuông và tổng chi phí sở hữu
+
+
+          Khi so sánh căn hộ, khách hàng nên xem xét đồng thời giá bán tổng và đơn giá trên diện tích thông thủy.
+
+
+          Bên cạnh giá mua, tổng chi phí sở hữu còn có thể bao gồm các khoản thuế phí, chi phí hoàn thiện nội thất, phí quản lý và chi phí sử dụng các dịch vụ liên quan.
+
+
+          Đối với khách hàng sử dụng vốn vay, việc tính toán khả năng trả nợ sau giai đoạn ưu đãi lãi suất đặc biệt quan trọng.
+
+
+          ## Giá trị sử dụng và khả năng khai thác cho thuê
+
+
+          Một căn hộ có vị trí phù hợp, công năng dễ sử dụng và chi phí vận hành hợp lý thường có lợi thế hơn khi đáp ứng nhu cầu ở thực hoặc cho thuê dài hạn.
+
+
+          Với Capital Square, hệ thống tiện ích và dịch vụ thương mại là những yếu tố có thể góp phần tăng sức hấp dẫn đối với người thuê.
+
+
+          Tuy nhiên, hiệu quả khai thác cần được tính toán bằng dòng tiền thực tế, bao gồm doanh thu thuê, tỷ lệ trống phòng, chi phí nội thất, phí quản lý và các nghĩa vụ tài chính.
+
+
+          ## Giá trị tài sản trong dài hạn
+
+
+          Đối với khách hàng có mục tiêu tích lũy tài sản, chất lượng công trình, tính pháp lý, năng lực vận hành và nhu cầu nhà ở thực tế là những yếu tố cần được ưu tiên.
+
+
+          Khả năng tăng giá của căn hộ không chỉ phụ thuộc vào quy hoạch hay danh tiếng của dự án mà còn chịu ảnh hưởng từ diễn biến thị trường, nguồn cung cạnh tranh và mức giá mua ban đầu.
+
+
+          # Có nên mua căn hộ Capital Square Đà Nẵng?
+
+
+          Capital Square là dự án đáng nghiên cứu đối với những khách hàng muốn sở hữu căn hộ trong một tổ hợp đô thị có quy mô lớn, hệ sinh thái tiện ích đa dạng và định hướng phát triển thương mại dịch vụ đồng bộ.
+
+
+          Đối với gia đình mua để ở, những lợi thế cần xem xét là công năng căn hộ, môi trường sinh hoạt, khả năng sử dụng tiện ích và chất lượng quản lý trong dài hạn.
+
+
+          Đối với khách hàng mua để cho thuê, cần ưu tiên sản phẩm có tổng vốn đầu tư phù hợp, công năng dễ khai thác và khả năng tiếp cận nhóm khách thuê mục tiêu.
+
+
+          Với khách hàng tích lũy tài sản, hồ sơ pháp lý, giá mua, chi phí sở hữu và khả năng chuyển nhượng là những tiêu chí cần được đánh giá kỹ trước khi quyết định.
+
+
+          Giá trị của Capital Square không chỉ nằm ở quy mô 14 tòa căn hộ hay danh mục hơn 88 tiện ích, mà còn phụ thuộc vào khả năng hoàn thiện, vận hành và duy trì chất lượng của toàn bộ quần thể trong tương lai.
+
+
+          # Tư vấn lựa chọn căn hộ Capital Square Đà Nẵng
+
+
+          Căn Hộ Đà Nẵng hỗ trợ khách hàng tìm hiểu và so sánh các căn hộ Capital Square theo phân khu, tòa tháp, diện tích, số phòng ngủ, hướng ban công, tầm nhìn và tổng giá trị sản phẩm.
+
+
+          Khách hàng có thể tham khảo danh sách căn hộ đang bán và cho thuê trên website, lựa chọn mã căn phù hợp với nhu cầu an cư hoặc đầu tư, đồng thời nhận tư vấn về chính sách thanh toán và hồ sơ sản phẩm.
     text: >-
       Capital Square Đà Nẵng được định hướng trở thành tổ hợp căn hộ cao cấp và
       thương mại dịch vụ quy mô lớn bên bờ sông Hàn. Không đơn thuần cung cấp
