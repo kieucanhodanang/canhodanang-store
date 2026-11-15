@@ -349,7 +349,10 @@ collections:
     - ^[a-z0-9]+(?:-[a-z0-9]+)*$
     - 'Chỉ dùng chữ thường không dấu, số và dấu gạch ngang. Ví dụ: capital-square'
     hint: 'Ví dụ: capital-square. Không nhập /du-an/ hoặc .md. Sau khi xuất bản không nên đổi slug vì sẽ đổi URL.'
-  - *id003
+  - label: Mô tả ngắn dự án (hiển thị tại phần Tổng quan)
+    name: description
+    widget: text
+    hint: Đoạn giới thiệu hiển thị trên trang dự án, không phải Meta Description dành cho Google.
   - label: Chủ đầu tư
     name: developer
     widget: string
