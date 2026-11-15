@@ -245,6 +245,9 @@ contentLayers:
 
 
           Việc làm rõ những thông tin này giúp đánh giá chính xác giá trị sử dụng của căn hộ sân vườn.
+
+
+          Khách hàng có thể đối chiếu hai phương án đang giao dịch tại dự án: [căn góc F1.03A22 – 2 phòng ngủ có sân vườn](https://canhodanang.store/can-ho/ban-can-goc-f1-03a22-fours-tower-da-nang-2pn-san-vuon-rieng-79m-view-song/) và [căn F5.0721 – 1PN+ có sân vườn](https://canhodanang.store/can-ho/ban-can-ho-f5-0721-fours-tower-da-nang-tang-7-san-vuon-rieng-63-5m-1pn/).
       - heading: Hệ thống tiện ích FourS Tower – Hướng đến trải nghiệm sống đồng bộ
         text: >-
           FourS Tower được định hướng phát triển không gian sống kết hợp các
@@ -398,6 +401,9 @@ contentLayers:
 
 
           Tuy nhiên, giá trị thực tế cần được đánh giá dựa trên mặt bằng từng tòa, khả năng đón nắng, thông gió, mức độ riêng tư và những thay đổi cảnh quan có thể xảy ra trong tương lai.
+
+
+          Chẳng hạn, [căn 1PN+ F2.0906 tầng 9, hướng Đông Nam](https://canhodanang.store/can-ho/ban-can-ho-1pn-fours-tower-f2-0906-view-bien-tang-9-huong-dong-nam/) là một sản phẩm cụ thể để người mua tham khảo hướng ban công và vị trí căn hộ.
 
 
           ### Chính sách thanh toán và tổng chi phí sở hữu
