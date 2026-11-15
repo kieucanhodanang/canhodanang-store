@@ -22,7 +22,7 @@ const layerMarkdown = (value: unknown) => {
     const line=raw.trim();
     if(!line){closeList();continue;}
     const heading=line.match(/^(#{1,6})\s+(.+)$/);
-    if(heading){closeList();const level=Math.min(6,heading[1].length+2);result.push('<h'+level+'>'+inline(heading[2])+'</h'+level+'>');continue;}
+    if(heading){closeList();const level=Math.max(3,Math.min(6,heading[1].length));result.push('<h'+level+'>'+inline(heading[2])+'</h'+level+'>');continue;}
     const bullet=line.match(/^[-*+]\s+(.+)$/),numbered=line.match(/^\d+[.)]\s+(.+)$/);
     if(bullet||numbered){const next=bullet?'ul':'ol';if(list!==next){closeList();result.push('<'+next+'>');list=next;}result.push('<li>'+inline((bullet||numbered)![1])+'</li>');continue;}
     closeList();result.push('<p>'+inline(line)+'</p>');
@@ -240,13 +240,13 @@ const unitPrice = (item: typeof listings[number]) => {
   return formatted + ' triệu/m²';
 };
 ---
-<Base title={seoTitle} description={seoDescription} image={d?.image || undefined} imageAlt={d?.imageAlt || d?.title}>
+<Base title={seoTitle} description={seoDescription} image={d?.ogImage || d?.image || undefined} imageAlt={d?.imageAlt || d?.title}>
   <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />
   <main class="experience">
     <nav class="preview-bar" aria-label="Đường dẫn"><a href="/">Trang chủ</a><span> / </span><a href="/du-an/">Dự án</a><span> / </span><span aria-current="page">{d?.title}</span></nav>
     <section class="cinema" id="dau-trang">
       <div class="slides">
-        {images.length ? images.map((src,i)=><img src={src} alt={`Phối cảnh ${d?.title || 'dự án'} ${i+1}`} class:list={['slide',{'active':i===0}]} loading={i===0?'eager':'lazy'} />) : <div class="no-image">Hình ảnh dự án đang cập nhật</div>}
+        {images.length ? images.map((src,i)=><img src={src} alt={i===0 ? (d?.imageAlt?.trim() || `Phối cảnh tổng thể ${d?.title || 'dự án'}`) : `Phối cảnh ${d?.title || 'dự án'} ${i+1}`} class:list={['slide',{'active':i===0}]} loading={i===0?'eager':'lazy'} />) : <div class="no-image">Hình ảnh dự án đang cập nhật</div>}
       </div>
       <div class="cinema-shade"></div>
       <div class="cinema-top"><span>CANHO<span class="gold">DANANG</span>.STORE</span><span>PROJECT EXPERIENCE / 01</span></div>
