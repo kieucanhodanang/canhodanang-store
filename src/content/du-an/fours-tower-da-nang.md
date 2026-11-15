@@ -369,18 +369,6 @@ contentLayers:
 
 
           Việc lựa chọn sản phẩm nên dựa trên khả năng tài chính và mức độ phù hợp với chiến lược sở hữu dài hạn của từng khách hàng.
-
-
-          ### Khách hàng tích lũy tài sản dài hạn
-
-
-          Đối với người mua với mục tiêu nắm giữ tài sản, những yếu tố cần xem xét gồm vị trí, pháp lý, chất lượng công trình, tiến độ hoàn thiện khu đô thị và khả năng duy trì nhu cầu sử dụng.
-
-
-          Giá trị căn hộ trong dài hạn không chỉ phụ thuộc vào mức giá mua ban đầu mà còn chịu ảnh hưởng bởi chất lượng vận hành, sự phát triển của khu vực và nguồn cung cạnh tranh.
-
-
-          Việc lựa chọn sản phẩm nên dựa trên khả năng tài chính và mức độ phù hợp với chiến lược sở hữu dài hạn của từng khách hàng.
       - heading: Giá bán FourS Tower Đà Nẵng – Những yếu tố quyết định giá trị căn hộ
         text: >-
           Giá bán căn hộ FourS Tower có sự khác biệt tùy theo tòa tháp, tầng
