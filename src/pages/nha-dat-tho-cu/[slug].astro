@@ -85,7 +85,7 @@ const breadcrumbSchema = {
 };
 const jsonLd = JSON.stringify([propertySchema, breadcrumbSchema]).replace(/</g, '\\u003c');
 ---
-<Base title={seoTitle} description={seoDescription} image={data.ogImage || data.image || undefined} imageAlt={data.imageAlt || data.title} type="article">
+<Base title={seoTitle} description={seoDescription} image={data.ogImage || data.image || undefined} imageAlt={data.imageAlt || data.title} type="article" publishedTime={data.date instanceof Date ? data.date.toISOString() : undefined} modifiedTime={data.updatedAt instanceof Date ? data.updatedAt.toISOString() : (data.date instanceof Date ? data.date.toISOString() : undefined)}>
   <script type="application/ld+json" set:html={jsonLd} />
   <div class="property-page">
     <div class="property-wrap">

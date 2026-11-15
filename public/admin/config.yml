@@ -607,13 +607,13 @@ collections:
         - { label: Vị trí, value: location }
         - { label: Sản phẩm, value: products }
         - { label: Liên hệ, value: contact }
-      - label: Bốn vùng nội dung
+      - label: Tối đa 5 vùng nội dung
         name: richTextRegions
         widget: list
         required: false
         collapsed: true
         min: 0
-        max: 4
+        max: 5
         summary: '{{fields.heading}}'
         hint: 'Mỗi vùng có H2 riêng; nút Xem thêm tự xuất hiện nếu nội dung dài.'
         fields:
@@ -690,7 +690,7 @@ collections:
         - { label: Ảnh Tab, name: image, widget: image, required: false }
         - { label: Alt ảnh, name: imageAlt, widget: string, required: false }
         - { label: Nội dung Tab, name: text, widget: markdown, required: false }
-    - label: 'H — 4 phân khu Vinhomes Hải Vân Bay'
+    - label: 'H — CHỈ dự án Vinhomes Hải Vân Bay (4 phân khu)'
       name: hai-van-zones
       widget: object
       summary: '{{fields.adminLabel}} — {{fields.heading}}'

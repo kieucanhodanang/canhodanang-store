@@ -17,7 +17,7 @@ export default defineConfig({
         const pathname = new URL(page).pathname;
 
         // Không đưa trang quản trị vào Sitemap
-        return !pathname.startsWith('/admin');
+        return !pathname.startsWith('/admin') && !['/mau-giao-dien-du-an', '/mau-giao-dien-du-an/'].includes(pathname);
       }
     })
   ]

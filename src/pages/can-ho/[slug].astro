@@ -9,8 +9,9 @@ export async function getStaticPaths() {
   // Astro chạy getStaticPaths trong scope riêng: khai báo danh sách khu vực ngay trong hàm.
   const regions = [
     { slug: 'son-tra', name: 'Sơn Trà' },
-    { slug: 'ngu-hanh-son', name: 'Ngũ Hành Sơn' },
     { slug: 'hai-chau', name: 'Hải Châu' },
+    { slug: 'thanh-khe', name: 'Thanh Khê' },
+    { slug: 'ngu-hanh-son', name: 'Ngũ Hành Sơn' },
   ];
   const apartments = await getCollection('can-ho');
   const reserved = new Set(regions.map((region) => region.slug));
@@ -52,6 +53,11 @@ const regionGuides: Record<string, { intro: string; highlights: string[]; advice
     intro: 'Hải Châu phù hợp để tìm hiểu khi ưu tiên sinh hoạt và làm việc tại khu vực trung tâm Đà Nẵng. Mỗi tòa nhà có đặc điểm riêng về giao thông, chỗ đỗ xe, tiện ích và mức độ thuận tiện trong giờ cao điểm.',
     highlights: ['Khảo sát giao thông, bãi đỗ xe và lối tiếp cận tòa nhà.', 'Xem kỹ diện tích thực tế, tình trạng nội thất, phí dịch vụ và quy định cư trú.', 'Kiểm tra hồ sơ pháp lý, thông tin chủ sở hữu và điều kiện giao dịch trước khi đặt cọc.'],
     advice: 'Nên lập danh sách các tiêu chí bắt buộc như ngân sách, số phòng ngủ, thời gian di chuyển và tiện ích. Sau đó đối chiếu từng tin đăng để chọn căn hộ phù hợp.'
+  },
+  'thanh-khe': {
+    intro: 'Thanh Khê có mạng lưới khu dân cư và tuyến đường kết nối với trung tâm Đà Nẵng. Khả năng tiếp cận tiện ích và đặc điểm giao thông cần được đánh giá theo địa chỉ từng căn hộ.',
+    highlights: ['Kiểm tra vị trí phường, tuyến đường và khoảng cách tới nơi làm việc, trường học.', 'Đối chiếu phí quản lý, diện tích sử dụng, tiện ích và chỗ đỗ xe.', 'Kiểm tra pháp lý, tình trạng giao dịch và hồ sơ căn hộ trước khi đặt cọc.'],
+    advice: 'Nên so sánh các căn hộ có diện tích và công năng tương đương, kết hợp khảo sát khu vực vào thời điểm thực tế.'
   }
 };
 const regionGuide = region ? regionGuides[region.slug] : undefined;
@@ -81,6 +87,10 @@ const regionSeoMetadata: Record<string, { title: string; description: string }> 
   'hai-chau': {
     title: 'Căn Hộ Hải Châu Đà Nẵng | Mua Bán & Cho Thuê',
     description: 'Tìm mua hoặc thuê căn hộ Hải Châu, trung tâm Đà Nẵng. Tham khảo thông tin vị trí, giá chào, diện tích và số phòng ngủ theo từng tin đăng.'
+  },
+  'thanh-khe': {
+    title: 'Căn Hộ Thanh Khê Đà Nẵng | Mua Bán & Cho Thuê',
+    description: 'Khám phá căn hộ Thanh Khê, Đà Nẵng đang bán và cho thuê. Xem khu vực, mức giá, diện tích, phòng ngủ và thông tin từng căn hộ.'
   }
 };
 const regionSeoTitle = region ? regionSeoMetadata[region.slug]?.title || `Căn Hộ ${region.name} Đà Nẵng` : '';
@@ -127,7 +137,7 @@ const saleApartmentsForSidebar = !region ? (await getCollection('can-ho')).filte
 const allProjectsForSidebar = !region ? (await getCollection('du-an')).filter(item => item.data.status === 'published') : [];
 const projectSaleCounts = new Map<string, number>();
 const districtSaleCounts = new Map<string, number>();
-const sidebarDistricts = [{slug:'son-tra',name:'Sơn Trà'},{slug:'ngu-hanh-son',name:'Ngũ Hành Sơn'},{slug:'hai-chau',name:'Hải Châu'}];
+const sidebarDistricts = [{slug:'son-tra',name:'Sơn Trà'},{slug:'hai-chau',name:'Hải Châu'},{slug:'thanh-khe',name:'Thanh Khê'},{slug:'ngu-hanh-son',name:'Ngũ Hành Sơn'}];
 for (const item of saleApartmentsForSidebar) {
   if (item.data.project) projectSaleCounts.set(item.data.project, (projectSaleCounts.get(item.data.project) || 0) + 1);
   const district = sidebarDistricts.find(area => normalizeRelatedDistrict(area.name) === normalizeRelatedDistrict(item.data.district));
@@ -209,7 +219,7 @@ const schema = {
   '@graph': region ? [regionBreadcrumb] : [apartmentSchema, ...(offerSchema ? [offerSchema] : []), breadcrumbSchema],
 };
 ---
-<Base title={seoTitle} description={seoDescription} image={region ? undefined : (data.image || undefined)} imageAlt={data.imageAlt || data.title}>
+<Base title={seoTitle} description={seoDescription} image={region ? undefined : (data.ogImage || data.image || undefined)} imageAlt={data.imageAlt || data.title} publishedTime={!region && data.date instanceof Date ? data.date.toISOString() : undefined} modifiedTime={!region && data.updatedAt instanceof Date ? data.updatedAt.toISOString() : (!region && data.date instanceof Date ? data.date.toISOString() : undefined)}>
   <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
   {region ? (
     <section class="region-page">

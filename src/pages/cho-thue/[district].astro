@@ -10,8 +10,6 @@ export function getStaticPaths() {
     { slug: 'hai-chau', name: 'Hải Châu' },
     { slug: 'thanh-khe', name: 'Thanh Khê' },
     { slug: 'ngu-hanh-son', name: 'Ngũ Hành Sơn' },
-    { slug: 'lien-chieu', name: 'Liên Chiểu' },
-    { slug: 'cam-le', name: 'Cẩm Lệ' },
   ].map(area => ({ params: { district: area.slug }, props: { area } }));
 }
 const { area } = Astro.props;

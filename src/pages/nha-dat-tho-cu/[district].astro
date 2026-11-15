@@ -9,6 +9,7 @@ export function getStaticPaths() {
     { slug: 'son-tra', name: 'Sơn Trà' },
     { slug: 'hai-chau', name: 'Hải Châu' },
     { slug: 'thanh-khe', name: 'Thanh Khê' },
+    { slug: 'ngu-hanh-son', name: 'Ngũ Hành Sơn' },
   ];
   return districtAreas.map(area => ({ params: { district: area.slug }, props: { area } }));
 }

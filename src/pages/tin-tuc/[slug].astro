@@ -67,7 +67,7 @@ const schema = {
   ],
 };
 ---
-<Base title={seoTitle} description={description} image={image} imageAlt={data.imageAlt || data.title} type="article">
+<Base title={seoTitle} description={description} image={image} imageAlt={data.imageAlt || data.title} type="article" publishedTime={dateText} modifiedTime={updatedText}>
   <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
   <main class="news-page">
     <div class="news-layout"><article class="news-wrap">
