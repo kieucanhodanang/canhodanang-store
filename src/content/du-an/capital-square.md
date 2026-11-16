@@ -101,7 +101,7 @@ contentLayers:
     adminLabel: Nội dung
     type: rich-text
     richTextRegions:
-      - heading: Quy hoạch Capital Square – Tổ hợp đô thị đa chức năng bên sông Hàn
+      - heading: Quy hoạch đô thị đa chức năng bên sông Hàn
         text: >-
           Capital Square Đà Nẵng được định hướng trở thành tổ hợp căn hộ cao cấp
           và thương mại dịch vụ quy mô lớn bên bờ sông Hàn. Không đơn thuần cung
@@ -124,7 +124,7 @@ contentLayers:
           Toàn dự án được quy hoạch thành hai phân khu chính: Capital Square 2 – Capital State và Capital Square 3 – Square District.
 
 
-          ## Capital Square 2 – Capital State
+          ### Capital Square 2 – Capital State
 
 
           Capital Square 2 có quy mô khoảng 31.960 m², gồm 7 tòa căn hộ và một tòa thương mại dịch vụ, cung cấp khoảng 1.681 căn hộ.
@@ -136,7 +136,7 @@ contentLayers:
           Điểm đáng chú ý của Capital State là sự kết hợp giữa chức năng nhà ở và hệ thống tiện ích trong một tổng thể quy hoạch thống nhất. Cách tổ chức này góp phần tạo điều kiện để cư dân tiếp cận các hoạt động sinh hoạt, mua sắm và giải trí ngay trong khu vực sinh sống.
 
 
-          ## Capital Square 3 – Square District
+          ### Capital Square 3 – Square District
 
 
           Capital Square 3 có diện tích khoảng 29.427 m², được quy hoạch với 7 tòa căn hộ, cung cấp khoảng 1.710 sản phẩm.
@@ -149,7 +149,7 @@ contentLayers:
 
 
           Đối với người mua nhà, giá trị của một khu đô thị không chỉ được thể hiện qua quy mô xây dựng mà còn nằm ở khả năng duy trì môi trường sống ổn định, tiện nghi và thuận tiện trong dài hạn.
-      - heading: Hạ tầng Capital Square – Hai tầng hầm liên thông
+      - heading: Hạ tầng hai tầng hầm liên thông
         text: >-
           
 
@@ -162,7 +162,7 @@ contentLayers:
           Quy mô này cho thấy sự chú trọng đối với hạ tầng kỹ thuật, đặc biệt khi dự án phát triển đồng thời nhiều tòa căn hộ và khu vực thương mại dịch vụ.
 
 
-          ## Tổ chức không gian đỗ xe và giao thông nội bộ
+          ### Tổ chức không gian đỗ xe và giao thông nội bộ
 
 
           Đối với cư dân sinh sống tại chung cư, khu vực đỗ xe không chỉ là nơi bảo quản phương tiện mà còn là một phần quan trọng của hành trình di chuyển mỗi ngày.
@@ -177,7 +177,7 @@ contentLayers:
           Đây là những tiêu chí người mua căn hộ nên tìm hiểu kỹ, nhất là những gia đình sở hữu ô tô hoặc có nhu cầu sử dụng nhiều phương tiện cá nhân.
 
 
-          ## An ninh, phòng cháy chữa cháy và quản lý vận hành
+          ### An ninh, phòng cháy chữa cháy và quản lý vận hành
 
 
           Với tổ hợp có quy mô hàng nghìn căn hộ, công tác quản lý hạ tầng đóng vai trò quan trọng đối với chất lượng sống.
@@ -187,7 +187,7 @@ contentLayers:
 
 
           Đối với người mua để ở lâu dài, chất lượng quản lý những hạng mục này có ý nghĩa không kém hệ thống tiện ích hay thiết kế bên trong căn hộ.
-      - heading: Chất lượng sống và thiết kế căn hộ Capital Square
+      - heading: Chất lượng sống và công năng căn hộ
         text: >-
           
 
@@ -197,7 +197,7 @@ contentLayers:
           Chất lượng cư trú còn phụ thuộc vào khả năng tiếp cận tiện ích, tổ chức giao thông, mức độ riêng tư, môi trường cộng đồng và chất lượng quản lý tòa nhà.
 
 
-          ## Sự thuận tiện trong sinh hoạt hằng ngày
+          ### Sự thuận tiện trong sinh hoạt hằng ngày
 
 
           Với định hướng tích hợp nhiều chức năng, Capital Square hướng đến giảm sự phân tán của các hoạt động thường nhật.
@@ -209,7 +209,7 @@ contentLayers:
           Sự thuận tiện này đặc biệt có ý nghĩa đối với những gia đình có con nhỏ, người thường xuyên làm việc tại nhà hoặc khách hàng đề cao việc tối ưu thời gian.
 
 
-          ## Môi trường sống dành cho nhiều thế hệ
+          ### Môi trường sống dành cho nhiều thế hệ
 
 
           Capital Square phát triển các dòng căn hộ phục vụ nhu cầu sử dụng đa dạng, từ cá nhân, cặp đôi đến gia đình nhiều thành viên.
@@ -221,7 +221,7 @@ contentLayers:
           Đây là yếu tố quan trọng đối với khách hàng mua để ở lâu dài, bởi nhu cầu sử dụng nhà ở thường thay đổi theo từng giai đoạn của cuộc sống.
 
 
-          ## Chất lượng quản lý quyết định trải nghiệm lâu dài
+          ### Chất lượng quản lý quyết định trải nghiệm lâu dài
 
 
           Với quần thể gồm 14 tòa căn hộ, công tác vận hành có vai trò đặc biệt quan trọng.
@@ -236,7 +236,7 @@ contentLayers:
           Một dự án có hệ thống tiện ích phong phú chỉ phát huy đầy đủ giá trị khi các tiện ích được duy trì ổn định và sử dụng thuận tiện.
 
 
-          # Các dòng căn hộ Capital Square và nhu cầu sử dụng thực tế
+          ### Các dòng căn hộ Capital Square và nhu cầu sử dụng thực tế
 
 
           Capital Square phát triển nhiều loại hình căn hộ, từ sản phẩm phục vụ nhu cầu ở cơ bản đến những dòng căn hộ có diện tích lớn và thiết kế đặc biệt.
@@ -245,7 +245,7 @@ contentLayers:
           Sự đa dạng này giúp khách hàng có thêm lựa chọn phù hợp với ngân sách, quy mô gia đình và mục tiêu sở hữu.
 
 
-          ## Căn hộ 1PN và 1PN+ – Linh hoạt cho người trẻ
+          #### Căn hộ 1PN và 1PN+ – Linh hoạt cho người trẻ
 
 
           Nhóm căn hộ một phòng ngủ phù hợp với người độc thân, cặp đôi hoặc khách hàng tìm kiếm không gian sống tại khu vực trung tâm.
@@ -257,7 +257,7 @@ contentLayers:
           Nhóm sản phẩm này cũng đáng nghiên cứu đối với khách hàng quan tâm đến thị trường cho thuê dài hạn.
 
 
-          ## Căn hộ 2PN và 2PN+ – Lựa chọn cho gia đình trẻ
+          #### Căn hộ 2PN và 2PN+ – Lựa chọn cho gia đình trẻ
 
 
           Căn hộ hai phòng ngủ là nhóm sản phẩm phù hợp với nhu cầu sử dụng phổ biến của các gia đình nhỏ.
@@ -269,7 +269,7 @@ contentLayers:
           Đối với các căn 2PN+, phần công năng bổ sung có thể đáp ứng nhu cầu làm việc tại nhà hoặc sử dụng làm không gian đa năng.
 
 
-          ## Căn hộ 3PN và các sản phẩm cao cấp
+          #### Căn hộ 3PN và các sản phẩm cao cấp
 
 
           Các căn hộ ba phòng ngủ hướng đến gia đình đông thành viên hoặc khách hàng có nhu cầu sử dụng diện tích lớn.
@@ -279,7 +279,7 @@ contentLayers:
 
 
           Với các dòng sản phẩm này, khách hàng nên đánh giá kỹ chi phí sở hữu, hoàn thiện nội thất và vận hành bên cạnh giá mua ban đầu.
-      - heading: Pháp lý, giá bán và lựa chọn căn hộ Capital Square
+      - heading: Pháp lý và quyền sở hữu căn hộ
         text: >-
           Capital Square được giới thiệu với dòng căn hộ nhà ở có hình thức sở
           hữu lâu dài dành cho người Việt Nam đáp ứng điều kiện pháp luật.
@@ -376,7 +376,7 @@ contentLayers:
     enabled: true
     navTarget: none
     richTextRegions:
-      - heading: Giá bán Capital Square – Đánh giá giá trị căn hộ từ nhiều yếu tố
+      - heading: Giá bán và những yếu tố quyết định giá trị căn hộ
         text: >-
           Giá bán căn hộ Capital Square phụ thuộc vào phân khu, tòa tháp, tầng
           cao, loại hình sản phẩm, diện tích, hướng nhìn và chính sách bán hàng
@@ -417,7 +417,7 @@ contentLayers:
 
 
           Khả năng tăng giá của căn hộ không chỉ phụ thuộc vào quy hoạch hay danh tiếng của dự án mà còn chịu ảnh hưởng từ diễn biến thị trường, nguồn cung cạnh tranh và mức giá mua ban đầu.
-      - heading: Có nên mua căn hộ Capital Square Đà Nẵng?
+      - heading: Có nên mua căn hộ Capital Square?
         text: >-
           Capital Square là dự án đáng nghiên cứu đối với những khách hàng muốn
           sở hữu căn hộ trong một tổ hợp đô thị có quy mô lớn, hệ sinh thái tiện
@@ -434,7 +434,7 @@ contentLayers:
 
 
           Giá trị của Capital Square không chỉ nằm ở quy mô 14 tòa căn hộ hay danh mục hơn 88 tiện ích, mà còn phụ thuộc vào khả năng hoàn thiện, vận hành và duy trì chất lượng của toàn bộ quần thể trong tương lai.
-      - heading: Tư vấn lựa chọn căn hộ Capital Square Đà Nẵng
+      - heading: Tư vấn lựa chọn căn hộ phù hợp
         text: >-
           Căn Hộ Đà Nẵng hỗ trợ khách hàng tìm hiểu và so sánh các căn hộ
           Capital Square theo phân khu, tòa tháp, diện tích, số phòng ngủ, hướng
@@ -442,8 +442,7 @@ contentLayers:
 
 
           Khách hàng có thể tham khảo danh sách căn hộ đang bán và cho thuê trên website, lựa chọn mã căn phù hợp với nhu cầu an cư hoặc đầu tư, đồng thời nhận tư vấn về chính sách thanh toán và hồ sơ sản phẩm.
-      - heading: Kế hoạch tài chính khi mua căn hộ Capital Square – Chủ động dòng tiền
-          và tối ưu giá trị sở hữu
+      - heading: Kế hoạch tài chính – Chủ động dòng tiền và chi phí sở hữu
         text: >-
           Mua căn hộ tại Capital Square Đà Nẵng không chỉ là quyết định lựa chọn
           một không gian sống bên sông Hàn mà còn là bài toán phân bổ nguồn vốn
