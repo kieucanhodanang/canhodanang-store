@@ -1,17 +1,4 @@
 ---
-ogImage: /uploads/khu-vinh-may-cua-hai-van-bay.webp
-showInMenu: true
-featuredOrder: 2
-floorPlanText: >-
-  Mặt bằng tổng thể và cơ cấu các loại hình BĐS
-
-
-  ![Mặt bằng tổng thể và cơ cấu các loại hình BĐS của Vinhomes Hải Vân Bay](/uploads/vinhomes-hai-van-bay-masterplan-infographic.png "Mặt bằng tổng thể và cơ cấu các loại hình BĐS của Vinhomes Hải Vân Bay")
-propertyTypes:
-  - can-ho
-  - shophouse
-  - biet-thu
-showGoogleMap: true
 title: Vinhomes Hải Vân Bay Đà Nẵng
 seoTitle: Vinhomes Hải Vân Bay Đà Nẵng – 4 Phân Khu, Giá 2026
 seoDescription: Vinhomes Hải Vân Bay Đà Nẵng quy mô 512,2 ha tại Làng Vân. Khám
@@ -32,6 +19,7 @@ district: Liên Chiểu
 totalArea: 512,2 ha
 towerCount: ""
 unitCount: 5792 bđs
+handoverDate: Quỹ IV 2029
 buildingDensity: 19,8%
 introSlogan:
   firstLine: Đệ nhất hùng quan vịnh biển
@@ -212,6 +200,7 @@ contentLayers:
           Khách hàng quan tâm biệt thự nghỉ dưỡng nên đánh giá thêm khả năng quan sát cảnh quan, khoảng cách giữa các công trình và diện tích sân vườn. Những lợi thế về tầm nhìn phải được kiểm tra tại đúng vị trí lô đất, thay vì suy ra từ hình ảnh phối cảnh toàn phân khu.
         imageAlt: Mặt bằng quy hoạch phân khu Vịnh Mây Vinhomes Hải Vân Bay thể hiện các
           cụm biệt thự và đường giao thông theo địa hình triền đồi
+        image: /uploads/mat-bang-vinh-may-hai-van-bay.webp
   - vinhMayTitle: Vịnh Mây – Biệt thự triền đồi phong cách Malibu
     enabled: true
     tinhVanTitle: Tinh Vân – Không gian biệt thự phong cách Nhật Bản
@@ -570,22 +559,35 @@ haiVanZoneImages:
   bachVan: /uploads/khu-bach-van-cua-hai-van-bay.webp
   daoNgoc: /uploads/khu-dao-ngoc-cua-hai-van-bay.webp
   vinhMay: /uploads/khu-vinh-may-cua-hai-van-bay.webp
+gallery: []
+ogImage: /uploads/khu-vinh-may-cua-hai-van-bay.webp
+image: /uploads/vinhomes-hai-van-bay.webp
+imageAlt: bản đồ vinhomes hải vân bay
+logo: /uploads/logo-vinhomes-hai-van-bay-danang.png
 showLogoInFooter: true
+logoOrder: 1
+showInMenu: true
+featuredOrder: 2
+floorPlanText: >-
+  Mặt bằng tổng thể và cơ cấu các loại hình BĐS
+
+
+  ![Mặt bằng tổng thể và cơ cấu các loại hình BĐS của Vinhomes Hải Vân Bay](/uploads/vinhomes-hai-van-bay-masterplan-infographic.png "Mặt bằng tổng thể và cơ cấu các loại hình BĐS của Vinhomes Hải Vân Bay")
+propertyTypes:
+  - can-ho
+  - shophouse
+  - biet-thu
+showGoogleMap: true
 googleMapsEmbed: <iframe
   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6444.7976762812405!2d108.13747668803464!3d16.163811938431788!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142211ba47587fb%3A0xc83c1b5f84675371!2zVmluaG9tZXMgTMOgbmcgVsOibg!5e0!3m2!1sen!2s!4v1794296871123!5m2!1sen!2s"
   width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
   referrerpolicy="strict-origin-when-cross-origin"></iframe>
-logo: /uploads/logo-vinhomes-hai-van-bay-danang.png
 floorPlanImages:
   - /uploads/vinhomes-hai-van-bay-masterplan-infographic.png
-handoverDate: Quỹ IV 2029
-gallery: []
-image: /uploads/vinhomes-hai-van-bay.webp
-imageAlt: bản đồ vinhomes hải vân bay
 logoAlt: logo vinhomes hải vân bay
 distributionStatus: dang-phan-phoi
 date: 2026-11-07T12:34:00
-updatedAt: 2026-11-10T14:49:00
+updatedAt: 2026-11-16T16:37:00
 status: published
 featured: true
 progressItems:
