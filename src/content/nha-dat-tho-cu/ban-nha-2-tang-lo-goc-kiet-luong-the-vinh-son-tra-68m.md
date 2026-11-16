@@ -21,14 +21,29 @@ legal: Sổ hồng lâu dài
 floors: 2
 bedrooms: 2
 bathrooms: 3
-gallery:
-  - /uploads/bon-tam-jacuzzi-ket-hop-tieu-canh-xanh-trong-villa-mini-luong-the-vinh-son-tra.jpg
-  - /uploads/khong-gian-ban-an-thong-tang-voi-cua-kinh-lon-va-anh-sang-tu-nhien-tai-villa-luong-the-vinh.jpg
-  - /uploads/phong-ngu-master-nha-2-tang-luong-the-vinh-son-tra-voi-noi-that-go-va-cua-so-thoang-sang.jpg
-  - /uploads/he-tu-bep-hien-dai-bo-tri-duoi-cau-thang-trong-villa-mini-68m-kiet-luong-the-vinh.jpg
-  - /uploads/phong-khach-nha-lo-goc-luong-the-vinh-son-tra-voi-sofa-cua-kinh-lon-va-noi-that-hien-dai.jpg
-  - /uploads/cau-thang-go-ket-hop-lan-can-trang-va-khong-gian-thong-tang-tai-nha-2-tang-luong-the-vinh.jpg
-  - /uploads/toan-canh-bon-tam-jacuzzi-op-go-ket-hop-bep-va-khong-gian-mo-trong-villa-mini-son-tra.jpg
+gallery: []
+galleryItems:
+  - image: /uploads/phong-khach-nha-lo-goc-luong-the-vinh-son-tra-voi-sofa-cua-kinh-lon-va-noi-that-hien-dai.jpg
+    imageAlt: Phòng khách nhà lô góc Lương Thế Vinh Sơn Trà với sofa, cửa kính lớn
+      và nội thất hiện đại
+  - image: /uploads/bon-tam-jacuzzi-ket-hop-tieu-canh-xanh-trong-villa-mini-luong-the-vinh-son-tra.jpg
+    imageAlt: Bồn tắm jacuzzi kết hợp tiểu cảnh xanh trong villa mini Lương Thế Vinh
+      Sơn Trà
+  - image: /uploads/phong-ngu-master-nha-2-tang-luong-the-vinh-son-tra-voi-noi-that-go-va-cua-so-thoang-sang.jpg
+    imageAlt: Phòng ngủ master nhà 2 tầng Lương Thế Vinh Sơn Trà với nội thất gỗ và
+      cửa sổ thoáng sáng
+  - image: /uploads/he-tu-bep-hien-dai-bo-tri-duoi-cau-thang-trong-villa-mini-68m-kiet-luong-the-vinh.jpg
+    imageAlt: Hệ tủ bếp hiện đại bố trí dưới cầu thang trong villa mini 68m² kiệt
+      Lương Thế Vinh
+  - image: /uploads/cau-thang-go-ket-hop-lan-can-trang-va-khong-gian-thong-tang-tai-nha-2-tang-luong-the-vinh.jpg
+    imageAlt: Cầu thang gỗ kết hợp lan can trắng và không gian thông tầng tại nhà 2
+      tầng Lương Thế Vinh
+  - image: /uploads/khong-gian-ban-an-thong-tang-voi-cua-kinh-lon-va-anh-sang-tu-nhien-tai-villa-luong-the-vinh.jpg
+    imageAlt: Không gian bàn ăn thông tầng với cửa kính lớn và ánh sáng tự nhiên tại
+      villa Lương Thế Vinh
+  - image: /uploads/toan-canh-bon-tam-jacuzzi-op-go-ket-hop-bep-va-khong-gian-mo-trong-villa-mini-son-tra.jpg
+    imageAlt: Toàn cảnh bồn tắm jacuzzi ốp gỗ kết hợp bếp và không gian mở trong
+      villa mini Sơn Trà
 ogImage: /uploads/bon-tam-jacuzzi-ket-hop-tieu-canh-xanh-trong-villa-mini-luong-the-vinh-son-tra.jpg
 image: /uploads/bon-tam-jacuzzi-ket-hop-tieu-canh-xanh-trong-villa-mini-luong-the-vinh-son-tra.jpg
 imageAlt: Bồn tắm jacuzzi kết hợp tiểu cảnh xanh trong villa mini Lương Thế Vinh Sơn Trà
@@ -36,6 +51,9 @@ date: 2026-11-16T17:54:00
 status: published
 showOnHome: true
 featured: true
+highlightTags:
+  - Lô góc
+  - Villa hiện đại
 featuredOrder: 1
 ---
 Nhà 2 tầng phong cách villa mini nằm trong kiệt đường Lương Thế Vinh, khu vực Sơn Trà, Đà Nẵng. Bất động sản sở hữu diện tích đất 68m², thiết kế lô góc hai mặt thoáng, đường ô tô 7 chỗ có thể tiếp cận. Không gian sống được hoàn thiện đầy đủ nội thất, nổi bật với bồn tắm jacuzzi và thiết kế tận dụng ánh sáng tự nhiên.
