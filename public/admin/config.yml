@@ -251,7 +251,7 @@ collections:
     required: false
     hint: 'Ví dụ: Đầy đủ nội thất, Nội thất cơ bản, Bàn giao thô.'
   - &id005
-    label: Thư viện hình ảnh
+    label: Thư viện hình ảnh cũ (giữ nguyên ảnh đã đăng)
     name: gallery
     widget: list
     required: false
@@ -259,6 +259,22 @@ collections:
       label: Hình ảnh
       name: image
       widget: image
+  - &richGalleryV2
+    label: Thư viện ảnh có ALT riêng (mới)
+    name: galleryItems
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.imageAlt}}'
+    hint: 'Với ảnh mới, thêm ảnh tại đây và nhập ALT theo từng ảnh. Thư viện hình ảnh cũ bên trên vẫn giữ nguyên để bảo toàn ảnh đã đăng.'
+    fields:
+    - label: Hình ảnh
+      name: image
+      widget: image
+    - label: ALT mô tả ảnh (SEO)
+      name: imageAlt
+      widget: string
+      hint: 'Mô tả đúng nội dung ảnh, ngắn gọn, không nhồi từ khóa. Ví dụ: Phòng khách villa mini kiệt Lương Thế Vinh Sơn Trà.'
   - &id006
     label: Ảnh chia sẻ mạng xã hội
     name: ogImage
@@ -309,6 +325,19 @@ collections:
     name: featured
     widget: boolean
     default: false
+  - &highlightTagsV2
+    label: Nhãn nổi bật (tối đa 3 nhãn tự nhập)
+    name: highlightTags
+    widget: list
+    required: false
+    min: 1
+    max: 3
+    collapsed: false
+    hint: 'Nhập 1–3 nhãn ngắn, ví dụ Giá tốt, Nở hậu, Căn góc. Chỉ hiển thị nhãn trên thẻ sản phẩm khi đã ghim nổi bật trên trang chủ hoặc ghim trong dự án.'
+    field:
+      label: Nội dung nhãn
+      name: label
+      widget: string
   - &id014
     label: Thứ tự ưu tiên (số nhỏ lên trước)
     name: featuredOrder
@@ -923,6 +952,7 @@ collections:
     required: false
     options: *id001
   - *id005
+  - *richGalleryV2
   - *id006
   - *id007
   - *id008
@@ -931,6 +961,7 @@ collections:
   - *id011
   - *id012
   - *id013
+  - *highlightTagsV2
   - *id014
   - *id015
 - name: bai-viet
