@@ -73,7 +73,7 @@ unitCount: 312 căn hộ
 introSlogan:
   firstLine: Kiệt tác kiến trúc Chăm Pa
   highlight: giao thoa thời thượng
-imageAlt: M Riverside Đà Nẵng
+imageAlt: M Riverside Đà Nẵng cập nhật mới nhất
 showLogoInFooter: true
 googleMapsEmbed: <iframe
   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.121914563066!2d108.22041907576013!3d16.05916213970618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314219005d03e299%3A0x1a16f7fb5335687d!2sM%20Riverside%20Da%20Nang!5e0!3m2!1sen!2s!4v1794305395478!5m2!1sen!2s"
@@ -488,9 +488,9 @@ logo: /uploads/logo-m-riverside-da-nang.png
 logoAlt: logo M Riverside Đà Nẵng
 distributionStatus: dang-phan-phoi
 date: 2026-11-09T16:08:00
-updatedAt: 2026-11-10T17:14:00
+updatedAt: 2026-11-16T11:20:00
 status: published
-featured: false
+featured: true
 progressText: >-
   Dự án **M Riverside Đà Nẵng** đã được cấp phép xây dựng và hiện đang trong quá
   trình thi công phần móng và hầm (đã hoàn thành 100% công tác đào đất tầng hầm
