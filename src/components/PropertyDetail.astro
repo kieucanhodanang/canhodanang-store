@@ -10,7 +10,8 @@ interface Property {
   description?: string | null;
   image?: string | null;
   imageAlt?: string | null;
-  gallery?: string[] | null;
+  gallery?: string[] | null; // Ảnh cũ: danh sách URL, không có ALT riêng
+  galleryItems?: { image: string; imageAlt?: string | null }[] | null; // Ảnh mới có ALT riêng
   price?: string | null;
   priceValue?: number | null; // million VND
   area?: string | null;
@@ -48,7 +49,25 @@ const {
   phone = '0869437415',
   zalo = '0869437415',
 } = Astro.props;
-const gallery = Array.from(new Set([property.image, ...(property.gallery ?? [])].filter((item): item is string => typeof item === 'string' && item.trim().length > 0)));
+// Giữ ảnh cũ và bổ sung ảnh CMS mới có ALT độc lập. Nếu một ảnh tồn tại ở cả hai
+// danh sách, lấy ALT được nhập thủ công, không hiển thị ảnh hai lần.
+const altByImage = new Map<string, string>();
+for (const item of property.galleryItems ?? []) {
+  if (item?.image?.trim() && item.imageAlt?.trim()) {
+    altByImage.set(item.image.trim(), item.imageAlt.trim());
+  }
+}
+const gallerySources = [
+  property.image,
+  ...(property.gallery ?? []),
+  ...(property.galleryItems ?? []).map(item => item?.image),
+].filter((src): src is string => typeof src === 'string' && src.trim().length > 0).map(src => src.trim());
+const gallery = Array.from(new Set(gallerySources)).map((src, index) => ({
+  src,
+  alt: src === property.image && property.imageAlt?.trim()
+    ? property.imageAlt.trim()
+    : altByImage.get(src) || `Ảnh ${index + 1} của ${property.title}`,
+}));
 const isSale = (property.transaction ?? 'ban') === 'ban';
 const displayPrice = formatListingPrice(property.price, property.transaction ?? 'ban', property.priceValue);
 const pricePerSqm = isSale && typeof property.priceValue === 'number' && property.priceValue > 0 && typeof property.areaValue === 'number' && property.areaValue > 0
@@ -126,7 +145,7 @@ const uniqueId = `property-${Math.random().toString(36).slice(2, 10)}`;
   {gallery.length > 0 && (
     <div class="property-gallery" aria-label="Thư viện hình ảnh bất động sản">
       <div class="gallery-main">
-        <img class="gallery-featured" src={gallery[0]} alt={property.imageAlt || property.title} loading="eager" decoding="async" />
+        <img class="gallery-featured" src={gallery[0].src} alt={gallery[0].alt} loading="eager" decoding="async" />
         <button type="button" class="gallery-fullscreen" aria-label="Mở ảnh toàn màn hình" title="Xem toàn màn hình">⛶ <span>Xem toàn màn hình</span></button>
         {gallery.length > 1 && (
           <>
@@ -139,15 +158,15 @@ const uniqueId = `property-${Math.random().toString(36).slice(2, 10)}`;
       <dialog class="gallery-lightbox" aria-label="Xem ảnh bất động sản toàn màn hình">
         <button type="button" class="lightbox-close" aria-label="Đóng ảnh">×</button>
         <button type="button" class="lightbox-nav lightbox-prev" aria-label="Ảnh trước">❮</button>
-        <img class="lightbox-image" src={gallery[0]} alt={property.imageAlt || property.title} />
+        <img class="lightbox-image" src={gallery[0].src} alt={gallery[0].alt} />
         <button type="button" class="lightbox-nav lightbox-next" aria-label="Ảnh tiếp theo">❯</button>
         <span class="lightbox-count"></span>
       </dialog>
       {gallery.length > 1 && (
         <div class="gallery-thumbs" aria-label="Chọn ảnh">
-          {gallery.map((src, index) => (
+          {gallery.map(({ src, alt }, index) => (
             <button type="button" class:list={['gallery-thumb', { active: index === 0 }]} data-index={index} aria-label={`Xem ảnh ${index + 1}`} aria-pressed={index === 0}>
-              <img src={src} alt={`Ảnh ${index + 1} của ${property.title}`} loading="lazy" decoding="async" />
+              <img src={src} alt={alt} loading="lazy" decoding="async" />
             </button>
           ))}
         </div>
