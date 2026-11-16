@@ -42,6 +42,12 @@ const latestNews = (await getCollection('bai-viet'))
   .filter(item => item.data.status === 'published')
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
+// Nhãn tự nhập: hỗ trợ string[] của Decap CMS và dữ liệu đối tượng cũ nếu có.
+const listingHighlightTags = (raw) => Array.isArray(raw)
+  ? raw.map(value => typeof value === 'string' ? value : value?.label)
+      .filter(value => typeof value === 'string' && value.trim())
+      .map(value => value.trim().slice(0, 40)).slice(0, 3)
+  : [];
 // Dữ liệu tin đăng thật từ Decap CMS, được Astro dựng sẵn khi build.
 // Chỉ công khai các sản phẩm còn giao dịch; không đưa bài dự án vào danh sách hàng bán.
 const projectNames = new Map(projects.map((item) => [item.id, item.data.title]));
@@ -166,12 +172,6 @@ const duAn = projects
     };
   });
 
-// Nhãn tự nhập: hỗ trợ string[] của Decap CMS và dữ liệu đối tượng cũ nếu có.
-const listingHighlightTags = (raw) => Array.isArray(raw)
-  ? raw.map(value => typeof value === 'string' ? value : value?.label)
-      .filter(value => typeof value === 'string' && value.trim())
-      .map(value => value.trim().slice(0, 40)).slice(0, 3)
-  : [];
 // Danh sách trang chủ: ghim trước, sau đó bài mới nhất; chỉ lấy bài còn giao dịch.
 const homePriority = (a, b) => {
   const pinned = Number(Boolean(b.data.featured)) - Number(Boolean(a.data.featured));
