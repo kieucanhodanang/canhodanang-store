@@ -693,7 +693,7 @@ collections:
     - label: 'H — CHỈ dự án Vinhomes Hải Vân Bay (4 phân khu)'
       name: hai-van-zones
       widget: object
-      summary: '{{fields.adminLabel}} — {{fields.heading}}'
+      summary: '{{fields.adminLabel}} — 4 phân khu'
       fields:
       - { label: Hiển thị Section, name: enabled, widget: boolean, default: true, required: false }
       - { label: Tên Section trong CMS, name: adminLabel, widget: string, required: false }
@@ -710,7 +710,15 @@ collections:
         - { label: Vị trí, value: location }
         - { label: Sản phẩm, value: products }
         - { label: Liên hệ, value: contact }
-      - { label: Ghi chú quản trị, name: adminNote, widget: string, required: false, hint: 'Chỉ sử dụng tại dự án Vinhomes Hải Vân Bay. Các ảnh phân khu nhập tại nhóm bên dưới.' }
+      - { label: Ghi chú quản trị, name: adminNote, widget: string, required: false, hint: 'Chỉ sử dụng tại Vinhomes Hải Vân Bay. Ảnh phân khu quản lý ở nhóm Ảnh 4 phân khu bên dưới. Để trống tiêu đề/mô tả sẽ dùng nội dung mặc định.' }
+      - { label: 'H3 phân khu Tinh Vân', name: tinhVanTitle, widget: string, required: false, hint: 'Tiêu đề H3 trên thẻ Tinh Vân; không nhập ###. Để trống dùng Tinh Vân.' }
+      - { label: 'Mô tả phân khu Tinh Vân', name: tinhVanDescription, widget: text, required: false, hint: 'Đoạn mô tả nằm dưới H3 Tinh Vân; không nhập thêm H2/H3.' }
+      - { label: 'H3 phân khu Bạch Vân', name: bachVanTitle, widget: string, required: false, hint: 'Tiêu đề H3 trên thẻ Bạch Vân; không nhập ###. Để trống dùng Bạch Vân.' }
+      - { label: 'Mô tả phân khu Bạch Vân', name: bachVanDescription, widget: text, required: false, hint: 'Đoạn mô tả nằm dưới H3 Bạch Vân; không nhập thêm H2/H3.' }
+      - { label: 'H3 phân khu Đảo Ngọc', name: daoNgocTitle, widget: string, required: false, hint: 'Tiêu đề H3 trên thẻ Đảo Ngọc; không nhập ###. Để trống dùng Đảo Ngọc.' }
+      - { label: 'Mô tả phân khu Đảo Ngọc', name: daoNgocDescription, widget: text, required: false, hint: 'Đoạn mô tả nằm dưới H3 Đảo Ngọc; không nhập thêm H2/H3.' }
+      - { label: 'H3 phân khu Vịnh Mây', name: vinhMayTitle, widget: string, required: false, hint: 'Tiêu đề H3 trên thẻ Vịnh Mây; không nhập ###. Để trống dùng Vịnh Mây.' }
+      - { label: 'Mô tả phân khu Vịnh Mây', name: vinhMayDescription, widget: text, required: false, hint: 'Đoạn mô tả nằm dưới H3 Vịnh Mây; không nhập thêm H2/H3.' }
   - label: Ảnh 4 phân khu Vinhomes Hải Vân Bay (chỉ dành cho Hải Vân Bay)
     name: haiVanZoneImages
     condition: { field: slug, value: vinhomes-hai-van-bay }
