@@ -119,6 +119,15 @@ const duAn = defineCollection({
       text: optionalText,
       layout: z.enum(['split', 'text-gallery', 'full-image']).optional(),
       imageSide: z.enum(['auto', 'left', 'right']).optional(),
+      // H - Chỉ Vinhomes Hải Vân Bay: H3 và mô tả cho bốn phân khu (tùy chọn).
+      tinhVanTitle: optionalText,
+      tinhVanDescription: optionalText,
+      bachVanTitle: optionalText,
+      bachVanDescription: optionalText,
+      daoNgocTitle: optionalText,
+      daoNgocDescription: optionalText,
+      vinhMayTitle: optionalText,
+      vinhMayDescription: optionalText,
       // Kiểu A: URL bài báo, chỉ tạo CTA khi có link hợp lệ.
       articleUrl: optionalText,
       // Kiểu B: ảnh nổi chữ hoặc gallery tiến độ 3 ảnh/hàng.
