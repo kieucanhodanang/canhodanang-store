@@ -126,7 +126,7 @@ const navigationHref = (key: NavKey): string => {
   if (!contentLayers.length) return defaultNavigation[key];
   // Product/contact blocks are rendered outside the Section Builder.
   if (key === 'products') {
-  if (project.id === 'vinhomes-hai-van-bay' && haiVanZones.length > 0) {
+  if (project.id === 'vinhomes-hai-van-bay') {
     return '#phan-khu-hai-van-bay';
   }
   return listings.length ? productAnchor : '';
