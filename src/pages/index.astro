@@ -63,6 +63,7 @@ const searchableListings = listingCollections.flatMap((entries, index) =>
         title: d.title || item.id,
         publishedAt: d.date instanceof Date && !Number.isNaN(d.date.getTime()) ? d.date.getTime() : 0,
         featured: Boolean(d.featured),
+        highlightTags: listingHighlightTags(d.highlightTags),
         featuredOrder: numeric(d.featuredOrder),
         description: d.description || '',
         project,
@@ -165,6 +166,12 @@ const duAn = projects
     };
   });
 
+// Nhãn tự nhập: hỗ trợ string[] của Decap CMS và dữ liệu đối tượng cũ nếu có.
+const listingHighlightTags = (raw) => Array.isArray(raw)
+  ? raw.map(value => typeof value === 'string' ? value : value?.label)
+      .filter(value => typeof value === 'string' && value.trim())
+      .map(value => value.trim().slice(0, 40)).slice(0, 3)
+  : [];
 // Danh sách trang chủ: ghim trước, sau đó bài mới nhất; chỉ lấy bài còn giao dịch.
 const homePriority = (a, b) => {
   const pinned = Number(Boolean(b.data.featured)) - Number(Boolean(a.data.featured));
@@ -214,6 +221,7 @@ const homeCards = (items, type) => items.map(item => ({
   projectName: cleanProjectName(projectNames.get(item.data.project || '') || ''),
   href: `/${type}/${item.id}/`,
   pinned: Boolean(item.data.featured),
+  highlightTags: listingHighlightTags(item.data.highlightTags),
 }));
 const saleCards = homeCards(homeSaleApartments, 'can-ho');
 const rentCards = homeRentListings.flatMap(item => homeCards([item], item.rentalType));
@@ -482,7 +490,13 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const priceValue = mode === 'cho-thue' ? item.rent : item.price;
            const shownPrice = item.priceText || (priceValue === null ? 'Liên hệ báo giá' : `${format(priceValue)} ${priceUnit()}`);
            const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : 'Nhà đất';
-           const image = item.image ? `<img class="result-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy" />` : `<span class="result-image result-image-empty" aria-hidden="true">⌂</span>`;
+           const badgeLabels = item.featured
+              ? (Array.isArray(item.highlightTags) && item.highlightTags.length ? item.highlightTags.slice(0, 3) : ['Nổi bật'])
+              : [];
+            const badgeHTML = badgeLabels.length
+              ? `<span class="result-highlight-tags">${badgeLabels.map(tag => `<span class="result-highlight-tag">${escapeHTML(tag)}</span>`).join('')}</span>`
+              : '';
+            const image = item.image ? `<img class="result-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="lazy" />` : `<span class="result-image result-image-empty" aria-hidden="true">⌂</span>`;
            const parts = String(item.address || '').split(',').map(v=>v.trim()).filter(Boolean);
            const street = parts.find(v=>/(?:^|\s)(?:đường|phố|đại lộ|đ\.|street)\s+[\p{L}\d]/iu)
              || parts.find(v=>/^(?:\d+[\w/-]*\s+)[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v)) || '';
@@ -499,7 +513,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const dateBadge = publishedLabel
              ? `<time class="result-posted-date" datetime="${publishedDate.toISOString().slice(0, 10)}">Đăng: ${escapeHTML(publishedLabel)}</time>`
              : '';
-           card.innerHTML = `<a class="result-photo" href="${escapeHTML(item.url)}" aria-label="Xem ${escapeHTML(item.title)}">${image}</a><div class="result-card-main"><div class="result-card-top"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span>${dateBadge}</div><h3><a href="${escapeHTML(item.url)}">${escapeHTML(item.title)}</a></h3><div class="result-project-location">${projectLine}${locationLine}</div><div class="result-meta">${escapeHTML(details || 'Xem thông tin chi tiết')}</div><div class="result-card-bottom"><strong class="result-price">${escapeHTML(shownPrice)}</strong><a class="result-detail-link" href="${escapeHTML(item.url)}">Xem chi tiết →</a></div></div>`;
+           card.innerHTML = `<a class="result-photo" href="${escapeHTML(item.url)}" aria-label="Xem ${escapeHTML(item.title)}">${image}${badgeHTML}</a><div class="result-card-main"><div class="result-card-top"><span class="result-tag">${typeLabel} · ${item.transaction === 'ban' ? 'Đang bán' : 'Cho thuê'}</span>${dateBadge}</div><h3><a href="${escapeHTML(item.url)}">${escapeHTML(item.title)}</a></h3><div class="result-project-location">${projectLine}${locationLine}</div><div class="result-meta">${escapeHTML(details || 'Xem thông tin chi tiết')}</div><div class="result-card-bottom"><strong class="result-price">${escapeHTML(shownPrice)}</strong><a class="result-detail-link" href="${escapeHTML(item.url)}">Xem chi tiết →</a></div></div>`;
            list.append(card);
          });
          if (totalPages > 1) {
@@ -617,7 +631,13 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <article class="card home-listing-card">
             <a class="home-listing-photo" href={item.href} aria-label={`Xem ${item.title}`}>
               {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
-              {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
+              {item.pinned && (
+                <span class="home-listing-tags" aria-label="Điểm nổi bật">
+                  {(item.highlightTags.length ? item.highlightTags : ['Nổi bật']).map(tag => (
+                    <span class="home-listing-pin">{tag}</span>
+                  ))}
+                </span>
+              )}
             </a>
             <div class="cardbody home-listing-body">
               <div class="home-listing-address">
@@ -703,7 +723,13 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <article class="card home-listing-card">
             <a class="home-listing-photo" href={item.href} aria-label={`Xem ${item.title}`}>
               {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
-              {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
+              {item.pinned && (
+                <span class="home-listing-tags" aria-label="Điểm nổi bật">
+                  {(item.highlightTags.length ? item.highlightTags : ['Nổi bật']).map(tag => (
+                    <span class="home-listing-pin">{tag}</span>
+                  ))}
+                </span>
+              )}
             </a>
             <div class="cardbody home-listing-body">
               <span class="location">⌖ {item.place}</span>
@@ -764,7 +790,13 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <article class="card home-listing-card">
             <a class="home-listing-photo" href={item.href} aria-label={`Xem ${item.title}`}>
               {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
-              {item.pinned && <span class="home-listing-pin">Nổi bật</span>}
+              {item.pinned && (
+                <span class="home-listing-tags" aria-label="Điểm nổi bật">
+                  {(item.highlightTags.length ? item.highlightTags : ['Nổi bật']).map(tag => (
+                    <span class="home-listing-pin">{tag}</span>
+                  ))}
+                </span>
+              )}
             </a>
             <div class="cardbody home-listing-body">
               <div class="home-listing-address">
@@ -915,7 +947,9 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .home-listing-card {min-width:0;overflow:hidden;}
     .home-listing-photo {position:relative;display:block;aspect-ratio:16/10;background:#e4edf3;overflow:hidden;}
     .home-listing-photo img {display:block;width:100%;height:100%;object-fit:cover;}
-    .home-listing-pin {position:absolute;top:12px;left:12px;background:#173f60;color:#fff;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:700;}
+    .home-listing-tags {position:absolute;top:12px;left:12px;right:12px;z-index:1;display:flex;align-items:flex-start;flex-wrap:wrap;gap:5px;pointer-events:none;}
+    .home-listing-pin {display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#173f60;color:#fff;padding:5px 9px;border-radius:6px;font-size:12px;font-weight:700;box-shadow:0 2px 6px #0003;}
+    @media(max-width:767px){.home-listing-tags{top:6px;left:6px;right:6px;gap:4px;}.home-listing-pin{font-size:10px;padding:3px 6px;}}
     .home-listing-body h3 a {color:inherit;text-decoration:none;}
     .home-listing-price {display:block;color:#c42626;font-size:20px;margin:8px 0;}
     .home-listing-meta {font-size:14px;color:#64788c;}
@@ -1018,7 +1052,9 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
      .results-pagination :global(button.active) {background:#173f60;color:white;border-color:#173f60;}
      .results-pagination :global(button:disabled) {opacity:.4;cursor:default;}
      .search-results-list :global(.result-card) {display:flex;align-items:stretch;gap:14px;background:#fff;border:1px solid #dce5ee;border-radius:12px;padding:10px;min-width:0;overflow:hidden;}
-     .search-results-list :global(.result-photo) {display:block;flex:0 0 170px;width:170px;height:128px;border-radius:8px;overflow:hidden;background:#e6edf4;text-decoration:none;}
+     .search-results-list :global(.result-photo) {position:relative;display:block;flex:0 0 170px;width:170px;height:128px;border-radius:8px;overflow:hidden;background:#e6edf4;text-decoration:none;}
+     .search-results-list :global(.result-highlight-tags) {position:absolute;top:5px;left:5px;right:5px;display:flex;flex-wrap:wrap;gap:3px;pointer-events:none;}
+     .search-results-list :global(.result-highlight-tag) {display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#173f60;color:#fff;padding:3px 6px;border-radius:4px;font-size:10px;font-weight:700;box-shadow:0 1px 4px #0004;}
      .search-results-list :global(.result-image) {display:block;width:100%;height:100%;object-fit:cover;}
      .search-results-list :global(.result-image-empty) {display:flex;align-items:center;justify-content:center;font-size:40px;color:#8da2b3;}
      .search-results-list :global(.result-card-main) {min-width:0;flex:1;display:flex;flex-direction:column;gap:6px;padding:2px 3px 2px 0;}
