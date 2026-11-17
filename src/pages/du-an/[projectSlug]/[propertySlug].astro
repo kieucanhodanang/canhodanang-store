@@ -1,0 +1,31 @@
+---
+import LandPage from '../../nha-dat-tho-cu/[slug].astro';
+import { getCollection } from 'astro:content';
+
+// Pre-render only sale listings belonging to a published project.
+// The CMS entry stays in nha-dat-tho-cu; its public URL does not.
+export async function getStaticPaths() {
+  const [properties, projects] = await Promise.all([
+    getCollection('nha-dat-tho-cu'),
+    getCollection('du-an'),
+  ]);
+  const publishedProjects = new Set(
+    projects.filter(project => project.data.status === 'published').map(project => project.id)
+  );
+  const paths = properties
+    .filter(entry => entry.data.status !== 'draft'
+      && entry.data.transaction === 'ban'
+      && !!entry.data.project
+      && publishedProjects.has(entry.data.project))
+    .map(entry => ({
+      params: { projectSlug: entry.data.project!, propertySlug: entry.id },
+      props: { entry },
+    }));
+  // Detect conflicting routes rather than silently generating an incorrect URL.
+  const ids = paths.map(item => `${item.params.projectSlug}/${item.params.propertySlug}`);
+  if (new Set(ids).size !== ids.length) throw new Error('Trùng URL sản phẩm dự án.');
+  return paths;
+}
+const { entry } = Astro.props;
+---
+<LandPage entry={entry} />
