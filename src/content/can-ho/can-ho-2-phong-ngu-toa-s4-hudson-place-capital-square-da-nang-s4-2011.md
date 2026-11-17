@@ -31,7 +31,7 @@ galleryItems:
   - image: /uploads/brochure-can-ho-s4-2011-hudson-place-capital-square-da-nang-2-phong-ngu-view-cheo-song-han-va-noi-khu.webp
     imageAlt: Brochure căn hộ S4-2011 Hudson Place Capital Square Đà Nẵng 2 phòng
       ngủ view chéo sông Hàn và nội khu
-  - image: /uploads/mat-bang-layout-can-ho-s4-11-gom-2-phong-ngu-dien-tich-thong-thuy-72m2-tai-hudson-place-capital-square-da-nang.png
+  - image: /uploads/mat-bang-can-ho-s4-11-sang-trong.png
     imageAlt: Mặt bằng layout căn hộ S4-11 gồm 2 phòng ngủ diện tích thông thủy 72m2
       tại Hudson Place Capital Square Đà Nẵng
   - image: /uploads/toa-s4-hudson-place-cua-capital-square.png
