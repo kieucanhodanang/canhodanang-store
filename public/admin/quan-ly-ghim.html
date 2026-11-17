@@ -1,71 +1,419 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quản lý ghim trang chủ | Căn Hộ Đà Nẵng</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Quản lý ghim & thứ tự | Căn Hộ Đà Nẵng</title>
 <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#18334d;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:30px 18px 70px}header{background:#123756;color:white;padding:20px 0}header .wrap{padding:0 18px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}a{color:#155b8c}header a{color:#fff}h1{font-size:clamp(22px,3vw,30px);margin:0}h2{font-size:20px;margin:0 0 14px}.intro{color:#607489;line-height:1.65}.notice{background:#fff8e9;border:1px solid #edd7aa;padding:14px 16px;border-radius:10px;font-size:14px;line-height:1.6;margin:18px 0 24px}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0}button,.btn{font:inherit;background:#155b8c;color:#fff;border:0;border-radius:8px;padding:10px 15px;text-decoration:none;cursor:pointer}.status{font-size:14px;color:#52677d}.group{background:#fff;border:1px solid #dce5ee;border-radius:14px;margin:22px 0;padding:22px;box-shadow:0 4px 18px #17365309}.group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.count{color:#62778a;font-size:13px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:left}th,td{padding:13px 12px;border-bottom:1px solid #e8edf2;font-size:14px;vertical-align:middle}th{background:#f5f8fb;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#5c7287}tr:last-child td{border-bottom:0}.title{font-weight:700;min-width:210px}.meta{display:block;color:#7b8c9c;font-size:12px;font-weight:400;margin-top:4px}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#e8f5ee;color:#24734a;font-size:12px;white-space:nowrap}.muted{color:#738496}.edit{white-space:nowrap;font-weight:600}.empty{color:#718297;font-size:14px;padding:14px 0}.loading{opacity:.65}footer{font-size:13px;color:#6b7f90;line-height:1.6;margin-top:28px}@media(max-width:640px){.group{padding:15px}.wrap{padding-inline:12px}th,td{padding:11px 8px}.title{min-width:170px}}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#193449;background:#f5f7fb}
+*{box-sizing:border-box}body{margin:0}a{color:#115f91}
+header{background:#123756;color:white;padding:19px 0}
+header .wrap{padding:0 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header a{color:white}.wrap{max-width:1220px;margin:auto;padding:24px 18px 70px}
+h1{font-size:clamp(22px,3vw,30px);margin:0}h2{font-size:20px;margin:0}
+p{line-height:1.55}.intro{color:#526d82;max-width:950px}
+.note{padding:13px 16px;background:#fff8e9;border:1px solid #ecd4aa;border-radius:10px;font-size:14px;line-height:1.6}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0}
+.toolbar .search{flex:1 1 260px;width:100%;max-width:480px}
+input[type="search"]{font:inherit;border:1px solid #bacbd7;border-radius:8px;padding:11px;width:100%;background:white;color:#173653}
+button,.button{font:600 14px/1.3 inherit;font-family:inherit;cursor:pointer;padding:10px 13px;border-radius:8px;border:1px solid #0f5682;color:#fff;background:#155b8c;text-decoration:none}
+button:hover:not(:disabled){background:#0f4267}
+button:disabled{opacity:.48;cursor:not-allowed}
+button.secondary,.button.secondary{background:#fff;color:#185377;border-color:#b2c6d5}
+button.secondary:hover:not(:disabled){background:#ecf4fa}
+button.danger{background:#fff;color:#b03838;border-color:#e2b7b7}
+button.danger:hover:not(:disabled){background:#fff2f2}
+button.small{font-size:12px;padding:7px 9px}
+button.save{background:#167047;border-color:#167047}
+button.save:hover:not(:disabled){background:#0d5937}
+.status{font-size:13px;color:#506a80;min-height:22px;margin:9px 0 16px}
+.status.ok{color:#167047}.status.error{color:#ad3333}
+.panel{background:#fff;border:1px solid #dce6ee;box-shadow:0 3px 15px #12375609;border-radius:13px;padding:19px;margin:20px 0}
+.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.subline{font-size:13px;color:#657c90;margin:3px 0 12px}
+.entry{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #e8eef3;padding:12px 0;flex-wrap:wrap}
+.entry-main{min-width:220px;flex:1 1 350px}
+.entry-title{font-size:14px;font-weight:650;line-height:1.45}
+.entry-meta{font-size:12px;color:#688093;margin-top:4px;word-break:break-word}
+.entry-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;font-size:11px;padding:3px 7px;border-radius:20px;background:#e6f3ea;color:#1d6b44;font-weight:650;margin-left:6px}
+.pill.off{background:#edf1f5;color:#657687}.pill.warn{background:#fff3db;color:#925e14}
+.position{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#50657c}
+.position select{border:1px solid #afc5d5;background:white;color:#173b56;font:inherit;border-radius:7px;padding:7px}
+details{margin-top:14px;border-top:1px dashed #dae3eb}
+summary{cursor:pointer;padding:14px 0 6px;color:#145d8e;font-weight:600;font-size:14px}
+.empty{font-size:14px;color:#6f8496;margin:10px 0}
+.counter{font-size:13px;color:#526e82}
+footer{font-size:13px;color:#637e91;margin-top:26px;line-height:1.6}
+[hidden]{display:none!important}
+@media(max-width:640px){.wrap{padding:17px 12px 50px}.panel{padding:14px}.entry-main{flex-basis:100%}.entry-tools{width:100%}.toolbar button{flex:0 1 auto}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><h1>Quản lý ghim trang chủ</h1><a href="/admin/">← Quay lại Decap CMS</a></div></header>
+<header><div class="wrap"><h1>📌 Quản lý ghim trang chủ</h1><a href="/admin/">← Quay lại CMS</a></div></header>
 <main class="wrap">
-<p class="intro">Tổng hợp các nội dung được đánh dấu <strong>Ghim nổi bật</strong> trong CMS. Sắp xếp theo <strong>Thứ tự ghim</strong> tăng dần; có thể mở bài để chỉnh sửa trực tiếp trong Decap CMS.</p>
-<div class="notice"><strong>Chú ý:</strong> Trang này đọc dữ liệu từ repository GitHub công khai, nên bất kỳ ai có đường dẫn đều có thể xem thông tin ghim. Chỉ tài khoản được cấp quyền GitHub mới có thể lưu chỉnh sửa trong Decap CMS. Dữ liệu cập nhật theo commit trên nhánh <strong>main</strong>, có thể trễ do bộ nhớ đệm GitHub.</div>
-<div class="toolbar"><span id="status" class="status" role="status">Đang tải danh sách ghim…</span><button id="refresh" type="button">Tải lại danh sách</button></div>
-<div id="groups" aria-live="polite"></div>
-<footer>Trang tổng hợp chỉ đọc; để bật/tắt ghim hoặc thay đổi thứ tự, chọn “Chỉnh sửa” và lưu bài trong CMS. Những bài ở trạng thái nháp, ngừng giao dịch hoặc tắt hiển thị trang chủ vẫn được ghi nhận riêng trong danh sách ghim để dễ kiểm tra.</footer>
+<p class="intro">Quản lý vị trí hiển thị, ghim thêm và gỡ ghim cho <strong>Dự án, Căn hộ, Nhà đất thổ cư và Cho thuê</strong>. Mỗi lần bấm Lưu, tất cả thay đổi được gộp vào <strong>một commit GitHub</strong>.</p>
+<p class="note">Trang đọc dữ liệu GitHub công khai. Chỉ tài khoản GitHub có quyền ghi repository mới được lưu. Thứ tự là thứ tự ưu tiên <strong>trong từng nhóm trang chủ</strong>; tối đa 6 sản phẩm mỗi nhóm xuất hiện trên trang chủ. Sản phẩm bản nháp, ngừng giao dịch hoặc tắt hiển thị trang chủ sẽ không xuất hiện dù được ghim. <strong>Chỉ thay đổi ghim trang chủ</strong>, không ảnh hưởng ghim trong trang Dự án.</p>
+<div class="toolbar">
+<input class="search" id="search" type="search" placeholder="Tìm tên hoặc mã sản phẩm để ghim…" aria-label="Tìm sản phẩm">
+<button class="secondary" type="button" id="refresh">Tải lại</button>
+<button class="secondary" type="button" id="login">Đăng nhập GitHub</button>
+<button class="secondary" type="button" id="logout" hidden>Đăng xuất GitHub</button>
+</div>
+<div class="toolbar">
+<strong id="changes" class="counter">Chưa có thay đổi</strong>
+<button class="save" type="button" id="save" disabled>Lưu tất cả thay đổi (1 commit)</button>
+</div>
+<p id="status" class="status" role="status" aria-live="polite">Đang tải dữ liệu…</p>
+<div id="groups"></div>
+<footer>Quy trình: điều chỉnh các sản phẩm trong danh sách → đăng nhập GitHub → Lưu một lần → kiểm tra Cloudflare Success. Nếu CMS vừa được cập nhật bởi người khác, trang sẽ yêu cầu tải lại để tránh ghi đè dữ liệu mới. Thông tin đăng nhập chỉ giữ trong tab hiện tại, không lưu vào trình duyệt.</footer>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 <script>
-(()=>{
-'use strict';
-const owner='kieucanhodanang',repo='canhodanang-store',branch='main';
-const collections=['du-an','can-ho','biet-thu','tho-cu'];
-const labels=[['Dự án nổi bật',r=>r.collection==='du-an'],['Căn hộ đang bán',r=>r.collection==='can-ho'&&r.transaction==='ban'],['Căn hộ cho thuê',r=>r.collection==='can-ho'&&r.transaction!=='ban'],['Nhà đất đang bán',r=>(r.collection==='biet-thu'||r.collection==='tho-cu')&&r.transaction==='ban'],['Khác (biệt thự / nhà đất cho thuê)',r=>(r.collection==='biet-thu'||r.collection==='tho-cu')&&r.transaction!=='ban']];
-const groups=document.getElementById('groups'),status=document.getElementById('status'),refresh=document.getElementById('refresh');
-function el(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=String(content);return n;}
-function norm(v){return String(v??'').trim().toLowerCase();}
-function bool(v){return v===true||v===1||norm(v)==='true';}
-function num(v){const n=Number(v);return Number.isFinite(n)&&n>0?n:999999;}
-function date(v){const n=Date.parse(v||'');return Number.isFinite(n)?n:0;}
-function decode64(str){const bytes=Uint8Array.from(atob(str.replace(/\s/g,'')),c=>c.charCodeAt(0));return new TextDecoder().decode(bytes);}
-async function json(url){const response=await fetch(url,{headers:{'Accept':'application/vnd.github+json'}});if(!response.ok)throw new Error(`GitHub API trả về HTTP ${response.status}`);return response.json();}
-async function loadEntry(path,sha){
- const data=await json(`https://api.github.com/repos/${owner}/${repo}/git/blobs/${encodeURIComponent(sha)}`);
- const raw=data.encoding==='base64'?decode64(data.content):data.content;
- const m=raw.match(/^\uFEFF?---\s*\r?\n([\s\S]*?)\r?\n---(?:\s*\r?\n|$)/);
- if(!m)return null;
- const d=window.jsyaml.load(m[1])||{};
- if(!bool(d.featured))return null;
- const parts=path.split('/'),collection=parts[2],slug=parts.slice(3).join('/').replace(/\.md$/i,'');
- const status=norm(d.status||'published'),listing=norm(d.listingStatus||'available');
- const active=status==='published'&&d.showOnHome!==false&&(collection==='du-an'||listing==='available');
- return {collection,slug,title:String(d.title||slug),price:String(d.price||''),featuredOrder:d.featuredOrder,transaction:norm(d.transaction||'ban'),date:d.date||'',active,status,listing,showOnHome:d.showOnHome!==false};
-}
-function rowFor(item){
- const tr=el('tr');const name=el('td','title',item.title);name.append(el('small','meta',item.collection+' / '+item.slug));tr.append(name);
- tr.append(el('td','',num(item.featuredOrder)===999999?'—':item.featuredOrder));
- tr.append(el('td','',item.price||'—'));
- const state=el('td');if(item.active)state.append(el('span','pill','Đang hiển thị'));else{let reason=item.status!=='published'?'Bản nháp':!item.showOnHome?'Tắt trang chủ':'Ngừng giao dịch';state.append(el('span','muted',reason));}tr.append(state);
- const linkCell=el('td');const link=el('a','edit','Chỉnh sửa ↗');link.href=`/admin/#/collections/${encodeURIComponent(item.collection)}/entries/${encodeURIComponent(item.slug)}`;link.target='_blank';link.rel='noopener noreferrer';linkCell.append(link);tr.append(linkCell);return tr;
-}
-function render(records){groups.replaceChildren();for(const [name,predicate] of labels){const items=records.filter(predicate).sort((a,b)=>Number(b.active)-Number(a.active)||num(a.featuredOrder)-num(b.featuredOrder)||date(b.date)-date(a.date)||a.title.localeCompare(b.title,'vi'));
- const section=el('section','group');const head=el('div','group-head');head.append(el('h2','',name),el('span','count',`${items.length} nội dung ghim`));section.append(head);
- if(!items.length){section.append(el('p','empty','Chưa có nội dung được ghim.'));groups.append(section);continue;}
- const wrap=el('div','table-wrap'),table=el('table'),thead=el('thead'),tr=el('tr');for(const h of ['Tên nội dung','Thứ tự','Giá','Trạng thái','Thao tác'])tr.append(el('th','',h));thead.append(tr);table.append(thead);const body=el('tbody');items.forEach(item=>body.append(rowFor(item)));table.append(body);wrap.append(table);section.append(wrap);groups.append(section);
- }}
-async function load(){refresh.disabled=true;status.textContent='Đang đọc dữ liệu GitHub…';groups.classList.add('loading');try{
- if(!window.jsyaml)throw new Error('Không tải được thư viện đọc YAML.');
- const tree=await json(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`);
- if(tree.truncated)throw new Error('Danh sách file từ GitHub bị cắt ngắn.');
- const files=(tree.tree||[]).filter(x=>x.type==='blob'&&/^src\/content\/(du-an|can-ho|biet-thu|tho-cu)\/.+\.md$/i.test(x.path));
- const result=[];const concurrency=5;let index=0;
- async function worker(){while(index<files.length){const f=files[index++];try{const r=await loadEntry(f.path,f.sha);if(r)result.push(r);}catch(e){throw new Error(`Không đọc được ${f.path}: ${e.message}`);}}}
- await Promise.all(Array.from({length:Math.min(concurrency,files.length)},worker));render(result);status.textContent=`Đã tải ${result.length} nội dung ghim từ ${files.length} bài CMS · ${new Date().toLocaleString('vi-VN')}`;
- }catch(e){status.textContent='Lỗi tải dữ liệu: '+e.message;groups.replaceChildren();const p=el('p','notice','Không thể hiển thị danh sách. Kiểm tra kết nối, giới hạn GitHub API hoặc thử tải lại sau.');groups.append(p);}finally{refresh.disabled=false;groups.classList.remove('loading');}}
-refresh.addEventListener('click',load);load();
+(() => {
+  'use strict';
+  const owner = 'kieucanhodanang', repo = 'canhodanang-store', branch = 'main';
+  const base = 'https://api.github.com/repos/' + owner + '/' + repo;
+  const groups = [
+    { id: 'du-an', title: 'Dự án nổi bật', matches: r => r.collection === 'du-an' },
+    { id: 'can-ho-ban', title: 'Căn hộ đang bán', matches: r => r.collection === 'can-ho' && r.transaction === 'ban' },
+    { id: 'nha-ban', title: 'Nhà đất đang bán', matches: r => r.collection === 'nha-dat-tho-cu' && r.transaction === 'ban' },
+    { id: 'cho-thue', title: 'Bất động sản cho thuê (căn hộ và nhà)', matches: r => r.collection !== 'du-an' && r.transaction !== 'ban' },
+  ];
+  const state = { entries: [], head: '', token: '', popup: null, busy: false, query: '' };
+  const $ = id => document.getElementById(id);
+  const area = $('groups'), status = $('status'), search = $('search'), save = $('save');
+  const refresh = $('refresh'), login = $('login'), logout = $('logout'), changes = $('changes');
+
+  function el(tag, className, content) {
+    const e = document.createElement(tag);
+    if (className) e.className = className;
+    if (content !== undefined && content !== null) e.textContent = String(content);
+    return e;
+  }
+  function truth(v) { return v === true || v === 1 || String(v).trim().toLowerCase() === 'true'; }
+  function norm(v) { return String(v == null ? '' : v).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
+  function order(v) { const n = Number(v); return Number.isInteger(n) && n > 0 ? n : null; }
+  function date(v) { const t = new Date(v || '').getTime(); return Number.isFinite(t) ? t : 0; }
+  function groupFor(r) { return groups.find(g => g.matches(r)); }
+  function same(r) { return r.pinned === r.originalPinned && (!r.pinned || r.position === r.originalPosition); }
+  function dirty() { return state.entries.filter(r => !same(r)); }
+  function show(message, kind) {
+    status.textContent = message;
+    status.className = 'status' + (kind ? ' ' + kind : '');
+  }
+  async function gh(path, options) {
+    const headers = { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+    if (state.token) headers.Authorization = 'Bearer ' + state.token;
+    if (options && options.body) headers['Content-Type'] = 'application/json';
+    const res = await fetch(base + path, { ...options, headers, cache: 'no-store' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 401) state.token = '';
+      const msg = typeof data.message === 'string' ? data.message : 'Yêu cầu thất bại';
+      throw new Error('GitHub HTTP ' + res.status + ': ' + msg);
+    }
+    return data;
+  }
+  function decodedBase64(str) {
+    const bin = atob(str.replace(/\s/g, ''));
+    const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+  function frontmatter(raw) {
+    const match = raw.match(/^\uFEFF?---[ \t]*\r?\n([\s\S]*?)\r?\n---(?:\s*\r?\n|$)/);
+    return match ? match[1] : null;
+  }
+  async function readEntry(blob) {
+    const data = await gh('/git/blobs/' + encodeURIComponent(blob.sha));
+    const raw = data.encoding === 'base64' ? decodedBase64(data.content) : data.content;
+    const source = frontmatter(raw);
+    if (source === null) return null;
+    const d = window.jsyaml.load(source) || {};
+    const path = blob.path;
+    const segments = path.split('/');
+    const collection = segments[2], slug = segments.slice(3).join('/').replace(/\.md$/i, '');
+    const pin = truth(d.featured), position = pin ? order(d.featuredOrder) : null;
+    const transaction = collection === 'du-an' ? 'ban' : norm(d.transaction || 'ban');
+    const active = norm(d.status || 'published') === 'published' &&
+      d.showOnHome !== false && (collection === 'du-an' || norm(d.listingStatus || 'available') === 'available');
+    return {
+      path, collection, slug, raw, title: String(d.title || slug), transaction,
+      updated: d.date || '', active, status: norm(d.status || 'published'),
+      listing: norm(d.listingStatus || 'available'), visible: d.showOnHome !== false,
+      price: String(d.price || ''), pinned: pin, originalPinned: pin,
+      position, originalPosition: position,
+    };
+  }
+  function pinnedFor(group) {
+    return state.entries.filter(r => group.matches(r) && r.pinned)
+      .sort((a, b) => (a.position || 999999) - (b.position || 999999) ||
+        date(b.updated) - date(a.updated) || a.title.localeCompare(b.title, 'vi'));
+  }
+  function renumber(group) { pinnedFor(group).forEach((r, i) => { r.position = i + 1; }); }
+  function togglePin(r) {
+    if (state.busy) return;
+    const group = groupFor(r);
+    if (r.pinned) { r.pinned = false; r.position = null; renumber(group); }
+    else {
+      const pinned = pinnedFor(group);
+      r.pinned = true; r.position = pinned.length + 1;
+      renumber(group);
+    }
+    render();
+  }
+  function move(r, targetIndex) {
+    if (state.busy || state.query) return;
+    const group = groupFor(r), arr = pinnedFor(group);
+    const from = arr.indexOf(r);
+    if (from < 0) return;
+    const to = Math.max(0, Math.min(arr.length - 1, targetIndex));
+    if (to === from) return;
+    arr.splice(from, 1);
+    arr.splice(to, 0, r);
+    arr.forEach((entry, i) => { entry.position = i + 1; });
+    render();
+  }
+  function urlFor(r) {
+    const slug = encodeURIComponent(r.slug);
+    if (r.collection === 'du-an') return '/du-an/' + slug + '/';
+    if (r.transaction !== 'ban') return '/cho-thue/' + (r.collection === 'can-ho' ? 'can-ho' : 'nha') + '/' + slug + '/';
+    return '/' + r.collection + '/' + slug + '/';
+  }
+  function matchSearch(r) {
+    if (!state.query) return true;
+    return norm([r.title, r.slug, r.price, r.collection, r.transaction].join(' ')).includes(state.query);
+  }
+  function stateLabel(r) {
+    if (r.status !== 'published') return 'Bản nháp';
+    if (!r.visible) return 'Ẩn trang chủ';
+    if (!r.active) return 'Ngừng giao dịch';
+    return 'Đủ điều kiện hiển thị';
+  }
+  function rowFor(r, group, length) {
+    const row = el('div', 'entry');
+    const main = el('div', 'entry-main');
+    const title = el('div', 'entry-title');
+    const link = el('a', '', r.title); link.href = urlFor(r); link.target = '_blank'; link.rel = 'noopener noreferrer';
+    title.append(link);
+    title.append(el('span', 'pill ' + (r.pinned ? '' : 'off'), r.pinned ? 'Đang ghim' : 'Chưa ghim'));
+    if (!r.active) title.append(el('span', 'pill warn', stateLabel(r)));
+    main.append(title);
+    main.append(el('div', 'entry-meta',
+      (r.collection === 'du-an' ? 'Dự án' : r.collection === 'can-ho' ? 'Căn hộ' : 'Nhà đất') +
+      ' · ' + r.slug + (r.price ? ' · ' + r.price : '')));
+    const tools = el('div', 'entry-tools');
+    if (r.pinned) {
+      const position = el('label', 'position', 'Vị trí');
+      const select = el('select');
+      select.setAttribute('aria-label', 'Vị trí ghim: ' + r.title);
+      for (let i = 1; i <= length; i++) {
+        const opt = el('option', '', i);
+        opt.value = String(i);
+        if (r.position === i) opt.selected = true;
+        select.append(opt);
+      }
+      select.disabled = !!state.query || state.busy;
+      select.addEventListener('change', () => move(r, Number(select.value) - 1));
+      position.append(select); tools.append(position);
+      const up = el('button', 'small secondary', '↑');
+      up.title = 'Di chuyển lên'; up.disabled = !!state.query || state.busy || r.position <= 1;
+      up.addEventListener('click', () => move(r, pinnedFor(group).indexOf(r) - 1));
+      const down = el('button', 'small secondary', '↓');
+      down.title = 'Di chuyển xuống'; down.disabled = !!state.query || state.busy || r.position >= length;
+      down.addEventListener('click', () => move(r, pinnedFor(group).indexOf(r) + 1));
+      tools.append(up, down);
+    }
+    const toggle = el('button', 'small ' + (r.pinned ? 'danger' : 'secondary'), r.pinned ? 'Gỡ ghim' : 'Ghim');
+    toggle.disabled = state.busy;
+    toggle.addEventListener('click', () => togglePin(r));
+    tools.append(toggle);
+    const edit = el('a', 'button secondary', 'Chỉnh sửa CMS');
+    edit.style.fontSize = '12px'; edit.style.padding = '7px 9px';
+    edit.href = '/admin/#/collections/' + encodeURIComponent(r.collection) + '/entries/' + encodeURIComponent(r.slug);
+    edit.target = '_blank'; edit.rel = 'noopener noreferrer';
+    tools.append(edit);
+    row.append(main, tools);
+    return row;
+  }
+  function render() {
+    area.replaceChildren();
+    for (const group of groups) {
+      const all = state.entries.filter(group.matches);
+      const pins = pinnedFor(group), current = pins.filter(matchSearch);
+      const unpinned = all.filter(r => !r.pinned && matchSearch(r))
+        .sort((a, b) => date(b.updated) - date(a.updated) || a.title.localeCompare(b.title, 'vi'));
+      const panel = el('section', 'panel');
+      const top = el('div', 'panel-heading');
+      top.append(el('h2', '', group.title));
+      top.append(el('span', 'counter', pins.length + ' đang ghim · ' + all.length + ' nội dung'));
+      panel.append(top);
+      panel.append(el('p', 'subline', 'Vị trí 1 được ưu tiên trước. Có thể chọn vị trí hoặc dùng mũi tên để sắp xếp.'));
+      if (current.length) current.forEach(r => panel.append(rowFor(r, group, pins.length)));
+      else panel.append(el('p', 'empty', state.query ? 'Không có sản phẩm ghim khớp tìm kiếm.' : 'Chưa ghim sản phẩm nào.'));
+      const details = el('details');
+      if (state.query) details.open = true;
+      details.append(el('summary', '', 'Ghim thêm sản phẩm (' + unpinned.length + ')'));
+      if (unpinned.length) unpinned.forEach(r => details.append(rowFor(r, group, pins.length)));
+      else details.append(el('p', 'empty', 'Không có sản phẩm phù hợp.'));
+      panel.append(details); area.append(panel);
+    }
+    const count = dirty().length;
+    changes.textContent = count ? count + ' sản phẩm đã thay đổi, chưa lưu' : 'Chưa có thay đổi';
+    save.disabled = state.busy || !count;
+    refresh.disabled = state.busy;
+    login.hidden = !!state.token;
+    logout.hidden = !state.token;
+  }
+  async function load() {
+    if (state.busy) return;
+    if (dirty().length && !window.confirm('Các thay đổi chưa lưu sẽ mất. Tải lại danh sách từ GitHub?')) return;
+    state.busy = true; render(); show('Đang đọc danh sách CMS từ GitHub…');
+    try {
+      if (!window.jsyaml) throw new Error('Không tải được thư viện js-yaml.');
+      const ref = await gh('/git/ref/heads/' + branch);
+      const head = ref.object.sha;
+      const commit = await gh('/git/commits/' + head);
+      const tree = await gh('/git/trees/' + commit.tree.sha + '?recursive=1');
+      if (tree.truncated) throw new Error('GitHub trả về danh sách file bị cắt ngắn.');
+      const files = (tree.tree || []).filter(x => x.type === 'blob' &&
+        /^src\/content\/(du-an|can-ho|nha-dat-tho-cu)\/.+\.md$/i.test(x.path));
+      const results = [];
+      let index = 0;
+      const concurrency = Math.min(5, files.length);
+      async function worker() {
+        while (index < files.length) {
+          const file = files[index++];
+          try { const row = await readEntry(file); if (row) results.push(row); }
+          catch (e) { throw new Error('Không đọc được ' + file.path + ': ' + e.message); }
+        }
+      }
+      await Promise.all(Array.from({ length: concurrency }, worker));
+      state.head = head; state.entries = results;
+      search.value = ''; state.query = '';
+      show('Đã tải ' + results.length + ' nội dung từ ' + files.length +
+        ' file CMS. Tìm kiếm, ghim và sắp xếp trước khi lưu.', 'ok');
+    } catch (e) {
+      show('Lỗi tải dữ liệu: ' + e.message, 'error');
+    } finally {
+      state.busy = false; render();
+    }
+  }
+  function editFrontmatter(raw, pinned, position) {
+    const m = raw.match(/^(\uFEFF?---[ \t]*\r?\n)([\s\S]*?)(\r?\n---(?=\r?\n|$))/);
+    if (!m) throw new Error('File không có frontmatter YAML hợp lệ.');
+    const eol = m[1].includes('\r\n') ? '\r\n' : '\n';
+    const lines = m[2].split(/\r?\n/);
+    let foundFeatured = false, foundOrder = false;
+    const edited = [];
+    for (const line of lines) {
+      if (/^featured\s*:/.test(line)) {
+        if (foundFeatured) throw new Error('Trùng trường featured.');
+        edited.push('featured: ' + (pinned ? 'true' : 'false'));
+        foundFeatured = true; continue;
+      }
+      if (/^featuredOrder\s*:/.test(line)) {
+        if (foundOrder) throw new Error('Trùng trường featuredOrder.');
+        if (pinned) edited.push('featuredOrder: ' + position);
+        foundOrder = true; continue;
+      }
+      edited.push(line);
+    }
+    if (!foundFeatured) edited.push('featured: ' + (pinned ? 'true' : 'false'));
+    if (pinned && !foundOrder) edited.push('featuredOrder: ' + position);
+    return m[1] + edited.join(eol) + m[3] + raw.slice(m[0].length);
+  }
+  async function saveAll() {
+    const edited = dirty();
+    if (!edited.length || state.busy) return;
+    if (!state.token) {
+      show('Cần đăng nhập GitHub để lưu. Nhấn “Đăng nhập GitHub” rồi bấm Lưu lại.', 'error');
+      return;
+    }
+    if (!window.confirm('Lưu ' + edited.length +
+        ' sản phẩm trong MỘT commit GitHub? Cloudflare sẽ build lại website một lần.')) return;
+    state.busy = true; render();
+    show('Đang kiểm tra phiên bản GitHub trước khi lưu…');
+    try {
+      const latest = await gh('/git/ref/heads/' + branch);
+      if (latest.object.sha !== state.head) throw new Error(
+        'Nhánh main đã có commit mới (ví dụ anh vừa lưu bài CMS). Chưa lưu gì. Tải lại danh sách rồi thực hiện lại thay đổi để tránh ghi đè.');
+      const newContent = edited.map(r => ({
+        record: r, text: editFrontmatter(r.raw, r.pinned, r.position)
+      }));
+      const headCommit = await gh('/git/commits/' + state.head);
+      const tree = await gh('/git/trees', {
+        method: 'POST', body: JSON.stringify({
+          base_tree: headCommit.tree.sha,
+          tree: newContent.map(item => ({
+            path: item.record.path, mode: '100644', type: 'blob', content: item.text,
+          })),
+        }),
+      });
+      const commit = await gh('/git/commits', {
+        method: 'POST', body: JSON.stringify({
+          message: 'CMS: manage homepage pinned listings and order (' + edited.length + ' entries)',
+          tree: tree.sha, parents: [state.head],
+        }),
+      });
+      await gh('/git/refs/heads/' + branch, {
+        method: 'PATCH', body: JSON.stringify({ sha: commit.sha, force: false }),
+      });
+      state.head = commit.sha;
+      newContent.forEach(item => {
+        item.record.raw = item.text;
+        item.record.originalPinned = item.record.pinned;
+        item.record.originalPosition = item.record.pinned ? item.record.position : null;
+      });
+      show('Đã lưu ' + edited.length + ' sản phẩm bằng 1 commit ' +
+        commit.sha.slice(0, 7) + '. Cloudflare sẽ xử lý triển khai.', 'ok');
+    } catch (e) {
+      show('Chưa lưu thành công: ' + e.message, 'error');
+    } finally { state.busy = false; render(); }
+  }
+  function startLogin() {
+    const popup = window.open('/auth', 'pin_manager_github_oauth',
+      'popup=yes,width=560,height=710');
+    if (!popup) return show('Trình duyệt đang chặn cửa sổ đăng nhập. Hãy cho phép pop-up.', 'error');
+    state.popup = popup;
+    show('Đang mở đăng nhập GitHub…');
+  }
+  window.addEventListener('message', async event => {
+    if (event.origin !== window.location.origin || !state.popup || event.source !== state.popup) return;
+    if (event.data === 'authorizing:github') {
+      state.popup.postMessage('authorizing:github', window.location.origin);
+      return;
+    }
+    if (typeof event.data !== 'string') return;
+    const m = event.data.match(/^authorization:github:(success|error):([\s\S]*)$/);
+    if (!m) return;
+    state.popup = null;
+    try {
+      const payload = JSON.parse(m[2]);
+      if (m[1] !== 'success' || !payload.token) throw new Error(payload.message || 'Không xác thực được.');
+      state.token = payload.token;
+      const current = await gh('');
+      if (!(current.permissions && current.permissions.push)) {
+        state.token = '';
+        throw new Error('Tài khoản GitHub này chưa có quyền ghi vào repository.');
+      }
+      show('Đã đăng nhập GitHub. Anh có thể lưu nhiều thay đổi trong một commit.', 'ok');
+    } catch (e) {
+      state.token = '';
+      show('Đăng nhập thất bại: ' + e.message, 'error');
+    }
+    render();
+  });
+  login.addEventListener('click', startLogin);
+  logout.addEventListener('click', () => { state.token = ''; show('Đã ngắt kết nối GitHub.'); render(); });
+  refresh.addEventListener('click', load);
+  save.addEventListener('click', saveAll);
+  search.addEventListener('input', () => { state.query = norm(search.value); render(); });
+  window.addEventListener('beforeunload', event => {
+    if (dirty().length && !state.busy) { event.preventDefault(); event.returnValue = ''; }
+  });
+  render(); load();
 })();
 </script>
-</body>
-</html>
+</body></html>
