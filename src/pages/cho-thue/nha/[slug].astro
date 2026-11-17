@@ -1,0 +1,12 @@
+---
+import LandPage from '../../nha-dat-tho-cu/[slug].astro';
+import { getCollection } from 'astro:content';
+export async function getStaticPaths() {
+  const entries = await getCollection('nha-dat-tho-cu');
+  return entries.filter(entry => entry.data.status !== 'draft' &&
+    ['cho-thue','cho-thue-ngay'].includes(entry.data.transaction))
+    .map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<LandPage entry={entry} />

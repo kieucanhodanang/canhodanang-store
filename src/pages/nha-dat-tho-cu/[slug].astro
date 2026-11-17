@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PropertyDetail from '../../components/PropertyDetail.astro';
+import { listingUrl } from '../../utils/listingUrl';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -79,20 +80,20 @@ const breadcrumbSchema = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: `${siteUrl}/` },
-    { '@type': 'ListItem', position: 2, name: 'Nhà đất thổ cư', item: `${siteUrl}/nha-dat-tho-cu/` },
+    { '@type': 'ListItem', position: 2, name: isRent ? 'Cho thuê' : 'Nhà đất thổ cư', item: isRent ? `${siteUrl}/cho-thue/` : `${siteUrl}/nha-dat-tho-cu/` },
     { '@type': 'ListItem', position: 3, name: data.title, item: pageUrl },
   ],
 };
 const jsonLd = JSON.stringify([propertySchema, breadcrumbSchema]).replace(/</g, '\\u003c');
 ---
-<Base title={seoTitle} description={seoDescription} image={data.ogImage || data.image || undefined} imageAlt={data.imageAlt || data.title} type="article" publishedTime={data.date instanceof Date ? data.date.toISOString() : undefined} modifiedTime={data.updatedAt instanceof Date ? data.updatedAt.toISOString() : (data.date instanceof Date ? data.date.toISOString() : undefined)}>
+<Base noindex={isRent && !Astro.url.pathname.startsWith('/cho-thue/')} title={seoTitle} description={seoDescription} image={data.ogImage || data.image || undefined} imageAlt={data.imageAlt || data.title} type="article" publishedTime={data.date instanceof Date ? data.date.toISOString() : undefined} modifiedTime={data.updatedAt instanceof Date ? data.updatedAt.toISOString() : (data.date instanceof Date ? data.date.toISOString() : undefined)}>
   <script type="application/ld+json" set:html={jsonLd} />
   <div class="property-page">
     <div class="property-wrap">
       <nav class="breadcrumbs" aria-label="Đường dẫn">
         <a href="/">Trang chủ</a>
         <span aria-hidden="true">/</span>
-        <a href="/nha-dat-tho-cu/">Nhà đất thổ cư</a>
+        <a href={isRent ? "/cho-thue/" : "/nha-dat-tho-cu/"}>{isRent ? "Cho thuê" : "Nhà đất thổ cư"}</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">{data.title}</span>
       </nav>
@@ -108,20 +109,20 @@ const jsonLd = JSON.stringify([propertySchema, breadcrumbSchema]).replace(/</g, 
         </main>
         <aside class="property-sidebar" aria-label="Tư vấn và nhà đất theo phường">
           <section class="consultant-card">
-            <div class="consultant-heading"><span>Tư vấn bất động sản</span><strong>Mua nhà Đà Nẵng</strong></div>
+            <div class="consultant-heading"><span>Tư vấn bất động sản</span><strong>{isRent ? 'Thuê nhà Đà Nẵng' : 'Mua nhà Đà Nẵng'}</strong></div>
             <div class="consultant-body">
               <div class="consultant-avatar"><img src="/uploads/tu-van-vien-vest.jpg" alt="Chuyên viên tư vấn bất động sản Đà Nẵng" loading="lazy" /></div>
-              <h2>Liên hệ tư vấn</h2><p>Hỗ trợ xem nhà và thông tin giao dịch</p>
+              <h2>Liên hệ tư vấn</h2><p>{isRent ? 'Hỗ trợ xem nhà cho thuê' : 'Hỗ trợ xem nhà và thông tin giao dịch'}</p>
               <a class="consultant-zalo" href="https://zalo.me/0869437415" target="_blank" rel="noopener noreferrer">Chat qua Zalo</a>
               <a class="consultant-call" href="tel:0869437415">☎ 0869 437 415</a>
             </div>
           </section>
-          <section class="sidebar-regions"><h2>Nhà đất theo phường</h2>
+          {!isRent && <section class="sidebar-regions"><h2>Nhà đất theo phường</h2>
             <ul>{wardCounts.map(ward => <li><a href={`/nha-dat-tho-cu/?phuong=${encodeURIComponent(ward.slug)}`}>{ward.name}</a><strong>{ward.count} tin đang bán</strong></li>)}</ul>
-          </section>
+          </section>}
         </aside>
       </div>
-      <p class="back-link"><a href="/nha-dat-tho-cu/">← Xem các nhà đất khác</a></p>
+      <p class="back-link"><a href={isRent ? "/cho-thue/" : "/nha-dat-tho-cu/"}>{isRent ? "← Xem tất cả bất động sản cho thuê" : "← Xem các nhà đất khác"}</a></p>
     </div>
   </div>
   <style>

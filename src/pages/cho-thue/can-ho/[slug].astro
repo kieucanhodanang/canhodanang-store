@@ -1,0 +1,12 @@
+---
+import ApartmentPage from '../../can-ho/[slug].astro';
+import { getCollection } from 'astro:content';
+export async function getStaticPaths() {
+  const entries = await getCollection('can-ho');
+  return entries.filter(entry => entry.data.status !== 'draft' &&
+    ['cho-thue','cho-thue-ngay'].includes(entry.data.transaction))
+    .map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<ApartmentPage entry={entry} />

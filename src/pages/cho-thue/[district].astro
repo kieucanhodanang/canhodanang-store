@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
+import { listingUrl } from '../../utils/listingUrl';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
 
 export function getStaticPaths() {
@@ -55,12 +56,12 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
               const location = [data.ward, data.district].filter(Boolean).join(' · ') || data.address;
               return (
                 <article class="property-card" data-page={Math.floor(index / 12) + 1} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-date={data.date ? new Date(data.date).getTime() || 0 : 0} hidden={index >= 12}>
-                  <a href={`/${entry.rentalType}/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
+                  <a href={listingUrl(entry.rentalType, entry.id, data.transaction)} class="image-link" aria-label={`Xem ${data.title}`}>
                     <img src={data.image} alt={data.imageAlt || data.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
                     {data.featured && <span class="featured-tag">Nổi bật</span>}
                   </a>
                   <div class="card-content">
-                    <h2><a href={`/${entry.rentalType}/${entry.id}/`}>{data.title}</a></h2>
+                    <h2><a href={listingUrl(entry.rentalType, entry.id, data.transaction)}>{data.title}</a></h2>
                     {location && <p class="location">📍 {location}</p>}
                     <div class="facts">
                       {(data.area || data.areaValue != null) && <span>Diện tích: <strong>{formatCardArea(data.area, data.areaValue)}</strong></span>}
@@ -69,7 +70,7 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
                     <div class="card-footer">
                       <strong class="price">{formatListingPrice(data.price, data.transaction || 'cho-thue', data.priceValue)}</strong>
                       <div class="card-action-row">
-                        <a class="detail-link" href={`/${entry.rentalType}/${entry.id}/`}>Xem chi tiết</a>
+                        <a class="detail-link" href={listingUrl(entry.rentalType, entry.id, data.transaction)}>Xem chi tiết</a>
                         {formatPostedDate(data.date) && <time class="posted-date">Ngày đăng: {formatPostedDate(data.date)}</time>}
                       </div>
                     </div>

@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
+import { listingUrl } from '../../utils/listingUrl';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
 
 const [apartmentEntries, landEntries] = await Promise.all([getCollection('can-ho'), getCollection('nha-dat-tho-cu')]);
@@ -49,7 +50,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
               {apartments.map((item, index) => {
                 const d = item.data;
                 const image = imageFor(d);
-                const href = `/${item.rentalType}/${item.id}/`;
+                const href = listingUrl(item.rentalType, item.id, d.transaction);
                 return (
                   <article class="listing-card" data-listing-index={index} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-date={d.date ? new Date(d.date).getTime() || 0 : 0} hidden={index >= pageSize}>
                     <a class="listing-image" href={href} aria-label={`Xem ${d.title}`}>

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { listingUrl } from '../../utils/listingUrl';
 
 export async function getStaticPaths() {
   const entries = await getCollection('du-an');
@@ -49,8 +50,8 @@ const specialListings = project?.id === 'vinhomes-hai-van-bay'
   : [];
 // Mỗi sản phẩm xuất hiện tối đa một lần, kể cả khi dữ liệu CMS trùng.
 const listings = [...new Map([
-  ...apartmentListings.map(item => ({ id:item.id, data:item.data, href:`/can-ho/${item.id}/`, kind:'can-ho' })),
-  ...specialListings.map(item => ({ id:item.id, data:item.data, href:`/nha-dat-tho-cu/${item.id}/`, kind:'nha-dat' })),
+  ...apartmentListings.map(item => ({ id:item.id, data:item.data, href:listingUrl('can-ho', item.id, item.data.transaction), kind:'can-ho' })),
+  ...specialListings.map(item => ({ id:item.id, data:item.data, href:listingUrl('nha-dat-tho-cu', item.id, item.data.transaction), kind:'nha-dat' })),
 ].map(item => [item.href, item] as const)).values()];
 // Ghim dự án độc lập với featured của trang chủ; sản phẩm không được ghim vẫn được điền tiếp theo ngày.
 const sortProjectListings = (items: typeof listings) => items.slice().sort((a,b)=>{
