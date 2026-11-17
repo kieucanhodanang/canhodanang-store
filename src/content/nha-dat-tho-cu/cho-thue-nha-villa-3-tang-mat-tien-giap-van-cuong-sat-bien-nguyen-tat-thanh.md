@@ -8,7 +8,7 @@ propertyType: nha-rieng
 transaction: cho-thue
 listingStatus: available
 district: Thanh Khê
-address: Giáp Cao Vân
+address: Giáp Văn Cương
 price: 14 triệu/tháng
 priceValue: 14
 area: "75"
