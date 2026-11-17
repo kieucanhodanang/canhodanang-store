@@ -211,6 +211,16 @@ const formatHomeArea = (area) => {
   const value = String(area ?? '').trim();
   return value && !/m²|m2|mét vuông/i.test(value) ? `${value} m²` : value;
 };
+// Dùng ngày đăng từ CMS, không dùng thời gian build Cloudflare.
+const formatHomePostedDate = (value) => {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(String(value));
+  if (Number.isNaN(date.getTime())) return null;
+  return {
+    text: new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' }).format(date),
+    iso: date.toISOString().slice(0, 10),
+  };
+};
 const homeCards = (items, type) => items.map(item => ({
   title: item.data.title,
   image: item.data.image || '',
@@ -223,6 +233,7 @@ const homeCards = (items, type) => items.map(item => ({
   href: listingUrl(type, item.id, item.data.transaction),
   pinned: Boolean(item.data.featured),
   highlightTags: listingHighlightTags(item.data.highlightTags),
+  postedDate: formatHomePostedDate(item.data.date),
 }));
 const saleCards = homeCards(homeSaleApartments, 'can-ho');
 const rentCards = homeRentListings.flatMap(item => homeCards([item], item.rentalType));
@@ -652,7 +663,10 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
                 {item.area && <span class="home-listing-fact">{item.area}</span>}
                 {item.bedrooms != null && <span class="home-listing-fact">{item.bedrooms} PN</span>}
               </div>
-              <a class="textlink" href={item.href}>Xem chi tiết →</a>
+              <div class="home-listing-actions">
+                <a class="textlink" href={item.href}>Xem chi tiết →</a>
+                {item.postedDate && <time class="home-listing-posted-date" datetime={item.postedDate.iso}>Ngày đăng: {item.postedDate.text}</time>}
+              </div>
             </div>
           </article>
         ))}
@@ -737,7 +751,10 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
               <h3><a href={item.href}>{item.title}</a></h3>
               <strong class="home-listing-price">{item.price}</strong>
               <p class="home-listing-meta">{[item.area, item.bedrooms != null ? `${item.bedrooms} phòng ngủ` : ''].filter(Boolean).join(' · ')}</p>
-              <a class="textlink" href={item.href}>Xem chi tiết →</a>
+              <div class="home-listing-actions">
+                <a class="textlink" href={item.href}>Xem chi tiết →</a>
+                {item.postedDate && <time class="home-listing-posted-date" datetime={item.postedDate.iso}>Ngày đăng: {item.postedDate.text}</time>}
+              </div>
             </div>
           </article>
         ))}
@@ -811,7 +828,10 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
                 {item.area && <span class="home-listing-fact">{item.area}</span>}
                 {item.bedrooms != null && <span class="home-listing-fact">{item.bedrooms} PN</span>}
               </div>
-              <a class="textlink" href={item.href}>Xem chi tiết →</a>
+              <div class="home-listing-actions">
+                <a class="textlink" href={item.href}>Xem chi tiết →</a>
+                {item.postedDate && <time class="home-listing-posted-date" datetime={item.postedDate.iso}>Ngày đăng: {item.postedDate.text}</time>}
+              </div>
             </div>
           </article>
         ))}
@@ -954,6 +974,9 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
     .home-listing-body h3 a {color:inherit;text-decoration:none;}
     .home-listing-price {display:block;color:#c42626;font-size:20px;margin:8px 0;}
     .home-listing-meta {font-size:14px;color:#64788c;}
+    .home-listing-actions {display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px 10px;margin-top:auto;padding-top:8px;min-width:0;}
+    .home-listing-actions .textlink {margin:0;}
+    .home-listing-posted-date {font-size:12px;color:#657b8d;white-space:nowrap;margin-left:auto;text-align:right;}
     @media(min-width:768px) and (max-width:1000px){.home-listing-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
     @media(max-width:767px){
       .home-listing-grid {display:grid;grid-template-columns:1fr;gap:12px;}
@@ -966,6 +989,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       .home-listing-price {font-size:16px;margin:5px 0;}
       .home-listing-meta {font-size:12px;margin:4px 0;}
       .home-listing-body .textlink {font-size:12px;}
+      .home-listing-actions {gap:4px 6px;padding-top:5px;}
+      .home-listing-posted-date {font-size:10px;}
     }
 
     /* Tất cả tiêu đề thẻ trang chủ có thể mở trang đích. */
