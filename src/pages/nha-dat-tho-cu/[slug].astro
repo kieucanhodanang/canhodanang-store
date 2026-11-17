@@ -7,7 +7,9 @@ import { getCollection, render } from 'astro:content';
 export async function getStaticPaths() {
   const properties = await getCollection('nha-dat-tho-cu');
   return properties
-    .filter((entry) => entry.data.status !== 'draft')
+    // Keep legacy rental/standalone URLs; project-sale URLs are generated under /du-an/.
+    .filter((entry) => entry.data.status !== 'draft'
+      && (entry.data.transaction !== 'ban' || !entry.data.project))
     .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
