@@ -187,13 +187,18 @@ const homePriority = (a, b) => {
 const isHomeListing = (item) => item.data.status !== 'draft'
   && item.data.listingStatus === 'available' && item.data.showOnHome !== false;
 const homeApartments = (await getCollection('can-ho')).filter(isHomeListing);
-const homeLand = (await getCollection('nha-dat-tho-cu')).filter(isHomeListing);
+const allHomeLand = (await getCollection('nha-dat-tho-cu')).filter(isHomeListing);
+// Biet thu/lien ke/shophouse da gan du an khong phai nha dat tho cu doc lap.
+const homeLand = allHomeLand.filter(item => !item.data.project);
+const homeHaiVanSale = allHomeLand.filter(item =>
+  item.data.project === 'vinhomes-hai-van-bay' && item.data.transaction === 'ban'
+).sort(homePriority).slice(0, 6);
 const homeSaleApartments = homeApartments.filter(item => item.data.transaction === 'ban')
   .sort(homePriority).slice(0, 6);
 const homeRentListings = [
   ...homeApartments.filter(item => ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
     .map(item => ({ ...item, rentalType: 'can-ho' })),
-  ...homeLand.filter(item => ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
+  ...allHomeLand.filter(item => ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
     .map(item => ({ ...item, rentalType: 'nha-dat-tho-cu' })),
 ].sort(homePriority).slice(0, 6);
 const homeSaleLand = homeLand.filter(item => item.data.transaction === 'ban')
@@ -238,6 +243,25 @@ const homeCards = (items, type) => items.map(item => ({
 const saleCards = homeCards(homeSaleApartments, 'can-ho');
 const rentCards = homeRentListings.flatMap(item => homeCards([item], item.rentalType));
 const landCards = homeCards(homeSaleLand, 'nha-dat-tho-cu');
+// The same CMS records appear in the Hai Van Bay section, not in standalone land.
+const haiVanTypes: Record<string, string> = {
+  'biet-thu-don-lap': 'Biệt thự đơn lập',
+  'biet-thu-song-lap': 'Biệt thự song lập',
+  'biet-thu-lien-ke': 'Biệt thự liền kề',
+  'shophouse': 'Shophouse',
+  'can-ho-cao-tang': 'Căn hộ cao tầng',
+  'resort': 'Bất động sản nghỉ dưỡng',
+};
+const haiVanZones: Record<string, string> = {
+  'tinh-van': 'Tinh Vân', 'bach-van': 'Bạch Vân',
+  'dao-ngoc': 'Đảo Ngọc', 'vinh-may': 'Vịnh Mây',
+};
+const haiVanCards = homeHaiVanSale.map(item => ({
+  ...homeCards([item], 'nha-dat-tho-cu')[0],
+  typeLabel: haiVanTypes[item.data.projectPropertyType || ''] || 'Bất động sản Hải Vân Bay',
+  zoneLabel: haiVanZones[item.data.subdivision || ''] || '',
+  floors: item.data.floors,
+}));
 
 const seoTitle = 'Căn Hộ Đà Nẵng | Mua Bán, Cho Thuê & Dự Án Nổi Bật';
 const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, dự án nổi bật và thông tin thị trường. Liên hệ tư vấn 0869 437 415.';
@@ -892,10 +916,44 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
 
         <a class="textlink"
           href={projects.some(item => item.id === "vinhomes-hai-van-bay") ? "/du-an/vinhomes-hai-van-bay/" : "/du-an/"}>
-          Tìm hiểu Hải Vân Bay →
+          Xem tất cả sản phẩm Hải Vân Bay →
         </a>
       </div>
 
+      {haiVanCards.length > 0 && (
+        <div class="cards home-listing-grid">
+          {haiVanCards.map(item => (
+            <article class="card home-listing-card">
+              <a class="home-listing-photo" href={item.href} aria-label={`Xem ${item.title}`}>
+                {item.image && <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />}
+                {item.pinned && (
+                  <span class="home-listing-tags" aria-label="Điểm nổi bật">
+                    {(item.highlightTags.length ? item.highlightTags : ['Nổi bật']).map(tag => (
+                      <span class="home-listing-pin">{tag}</span>
+                    ))}
+                  </span>
+                )}
+              </a>
+              <div class="cardbody home-listing-body">
+                <div class="home-listing-address">
+                  <strong class="home-listing-project">{item.typeLabel}</strong>
+                  {item.zoneLabel && <span class="location">{`, phân khu ${item.zoneLabel}`}</span>}
+                </div>
+                <h3 class="home-listing-title"><a href={item.href}>{item.title}</a></h3>
+                <div class="home-listing-facts">
+                  <strong class="home-listing-price">{item.price}</strong>
+                  {item.area && <span class="home-listing-fact">{item.area}</span>}
+                  {item.floors != null && <span class="home-listing-fact">{item.floors} tầng</span>}
+                </div>
+                <div class="home-listing-actions">
+                  <a class="textlink" href={item.href}>Xem chi tiết →</a>
+                  {item.postedDate && <time class="home-listing-posted-date" datetime={item.postedDate.iso}>Ngày đăng: {item.postedDate.text}</time>}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   </section>
 
