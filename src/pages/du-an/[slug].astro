@@ -756,7 +756,17 @@ const unitPrice = (item: typeof listings[number]) => {
     .cms-rich-region.is-expanded .cms-rich-body,.cms-progress-summary.is-expanded .cms-rich-body{max-height:none;overflow:visible}
     .cms-rich-toggle{display:inline-block;align-self:flex-start;margin:10px 0 0;padding:5px 0;color:#9a723c;background:transparent;border:0;border-bottom:1px solid #b68b4b;font-size:13px;font-weight:700;cursor:pointer}
     .cms-rich-toggle[hidden]{display:none!important}
-    .cms-rich-region.has-overflow .cms-rich-body:not(.is-expanded){mask-image:linear-gradient(#000 84%,transparent);-webkit-mask-image:linear-gradient(#000 84%,transparent)}
+    /* Gradient chi ap dung khi dang thu gon; khi mo rong, noi dung phai ro hoan toan. */
+    .cms-rich-region.has-overflow:not(.is-expanded) .cms-rich-body,
+    .cms-progress-summary.has-overflow:not(.is-expanded) .cms-rich-body{
+      -webkit-mask-image:linear-gradient(to bottom,#000 70%,transparent 100%);
+      mask-image:linear-gradient(to bottom,#000 70%,transparent 100%);
+    }
+    .cms-rich-region.is-expanded .cms-rich-body,
+    .cms-progress-summary.is-expanded .cms-rich-body{
+      -webkit-mask-image:none;
+      mask-image:none;
+    }
     /* Project product cards: exactly two columns and four entries per reveal batch. */
     .product-group .home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
     @media(max-width:900px){
