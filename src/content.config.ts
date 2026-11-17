@@ -53,6 +53,12 @@ const propertyFields = {
   legal: optionalText,
   direction: optionalText,
   gallery: z.array(z.string()).nullish(),
+  // Thư viện ảnh mới từ Decap CMS: giữ đường dẫn và ALT riêng từng ảnh.
+  // Khai báo tại propertyFields để cả căn hộ và nhà đất thổ cư đều nhận dữ liệu.
+  galleryItems: z.array(z.object({
+    image: z.string(),
+    imageAlt: optionalText,
+  })).nullish(),
 };
 
 const canHo = defineCollection({
