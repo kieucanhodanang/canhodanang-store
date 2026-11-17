@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
+import { listingPlace } from '../../utils/listingPlace';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
 
 const properties = sortFeaturedFirst(
@@ -56,10 +57,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
           <div class="property-grid" id="property-grid">
             {properties.map((entry, index) => {
               const data = entry.data;
-              // Ưu tiên tên đường + phường; dự phòng khu vực cũ khi CMS chưa có phường.
-              const street = String(data.address || '').trim();
-              const wardOrDistrict = String(data.ward || data.district || '').trim();
-              const location = [street, wardOrDistrict && !street.toLocaleLowerCase('vi').includes(wardOrDistrict.toLocaleLowerCase('vi')) ? wardOrDistrict : ''].filter(Boolean).join(', ');
+              const location = listingPlace(data.address, data.ward, data.district);
               return (
                 <article class="property-card" data-keywords={[data.title,data.description,data.address,data.district,data.ward].filter(Boolean).join(' ')} data-district={data.district || ''} data-ward={data.ward || ''} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-type={data.propertyType || ''} data-bedrooms={data.bedrooms ?? ''} data-date={data.date instanceof Date ? data.date.getTime() : 0} data-featured={data.featured ? '1' : '0'} hidden={index >= 12}>
                   <a href={`/nha-dat-tho-cu/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
