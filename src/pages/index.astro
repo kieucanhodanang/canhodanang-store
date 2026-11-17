@@ -78,9 +78,11 @@ const searchableListings = listingCollections.flatMap((entries, index) =>
         district: d.district || '',
         ward: d.ward || '',
         address: d.address || '',
-        url: listingUrl(type, item.id, transaction),
+        url: listingUrl(type, item.id, transaction, project),
         type,
         propertyType: d.propertyType || type,
+        projectPropertyType: d.projectPropertyType || '',
+        subdivision: d.subdivision || '',
         transaction,
         // Giá chuẩn hóa trong CMS là triệu đồng; bộ lọc bán dùng tỷ, thuê dùng triệu.
         price: transaction === 'ban' && priceMillion !== null ? priceMillion / 1000 : null,
@@ -132,7 +134,7 @@ const landDistrictAreas = [
   { name: 'Thanh Khê', description: 'Khám phá nhà riêng và đất thổ cư khu vực Thanh Khê.', image: homepage.landAreaImages?.thanhKhe || '' },
 ].map(area => ({
   ...area,
-  count: searchableListings.filter(item => item.type === 'nha-dat-tho-cu' && item.transaction === 'ban' && normalizeLandDistrict(item.district) === normalizeLandDistrict(area.name)).length,
+  count: searchableListings.filter(item => item.type === 'nha-dat-tho-cu' && !item.project && item.transaction === 'ban' && normalizeLandDistrict(item.district) === normalizeLandDistrict(area.name)).length,
   href: '/nha-dat-tho-cu/' + ({ 'Sơn Trà': 'son-tra', 'Hải Châu': 'hai-chau', 'Thanh Khê': 'thanh-khe' }[area.name] || '') + '/',
 }));
 const rentalDistrictAreas = [
@@ -204,13 +206,14 @@ const homeRentListings = [
 const homeSaleLand = homeLand.filter(item => item.data.transaction === 'ban')
   .sort(homePriority).slice(0, 6);
 const cleanProjectName = (name) => String(name || '').trim().replace(/\s*[-–|,]\s*(?:TP\.?\s*)?Đà\s*Nẵng\s*$/i, '').replace(/\s+Đà\s*Nẵng\s*$/i, '').trim();
-const shortAddress = (address, district) => {
+const shortAddress = (address, ward, district) => {
   const parts = String(address || '').split(',').map(v => v.trim()).filter(Boolean);
-  // Chỉ lấy đường thực sự; không lấy tên tháp hoặc tên tòa nhà làm đường.
-  const street = parts.find(v => /(?:^|\s)(?:đường|phố|đại lộ|đ\.|street)\s+[\p{L}\d]/iu)
-    || parts.find(v => /^\d+[\w/-]*\s+[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v)) || '';
-  const districtName = String(district || '').trim() || parts.find(v => /^(quận|huyện|q\.)\s/i.test(v)) || '';
-  return [street, districtName].filter(Boolean).join(', ');
+  const street = parts.find(v => /(?:^|\s)(?:đường|phố|đại lộ|kiệt|hẻm|đ\.|street)\s+[\p{L}\d]/iu)
+    || parts.find(v => /^\d+[\w/-]*\s+[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v))
+    || parts[0] || '';
+  const locality = String(ward || district || '').trim();
+  const normalizePlace = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  return [street, locality && !normalizePlace(street).includes(normalizePlace(locality)) ? locality : ''].filter(Boolean).join(', ');
 };
 const formatHomeArea = (area) => {
   const value = String(area ?? '').trim();
@@ -233,9 +236,9 @@ const homeCards = (items, type) => items.map(item => ({
   price: formatListingPrice(item.data.price, item.data.transaction || 'ban', item.data.priceValue),
   area: formatHomeArea(item.data.area || item.data.areaValue || ''),
   bedrooms: item.data.bedrooms,
-  place: type === 'can-ho' ? shortAddress(item.data.address, item.data.district) : (item.data.district || item.data.address || 'Đà Nẵng'),
+  place: shortAddress(item.data.address, item.data.ward, item.data.district) || 'Đà Nẵng',
   projectName: cleanProjectName(projectNames.get(item.data.project || '') || ''),
-  href: listingUrl(type, item.id, item.data.transaction),
+  href: listingUrl(type, item.id, item.data.transaction, item.data.project),
   pinned: Boolean(item.data.featured),
   highlightTags: listingHighlightTags(item.data.highlightTags),
   postedDate: formatHomePostedDate(item.data.date),
@@ -283,6 +286,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <label><input type="radio" name="search-type" value="can-ho" checked /><span>Căn hộ</span></label>
           <label><input type="radio" name="search-type" value="cho-thue" /><span>Cho thuê</span></label>
           <label><input type="radio" name="search-type" value="nha-dat-tho-cu" /><span>Nhà đất</span></label>
+          <label><input type="radio" name="search-type" value="du-an" /><span>Dự án</span></label>
         </div>
         <div class="hero-search-input"><input id="hero-keyword" type="search" aria-label="Từ khóa tìm kiếm" placeholder="Tìm tên dự án, khu vực, căn hộ..." autocomplete="off" /><button type="submit">Tìm kiếm</button></div>
       </form>
@@ -462,7 +466,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         priceTouched = false;
         document.getElementById('price-high-label').textContent = `${max} ${priceUnit()}+`;
         document.getElementById('price-low-label').textContent = `0 ${priceUnit()}`;
-        document.getElementById('search-type-label').textContent = 'Đang tìm: ' + ({'can-ho':'Căn hộ','cho-thue':'Cho thuê','nha-dat-tho-cu':'Nhà đất'}[mode]);
+        document.getElementById('search-type-label').textContent = 'Đang tìm: ' + ({'can-ho':'Căn hộ','cho-thue':'Cho thuê','nha-dat-tho-cu':'Nhà đất','du-an':'Dự án'}[mode]);
         syncRanges();
       };
       const render = (resetPage = true) => {
@@ -472,10 +476,11 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         const minA = Number(areaMin.value), maxA = Number(areaMax.value);
         const matched = items.filter(item => {
           if (mode === 'cho-thue' && !['cho-thue','cho-thue-ngay'].includes(item.transaction)) return false;
-          if (mode === 'nha-dat-tho-cu' && (item.type === 'can-ho' || item.transaction !== 'ban')) return false;
+          if (mode === 'nha-dat-tho-cu' && (item.type === 'can-ho' || item.project || item.transaction !== 'ban')) return false;
+          if (mode === 'du-an' && (!item.project || item.transaction !== 'ban')) return false;
           if (mode === 'can-ho' && (item.type !== 'can-ho' || item.transaction !== 'ban')) return false;
           const searchableText = normalize([item.title,item.description,item.projectName,item.district,item.ward,item.address,
-            item.type === 'can-ho' ? 'can ho chung cu' : 'nha dat tho cu',
+            item.type === 'can-ho' ? 'can ho chung cu' : item.project ? 'biet thu lien ke shophouse bat dong san du an' : 'nha dat tho cu',
             item.bedrooms === null ? '' : `${item.bedrooms} phong ngu ${item.bedrooms} pn`].join(' '));
           if (search.tokens.some(token => !searchableText.includes(token))) return false;
           if (search.requestedBedrooms !== null && item.bedrooms !== search.requestedBedrooms) return false;
@@ -525,7 +530,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            // Giá nhập dạng văn bản trong CMS được ưu tiên để không ghi nhầm đơn vị thuê ngày/tháng.
            const priceValue = mode === 'cho-thue' ? item.rent : item.price;
            const shownPrice = item.priceText || (priceValue === null ? 'Liên hệ báo giá' : `${format(priceValue)} ${priceUnit()}`);
-           const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : 'Nhà đất';
+           const projectTypeNames = {'biet-thu-don-lap':'Biệt thự đơn lập','biet-thu-song-lap':'Biệt thự song lập','biet-thu-lien-ke':'Biệt thự liền kề','shophouse':'Shophouse','can-ho-cao-tang':'Căn hộ cao tầng','resort':'Resort'};
+           const typeLabel = item.type === 'can-ho' ? 'Căn hộ' : item.project ? (projectTypeNames[item.projectPropertyType] || 'Bất động sản dự án') : 'Nhà đất';
            const badgeLabels = item.featured
               ? (Array.isArray(item.highlightTags) && item.highlightTags.length ? item.highlightTags.slice(0, 3) : ['Nổi bật'])
               : [];
@@ -537,8 +543,10 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
            const street = parts.find(v=>/(?:^|\s)(?:đường|phố|đại lộ|đ\.|street)\s+[\p{L}\d]/iu)
              || parts.find(v=>/^(?:\d+[\w/-]*\s+)[\p{L}\s]+$/u.test(v) && !/tower|block|tòa|tháp|chung cư/i.test(v)) || '';
            const district = item.district || parts.find(v=>/^(quận|huyện|q\.)\s/i.test(v)) || '';
-           const place = item.type === 'can-ho' ? [street,district].filter(Boolean).join(', ') : ([item.district,item.ward].filter(Boolean).join(' · ') || item.address || 'Đà Nẵng');
-           const projectLine = item.type === 'can-ho' && item.projectName ? `<strong class="result-project">${escapeHTML(String(item.projectName).replace(/\s*[-–|,]\s*(?:TP\.?\s*)?Đà\s*Nẵng\s*$/i, '').replace(/\s+Đà\s*Nẵng\s*$/i, '').trim())}</strong>` : '';
+           const locality = item.ward || district;
+           const rawStreet = street || parts[0] || '';
+           const place = [rawStreet, locality && !normalize(rawStreet).includes(normalize(locality)) ? locality : ''].filter(Boolean).join(', ') || 'Đà Nẵng';
+           const projectLine = item.project && item.projectName ? `<strong class="result-project">${escapeHTML(String(item.projectName).replace(/\s*[-–|,]\s*(?:TP\.?\s*)?Đà\s*Nẵng\s*$/i, '').replace(/\s+Đà\s*Nẵng\s*$/i, '').trim())}</strong>` : '';
            const locationLine = place ? `<span class="result-place">${projectLine ? ", " : ""}${escapeHTML(place)}</span>` : '';
            // Ngày đăng thực tế từ CMS, không dùng ngày hiện tại khi thiếu dữ liệu.
            const publishedDate = Number(item.publishedAt) > 0 && Number.isFinite(Number(item.publishedAt))
