@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
+import { listingPlace } from '../../utils/listingPlace';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
 
 const apartments = sortFeaturedFirst(
@@ -98,7 +99,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                         <span>Diện tích: {formatArea(d.area, d.areaValue)}</span>
                         {d.bedrooms != null && <span>{d.bedrooms} phòng ngủ</span>}
                       </div>
-                      {d.address && <p class="address">{d.address}</p>}
+                      {listingPlace(d.address, d.ward, d.district) && <p class="address">{listingPlace(d.address, d.ward, d.district)}</p>}
                       <div class="listing-card-bottom"><a class="detail-link" href={href}>Xem chi tiết <span aria-hidden="true">→</span></a>{formatPostedDate(d.date) && <time class="posted-date" datetime={d.date instanceof Date ? d.date.toISOString().slice(0,10) : String(d.date).slice(0,10)}>Ngày đăng: {formatPostedDate(d.date)}</time>}</div>
                     </div>
                   </article>
