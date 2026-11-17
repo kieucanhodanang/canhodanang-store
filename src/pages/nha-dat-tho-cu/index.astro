@@ -8,7 +8,9 @@ const properties = sortFeaturedFirst(
   (await getCollection('nha-dat-tho-cu')).filter((entry) =>
     entry.data.status !== 'draft' &&
     entry.data.listingStatus === 'available' &&
-    entry.data.transaction === 'ban'
+    entry.data.transaction === 'ban' &&
+    // Sản phẩm thuộc dự án được hiển thị tại dự án, không phải danh mục nhà đất thổ cư.
+    !entry.data.project
   )
 );
 const { totalItems } = paginateListings(properties, 1, 12);
@@ -54,7 +56,10 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
           <div class="property-grid" id="property-grid">
             {properties.map((entry, index) => {
               const data = entry.data;
-              const location = [data.ward, data.district].filter(Boolean).join(' · ') || data.address;
+              // Ưu tiên tên đường + phường; dự phòng khu vực cũ khi CMS chưa có phường.
+              const street = String(data.address || '').trim();
+              const wardOrDistrict = String(data.ward || data.district || '').trim();
+              const location = [street, wardOrDistrict && !street.toLocaleLowerCase('vi').includes(wardOrDistrict.toLocaleLowerCase('vi')) ? wardOrDistrict : ''].filter(Boolean).join(', ');
               return (
                 <article class="property-card" data-keywords={[data.title,data.description,data.address,data.district,data.ward].filter(Boolean).join(' ')} data-district={data.district || ''} data-ward={data.ward || ''} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-type={data.propertyType || ''} data-bedrooms={data.bedrooms ?? ''} data-date={data.date instanceof Date ? data.date.getTime() : 0} data-featured={data.featured ? '1' : '0'} hidden={index >= 12}>
                   <a href={`/nha-dat-tho-cu/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
