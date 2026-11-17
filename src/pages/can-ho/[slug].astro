@@ -4,6 +4,7 @@ import { formatListingPrice } from '../../utils/formatListingPrice';
 import PropertyDetail from '../../components/PropertyDetail.astro';
 import { listingUrl } from '../../utils/listingUrl';
 import { getCollection, render } from 'astro:content';
+import { listingPlace } from '../../utils/listingPlace';
 import { sortFeaturedFirst } from '../../utils/listingSort';
 
 export async function getStaticPaths() {
@@ -247,8 +248,8 @@ const schema = {
                   <div class="region-info">
                     <div class="region-address">
                       {item.data.project && regionProjectNames.has(item.data.project) && <strong>{regionProjectNames.get(item.data.project)}</strong>}
-                      {item.data.project && regionProjectNames.has(item.data.project) && (item.data.ward || item.data.address) && <span>, </span>}
-                      <span>{[item.data.address, item.data.ward].filter(Boolean).join(', ')}</span>
+                      {item.data.project && regionProjectNames.has(item.data.project) && listingPlace(item.data.address, item.data.ward, item.data.district) && <span>, </span>}
+                      <span>{listingPlace(item.data.address, item.data.ward, item.data.district)}</span>
                     </div>
                     <h2><a href={listingUrl('can-ho', item.id, item.data.transaction)}>{item.data.title}</a></h2>
                     <div class="region-facts">
