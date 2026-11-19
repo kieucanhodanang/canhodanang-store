@@ -10,7 +10,7 @@ transaction: cho-thue
 listingStatus: available
 district: Hải Châu
 address: Ông Ích Khiêm, Cao Thắng
-price: "22"
+price: 22 triệu/tháng
 priceValue: 22
 area: "50"
 areaValue: 50
