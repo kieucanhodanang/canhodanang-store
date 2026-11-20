@@ -11,10 +11,42 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const data = entry.data;
-const { Content } = await render(entry);
+const { Content, headings: markdownHeadings } = await render(entry);
 const projects = (await getCollection('du-an')).filter(item => item.data.status === 'published');
 const articles = (await getCollection('bai-viet')).filter(item => item.data.status === 'published' && item.id !== entry.id);
-const relatedArticles = data.project ? articles.filter(item => item.data.project === data.project).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 6) : [];
+// Trường project cũ vẫn là dự án chính; relatedProjects bổ sung nhiều dự án, không làm mất bài cũ.
+const linkedProjectIds = [...new Set([data.project, ...(data.relatedProjects ?? [])].filter((id): id is string => typeof id === 'string' && id.length > 0))];
+const relatedArticles = linkedProjectIds.length
+  ? articles.filter(item => [item.data.project, ...(item.data.relatedProjects ?? [])].some(id => id && linkedProjectIds.includes(id)))
+      .sort((a,b) => b.data.date.getTime() - a.data.date.getTime()).slice(0,6)
+  : [];
+const newsBlocks = data.contentBlocks ?? [];
+const useBuilder = data.contentMode === 'builder' && newsBlocks.length > 0;
+const headingIds = new Map<number, string>();
+const usedHeadingIds = new Set<string>();
+const builderHeadings = newsBlocks.flatMap((block, index) => {
+  const text = block.heading?.trim();
+  if (!text || !['heading', 'two_columns', 'highlight'].includes(block.type)) return [];
+  const base = 'muc-' + (text.toLowerCase().replace(/đ/g, 'd').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'noi-dung');
+  let slug = base;
+  let suffix = 2;
+  while (usedHeadingIds.has(slug)) slug = base + '-' + suffix++;
+  usedHeadingIds.add(slug);
+  headingIds.set(index, slug);
+  return [{ depth: block.headingLevel === 'h3' ? 3 : 2, slug, text }];
+});
+const tocHeadings = (useBuilder ? builderHeadings : markdownHeadings).filter(h => h.depth === 2 || h.depth === 3);
+const showToc = tocHeadings.filter(h => h.depth === 2).length >= 3;
+const safePalette = new Set(['#202A36', '#007BFF', '#176C87', '#C53232', '#AB7925', '#747D89']);
+const blockColor = (block: (typeof newsBlocks)[number]) => {
+  const custom = block.customTextColor?.trim();
+  if (custom && /^#[0-9A-Fa-f]{6}$/.test(custom)) return custom;
+  return block.textColor && safePalette.has(block.textColor) ? block.textColor : '#202A36';
+};
+const blockAlign = (block: (typeof newsBlocks)[number]) =>
+  ['left', 'center', 'right', 'justify'].includes(block.textAlign || '') ? block.textAlign : 'left';
+const blockBackground = (block: (typeof newsBlocks)[number]) =>
+  ({ blue: '#EFF7FF', cream: '#FFF7E8', gray: '#F4F7FA' } as Record<string,string>)[block.backgroundTone || ''] || 'transparent';
 // Căn hộ còn giao dịch thuộc dự án được gắn với bài viết.
 const relatedApartments = data.project
   ? (await getCollection('can-ho')).filter(item =>
@@ -29,9 +61,10 @@ const formatApartmentPrice = (value: unknown) => {
   return String(value);
 };
 const isLandArticle = data.category === 'tho-cu';
-const linkedProject = data.project ? projects.find(item => item.id === data.project && item.data.status === 'published') : undefined;
+const linkedProject = data.project ? projects.find(item => item.id === data.project) : undefined;
+const linkedProjects = linkedProjectIds.map(id => projects.find(item => item.id === id)).filter((item): item is (typeof projects)[number] => Boolean(item));
 const consultantHeading = isLandArticle ? 'Mua nhà Đà Nẵng' : (linkedProject?.data.title || 'Bất động sản Đà Nẵng');
-const featuredProjects = [...projects].sort((a, b) => Number(b.id === data.project) - Number(a.id === data.project)).slice(0, 8);
+const featuredProjects = [...projects].sort((a, b) => Number(linkedProjectIds.includes(b.id)) - Number(linkedProjectIds.includes(a.id))).slice(0, 8);
 const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const seoTitle = data.seoTitle?.trim() || data.title;
@@ -82,7 +115,44 @@ const schema = {
         <p class="lead">{description}</p>
       </header>
       {data.image && <img class="cover" src={data.image} alt={data.imageAlt || data.title} loading="eager" decoding="async" />}
-      <div class="article-body"><Content /></div>
+
+      {showToc && <nav class="news-toc" aria-label="Mục lục bài viết">
+        <details open>
+          <summary><strong>Nội dung bài viết</strong><span>Ẩn / hiện mục lục</span></summary>
+          <ol>{tocHeadings.map(heading => <li class:list={{ 'toc-subheading': heading.depth === 3 }}><a href={'#' + heading.slug}>{heading.text}</a></li>)}</ol>
+        </details>
+      </nav>}
+      <script is:inline>
+        (() => {
+          const toc = document.querySelector('.news-page .news-toc details');
+          if (toc && window.matchMedia('(max-width: 640px)').matches) toc.open = false;
+        })();
+      </script>
+      <div class="article-body">
+        {useBuilder ? <div class="news-builder">
+          {newsBlocks.map((block,index) => <section
+            class:list={['news-builder-block','news-block-' + block.type]}
+            style={{color: blockColor(block), textAlign: blockAlign(block), backgroundColor: blockBackground(block)}}
+          >
+            {block.type === 'heading' && block.heading && (block.headingLevel === 'h3'
+              ? <h3 id={headingIds.get(index)}>{block.heading}</h3>
+              : <h2 id={headingIds.get(index)}>{block.heading}</h2>)}
+            {block.type === 'text' && block.text && <p class="builder-paragraph">{block.text}</p>}
+            {block.type === 'two_columns' && <div class:list={['news-two-columns',block.imageSide === 'right' && 'image-right','ratio-' + (block.columnRatio || '50-50')]}>
+              {block.image && <figure class="news-column-photo"><img src={block.image} alt={block.imageAlt || block.heading || data.title} loading="lazy" decoding="async" /></figure>}
+              <div class="news-builder-copy">
+                {block.heading && (block.headingLevel === 'h3' ? <h3 id={headingIds.get(index)}>{block.heading}</h3> : <h2 id={headingIds.get(index)}>{block.heading}</h2>)}
+                {block.text && <p class="builder-paragraph">{block.text}</p>}
+              </div>
+            </div>}
+            {block.type === 'image' && block.image && <figure class="news-full-image"><img src={block.image} alt={block.imageAlt || data.title} loading="lazy" decoding="async" />{block.caption && <figcaption>{block.caption}</figcaption>}</figure>}
+            {block.type === 'highlight' && <div class="news-highlight-content">
+              {block.heading && (block.headingLevel === 'h3' ? <h3 id={headingIds.get(index)}>{block.heading}</h3> : <h2 id={headingIds.get(index)}>{block.heading}</h2>)}
+              {block.text && <p class="builder-paragraph">{block.text}</p>}
+            </div>}
+          </section>)}
+        </div> : <Content />}
+      </div>
       <!-- CMS shortcode: place [[FORM_TU_VAN]] on its own line in article Markdown. -->
       <template id="news-lead-template">
         <section class="news-lead-box" aria-label="Đăng ký nhận tư vấn">
@@ -151,6 +221,14 @@ const schema = {
           </a>)}</div>
         </div>)}
       </section>}
+
+      {linkedProjects.length > 0 && <section class="news-related-projects" aria-label="Các dự án liên quan">
+        <h2>Dự án liên quan</h2>
+        <div class="news-related-project-grid">{linkedProjects.map(project => <a class="news-related-project-card" href={'/du-an/' + project.id + '/'}>
+          {project.data.image && <img src={project.data.image} alt={project.data.title} loading="lazy" decoding="async" />}
+          <div><strong>{project.data.title}</strong>{project.data.location && <span>{project.data.location}</span>}</div>
+        </a>)}</div>
+      </section>}
       <section class="article-share" aria-label="Chia sẻ bài viết">
         <p>Chia sẻ bài viết này</p>
         <div class="share-actions">
@@ -160,8 +238,8 @@ const schema = {
         </div>
         <span class="share-feedback" aria-live="polite"></span>
       </section>
-      {linkedProject && <section class="related-articles" aria-label="Tin tức liên quan dự án">
-        <h2>Tin tức liên quan dự án {linkedProject.data.title}</h2>
+      {linkedProjects.length > 0 && <section class="related-articles" aria-label="Tin tức liên quan dự án">
+        <h2>{linkedProjects.length === 1 ? 'Tin tức liên quan dự án ' + linkedProjects[0].data.title : 'Tin tức liên quan các dự án'}</h2>
         {relatedArticles.length > 0 ? <div class="related-list">{relatedArticles.map(item => <a class="related-item" href={`/tin-tuc/${item.id}/`}>{item.data.image ? <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" /> : <span class="related-placeholder" aria-hidden="true">Tin tức</span>}<span class="related-info"><time datetime={item.data.date.toISOString()}>{new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' }).format(item.data.date)}</time><strong>{item.data.title}</strong>{item.data.description && <span class="related-description">{item.data.description}</span>}</span></a>)}</div> : <p class="related-empty">Chưa có bài viết liên quan khác về dự án này.</p>}
       </section>}
       <script>
@@ -233,6 +311,49 @@ const schema = {
     .lead{font-size:17px;line-height:1.75;color:#536879;margin:20px 0 26px}
     .cover{display:block;width:100%;max-height:490px;object-fit:cover;border-radius:12px;margin-bottom:28px}
     .article-body{font-size:16px;line-height:1.85;overflow-wrap:anywhere}
+
+    .news-toc{border:1px solid #d6e5f2;background:#f5faff;border-radius:12px;margin:0 0 26px;overflow:hidden}
+    .news-toc summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 18px;cursor:pointer;color:#17476d}
+    .news-toc summary span{font-size:12px;color:#68829a}
+    .news-toc ol{margin:0;padding:0 22px 16px 44px;font-size:14px;line-height:1.7}
+    .news-toc li{padding:3px 0}.news-toc li.toc-subheading{margin-left:20px;list-style-type:circle}
+    .news-toc a{color:#17628e;text-decoration:none}.news-toc a:hover{text-decoration:underline}
+    .article-body :global(h2[id]),.article-body :global(h3[id]){scroll-margin-top:110px}
+    :global(html){scroll-behavior:smooth}
+    .news-builder{display:grid;gap:16px}
+    .news-builder-block{min-width:0;border-radius:12px}
+    .news-builder-block.news-block-text,.news-builder-block.news-block-highlight{padding:10px 16px}
+    .news-builder-block.news-block-heading{padding:0}
+    .news-builder-block.news-block-highlight{border-left:4px solid #007BFF;padding:18px 22px}
+    .news-builder-block .builder-paragraph{white-space:pre-line;line-height:1.85;margin:0}
+    .news-builder-block h2,.news-builder-block h3{color:inherit!important;margin:0 0 12px}
+    .news-two-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:22px;padding:8px 0}
+    .news-two-columns.ratio-40-60{grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
+    .news-two-columns.ratio-60-40{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
+    .news-two-columns.image-right.ratio-40-60{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
+    .news-two-columns.image-right.ratio-60-40{grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
+    .news-two-columns.image-right .news-column-photo{order:2}.news-two-columns.image-right .news-builder-copy{order:1}
+    .news-column-photo,.news-full-image{margin:0;min-width:0}
+    .news-column-photo img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:10px}
+    .news-full-image img{display:block;width:100%;height:auto;border-radius:10px}
+    .news-full-image figcaption{font-size:13px;color:#698199;text-align:center;margin-top:8px}
+    .news-related-projects{margin-top:32px;padding-top:22px;border-top:1px solid #dce6ef}
+    .news-related-projects h2{margin:0 0 16px;font-size:23px;color:#173b60}
+    .news-related-project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .news-related-project-card{display:block;border:1px solid #e1e8f0;border-radius:11px;overflow:hidden;text-decoration:none;color:#193b58}
+    .news-related-project-card img{display:block;width:100%;height:125px;object-fit:cover}
+    .news-related-project-card>div{padding:12px;display:grid;gap:5px}
+    .news-related-project-card strong{font-size:14px;line-height:1.5}
+    .news-related-project-card span{color:#667d90;font-size:12px}
+    .news-related-project-card:hover{box-shadow:0 7px 20px #18334d18}
+    @media(max-width:640px){
+      .news-two-columns,.news-two-columns.ratio-40-60,.news-two-columns.ratio-60-40,.news-two-columns.image-right.ratio-40-60,.news-two-columns.image-right.ratio-60-40{grid-template-columns:1fr;gap:12px}
+      .news-two-columns.image-right .news-column-photo{order:1}.news-two-columns.image-right .news-builder-copy{order:2}
+      .news-related-project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .news-toc summary{padding:12px 14px}
+    }
+    @media(max-width:400px){.news-related-project-grid{grid-template-columns:1fr}}
+
     .article-body :global(.news-lead-box){margin:28px 0;padding:24px;background:linear-gradient(145deg,#fff3d6,#fce3ad);border:1px solid #d9a85a;border-radius:14px;box-shadow:0 8px 26px #a77a3826}
     .article-body :global(.news-lead-box h2){margin:0 0 8px;font-size:23px;color:#173d62}
     .article-body :global(.news-lead-box p){margin:0 0 16px;color:#64748b}

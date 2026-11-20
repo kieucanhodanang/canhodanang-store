@@ -1003,6 +1003,16 @@ collections:
     value_field: '{{slug}}'
     display_fields: *id029
     hint: Chọn dự án để bài viết tự động xuất hiện trong phần Tin tức về dự án.
+  - label: Các dự án liên quan (chọn nhiều)
+    name: relatedProjects
+    widget: relation
+    collection: du-an
+    multiple: true
+    required: false
+    search_fields: *id028
+    value_field: '{{slug}}'
+    display_fields: *id029
+    hint: Bài viết xuất hiện trong Tin tức của tất cả dự án đã chọn. Không cần chọn lại dự án chính.
   - *id006
   - *id007
   - *id008
@@ -1018,7 +1028,231 @@ collections:
   - *id012
   - *id013
   - *id014
-  - *id015
+
+  - label: Kiểu biên tập nội dung
+    name: contentMode
+    widget: select
+    default: markdown
+    options:
+      - { label: Markdown truyền thống (mặc định), value: markdown }
+      - { label: Layer Builder (khối nội dung nâng cao), value: builder }
+    hint: Chỉ kiểu được chọn mới hiển thị trên website. Hai vùng dữ liệu được giữ lại khi đổi kiểu.
+  - label: Các khối nội dung Layer Builder
+    name: contentBlocks
+    widget: list
+    required: false
+    collapsed: true
+    hint: 'Chỉ được hiển thị khi chọn Layer Builder. Nhấn thêm khối, chọn loại và sắp xếp thứ tự.'
+    types:
+      - label: Tiêu đề H2 / H3
+        name: heading
+        widget: object
+        fields:
+          - label: Tiêu đề (tự vào mục lục)
+            name: heading
+            widget: string
+            required: false
+          - label: Cấp tiêu đề
+            name: headingLevel
+            widget: select
+            default: h2
+            options:
+              - { label: H2, value: h2 }
+              - { label: H3, value: h3 }
+          - label: Màu chữ
+            name: textColor
+            widget: select
+            required: false
+            default: default
+            options:
+              - { label: Mặc định, value: default }
+              - { label: Xanh nước biển, value: '#007BFF' }
+              - { label: Xanh thương hiệu, value: '#176C87' }
+              - { label: Đỏ, value: '#C53232' }
+              - { label: Vàng đồng, value: '#AB7925' }
+              - { label: Xám, value: '#747D89' }
+          - label: Màu tùy chỉnh (mã HEX, ưu tiên nếu có)
+            name: customTextColor
+            widget: string
+            required: false
+            hint: 'Ví dụ #007BFF. Để trống nếu dùng bảng màu.'
+      - label: Đoạn văn
+        name: text
+        widget: object
+        fields:
+          - { label: Nội dung, name: text, widget: text }
+          - label: Căn lề chữ
+            name: textAlign
+            widget: select
+            required: false
+            default: left
+            options:
+              - { label: Trái, value: left }
+              - { label: Giữa, value: center }
+              - { label: Phải, value: right }
+              - { label: Đều hai bên, value: justify }
+          - label: Màu chữ
+            name: textColor
+            widget: select
+            required: false
+            default: default
+            options:
+              - { label: Mặc định, value: default }
+              - { label: Xanh nước biển, value: '#007BFF' }
+              - { label: Xanh thương hiệu, value: '#176C87' }
+              - { label: Đỏ, value: '#C53232' }
+              - { label: Vàng đồng, value: '#AB7925' }
+              - { label: Xám, value: '#747D89' }
+          - label: Màu tùy chỉnh (mã HEX, ưu tiên nếu có)
+            name: customTextColor
+            widget: string
+            required: false
+            hint: 'Ví dụ #007BFF. Để trống nếu dùng bảng màu.'
+          - label: Màu nền khối
+            name: backgroundTone
+            widget: select
+            required: false
+            default: none
+            options:
+              - { label: Không nền, value: none }
+              - { label: Xanh nhạt, value: blue }
+              - { label: Vàng kem, value: cream }
+              - { label: Xám nhạt, value: gray }
+      - label: Hai cột - ảnh và chữ
+        name: two_columns
+        widget: object
+        fields:
+          - { label: Ảnh, name: image, widget: image }
+          - { label: ALT ảnh (SEO), name: imageAlt, widget: string, required: false }
+          - label: Vị trí ảnh
+            name: imageSide
+            widget: select
+            default: left
+            options:
+              - { label: Ảnh trái - chữ phải, value: left }
+              - { label: Chữ trái - ảnh phải, value: right }
+          - label: Tỷ lệ ảnh / chữ
+            name: columnRatio
+            widget: select
+            default: 50-50
+            options:
+              - { label: 50 / 50, value: 50-50 }
+              - { label: 40 / 60, value: 40-60 }
+              - { label: 60 / 40, value: 60-40 }
+          - label: Tiêu đề (tự vào mục lục)
+            name: heading
+            widget: string
+            required: false
+          - label: Cấp tiêu đề
+            name: headingLevel
+            widget: select
+            default: h2
+            options:
+              - { label: H2, value: h2 }
+              - { label: H3, value: h3 }
+          - { label: Nội dung bên cạnh ảnh, name: text, widget: text, required: false }
+          - label: Căn lề chữ
+            name: textAlign
+            widget: select
+            required: false
+            default: left
+            options:
+              - { label: Trái, value: left }
+              - { label: Giữa, value: center }
+              - { label: Phải, value: right }
+              - { label: Đều hai bên, value: justify }
+          - label: Màu chữ
+            name: textColor
+            widget: select
+            required: false
+            default: default
+            options:
+              - { label: Mặc định, value: default }
+              - { label: Xanh nước biển, value: '#007BFF' }
+              - { label: Xanh thương hiệu, value: '#176C87' }
+              - { label: Đỏ, value: '#C53232' }
+              - { label: Vàng đồng, value: '#AB7925' }
+              - { label: Xám, value: '#747D89' }
+          - label: Màu tùy chỉnh (mã HEX, ưu tiên nếu có)
+            name: customTextColor
+            widget: string
+            required: false
+            hint: 'Ví dụ #007BFF. Để trống nếu dùng bảng màu.'
+          - label: Màu nền khối
+            name: backgroundTone
+            widget: select
+            required: false
+            default: none
+            options:
+              - { label: Không nền, value: none }
+              - { label: Xanh nhạt, value: blue }
+              - { label: Vàng kem, value: cream }
+              - { label: Xám nhạt, value: gray }
+      - label: Ảnh toàn chiều ngang
+        name: image
+        widget: object
+        fields:
+          - { label: Ảnh, name: image, widget: image }
+          - { label: ALT ảnh (SEO), name: imageAlt, widget: string, required: false }
+          - { label: Chú thích ảnh, name: caption, widget: string, required: false }
+      - label: Nội dung nhấn mạnh
+        name: highlight
+        widget: object
+        fields:
+          - label: Tiêu đề (tự vào mục lục)
+            name: heading
+            widget: string
+            required: false
+          - label: Cấp tiêu đề
+            name: headingLevel
+            widget: select
+            default: h2
+            options:
+              - { label: H2, value: h2 }
+              - { label: H3, value: h3 }
+          - { label: Nội dung, name: text, widget: text, required: false }
+          - label: Căn lề chữ
+            name: textAlign
+            widget: select
+            required: false
+            default: left
+            options:
+              - { label: Trái, value: left }
+              - { label: Giữa, value: center }
+              - { label: Phải, value: right }
+              - { label: Đều hai bên, value: justify }
+          - label: Màu chữ
+            name: textColor
+            widget: select
+            required: false
+            default: default
+            options:
+              - { label: Mặc định, value: default }
+              - { label: Xanh nước biển, value: '#007BFF' }
+              - { label: Xanh thương hiệu, value: '#176C87' }
+              - { label: Đỏ, value: '#C53232' }
+              - { label: Vàng đồng, value: '#AB7925' }
+              - { label: Xám, value: '#747D89' }
+          - label: Màu tùy chỉnh (mã HEX, ưu tiên nếu có)
+            name: customTextColor
+            widget: string
+            required: false
+            hint: 'Ví dụ #007BFF. Để trống nếu dùng bảng màu.'
+          - label: Màu nền khối
+            name: backgroundTone
+            widget: select
+            required: false
+            default: none
+            options:
+              - { label: Không nền, value: none }
+              - { label: Xanh nhạt, value: blue }
+              - { label: Vàng kem, value: cream }
+              - { label: Xám nhạt, value: gray }
+  - label: Nội dung Markdown truyền thống
+    name: body
+    widget: markdown
+    required: false
+    hint: Chỉ xuất hiện trên website khi chọn Markdown; giữ nguyên dữ liệu khi đổi sang Layer Builder.
 - name: cai-dat-trang-chu
   label: Cài đặt trang chủ
   files:

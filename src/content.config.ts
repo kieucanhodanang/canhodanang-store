@@ -222,6 +222,23 @@ const baiViet = defineCollection({
     date: z.coerce.date(),
     category: optionalText,
     project: optionalText,
+    relatedProjects: z.array(z.string()).nullish(),
+    contentMode: z.enum(['markdown', 'builder']).default('markdown'),
+    contentBlocks: z.array(z.object({
+      type: z.enum(['heading', 'text', 'two_columns', 'image', 'highlight']),
+      heading: optionalText,
+      headingLevel: z.enum(['h2', 'h3']).nullish(),
+      text: optionalText,
+      image: optionalText,
+      imageAlt: optionalText,
+      caption: optionalText,
+      imageSide: z.enum(['left', 'right']).nullish(),
+      columnRatio: z.enum(['50-50', '40-60', '60-40']).nullish(),
+      textAlign: z.enum(['left', 'center', 'right', 'justify']).nullish(),
+      textColor: optionalText,
+      customTextColor: optionalText,
+      backgroundTone: z.enum(['none', 'blue', 'cream', 'gray']).nullish(),
+    })).nullish(),
   }),
 });
 

@@ -71,7 +71,7 @@ const listingGroups = [
 ].filter(group=>group.items.length);
 // Tin tức liên quan được lấy một lần, tự động theo slug dự án.
 const relatedNews = project ? [...new Map((await getCollection('bai-viet'))
-  .filter(item => item.data.status !== 'draft' && item.data.project === project.id)
+  .filter(item => item.data.status !== 'draft' && (item.data.project === project.id || (item.data.relatedProjects ?? []).includes(project.id)))
   .map(item => [item.id, item] as const)).values()]
   .sort((a,b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()) : [];
 const legacyPlanImages = [...String(d?.floorPlanText || '').matchAll(/!\[([^\]]*)\]\((\/[^\s)]+)(?:\s+["'][^"']*["'])?\)/g)].map((match,i)=>({
