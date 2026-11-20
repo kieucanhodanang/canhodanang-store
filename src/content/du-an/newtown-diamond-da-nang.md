@@ -192,6 +192,7 @@ contentLayers:
 
 
           Thiết kế từng căn có sự khác nhau về hướng nhìn, cửa sổ, ban công và cách tổ chức không gian. Khách hàng nên tham khảo bản vẽ chính thức của từng mã căn để xác định diện tích và công năng thực tế.
+        image: /uploads/layout-cac-can-ho-cua-newtown-diamond.webp
   - type: four-images
     enabled: true
     navTarget: none
@@ -400,5 +401,6 @@ showInMenu: true
 date: 2026-11-20T09:11:00
 status: published
 showOnHome: true
-featured: false
+featured: true
+featuredOrder: 2
 ---
