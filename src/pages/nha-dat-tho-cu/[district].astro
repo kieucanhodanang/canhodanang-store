@@ -1,8 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ListingFilterSidebar from '../../components/ListingFilterSidebar.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
+const areaSlugs=[{name:'Sơn Trà',slug:'son-tra'},{name:'Hải Châu',slug:'hai-chau'},{name:'Thanh Khê',slug:'thanh-khe'},{name:'Ngũ Hành Sơn',slug:'ngu-hanh-son'}];
 
 export function getStaticPaths() {
   const districtAreas = [
@@ -22,10 +24,13 @@ const properties = sortFeaturedFirst(
     entry.data.status !== 'draft' &&
     entry.data.listingStatus === 'available' &&
     entry.data.transaction === 'ban' &&
+    !entry.data.project &&
     normalizeDistrict(entry.data.district) === normalizeDistrict(area.name)
   )
 );
 const { totalItems, totalPages } = paginateListings(properties, 1, 12);
+const sourceListings=(await getCollection('nha-dat-tho-cu')).filter(item=>item.data.status!=='draft'&&item.data.listingStatus==='available'&&item.data.transaction==='ban'&&!item.data.project);
+const areaLinks=areaSlugs.map(area=>({...area,count:sourceListings.filter(item=>normalizeDistrict(item.data.district||item.data.ward)===normalizeDistrict(area.name)).length}));
 const formatPostedDate = (value: unknown) => {
   if (!value) return '';
   const date = value instanceof Date ? value : new Date(String(value));
@@ -45,15 +50,16 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
         <h1>Nhà đất thổ cư {area.name}, Đà Nẵng</h1>
         <p>Thông tin nhà đất đang bán tại {area.name}, cập nhật từ hệ thống quản lý bất động sản.</p>
       </header>
+      <div class="region-listing-layout"><div class="region-listing-primary">
       {totalItems > 0 ? (
         <>
-          <div class="result-toolbar"><p class="result-count">Có <strong>{totalItems}</strong> bất động sản đang bán</p><label for="sort-listings">Sắp xếp <select id="sort-listings"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label></div>
+          <div class="result-toolbar"><p class="result-count" id="region-result-count">Có <strong>{totalItems}</strong> bất động sản đang bán</p><label for="sort-listings">Sắp xếp <select id="sort-listings"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label></div>
           <div class="property-grid" id="property-grid">
             {properties.map((entry, index) => {
               const data = entry.data;
               const location = [data.ward, data.district].filter(Boolean).join(' · ') || data.address;
               return (
-                <article class="property-card" data-page={Math.floor(index / 12) + 1} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-date={data.date ? new Date(data.date).getTime() || 0 : 0} hidden={index >= 12}>
+                <article class="property-card" data-page={Math.floor(index / 12) + 1} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-bedrooms={data.bedrooms ?? ''} data-date={data.date ? new Date(data.date).getTime() || 0 : 0} hidden={index >= 12}>
                   <a href={`/nha-dat-tho-cu/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
                     <img src={data.image} alt={data.imageAlt || data.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
                     {data.featured && <span class="featured-tag">Nổi bật</span>}
@@ -77,6 +83,7 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
               );
             })}
           </div>
+          <p class="empty-filter" id="region-empty-filter" hidden>Không tìm thấy nhà đất phù hợp với bộ lọc đã chọn.</p>
           {totalPages > 1 && (
             <nav class="pagination" id="pagination" aria-label="Phân trang nhà đất" data-total-pages={totalPages}>
               <button type="button" data-action="previous" disabled>‹ Trước</button>
@@ -88,50 +95,59 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
       ) : (
         <div class="empty-state"><h2>Đang cập nhật nhà đất</h2><p>Hiện chưa có bất động sản đang bán tại {area.name}. Anh/chị vui lòng quay lại sau hoặc liên hệ để được tư vấn.</p><a href="tel:0869437415">Gọi 0869 437 415</a></div>
       )}
+      </div><ListingFilterSidebar kind="house" isRegion areaLinks={areaLinks} activeSlug={area.slug} /></div>
     </div>
   </main>
   <script>
-    const cards = Array.from(document.querySelectorAll<HTMLElement>('#property-grid .property-card'));
-    const grid = document.querySelector<HTMLElement>('#property-grid');
-    const sort = document.querySelector<HTMLSelectElement>('#sort-listings');
-    const pagination = document.querySelector<HTMLElement>('#pagination');
-    const previous = pagination?.querySelector<HTMLButtonElement>('[data-action="previous"]');
-    const next = pagination?.querySelector<HTMLButtonElement>('[data-action="next"]');
-    const status = pagination?.querySelector<HTMLElement>('#page-status');
-    const originalOrder = new Map(cards.map((card, index) => [card, index]));
-    const valueOf = (card: HTMLElement, key: string) => {
-      const raw = card.dataset[key as keyof DOMStringMap];
-      return raw === undefined || raw === '' ? null : Number(raw);
-    };
-    const total = Math.max(1, Math.ceil(cards.length / 12));
-    let current = 1;
-    const showPage = (scroll = false) => {
-      cards.forEach(card => { card.hidden = Number(card.dataset.page) !== current; });
-      if (previous) previous.disabled = current === 1;
-      if (next) next.disabled = current === total;
-      if (status) status.textContent = `Trang ${current} / ${total}`;
-      if (scroll) document.querySelector('.heading')?.scrollIntoView({behavior:'smooth',block:'start'});
-    };
-    sort?.addEventListener('change', () => {
-      const mode = sort.value;
-      cards.sort((a,b) => {
-        if (mode === 'newest') return (valueOf(b,'date') || 0) - (valueOf(a,'date') || 0) || originalOrder.get(a)! - originalOrder.get(b)!;
-        if (mode === 'price-asc' || mode === 'price-desc' || mode === 'area-desc') {
-          const key = mode === 'area-desc' ? 'area' : 'price';
-          const av = valueOf(a,key), bv = valueOf(b,key);
-          if (av === null && bv !== null) return 1;
-          if (bv === null && av !== null) return -1;
-          if (av !== null && bv !== null && av !== bv) return mode === 'price-asc' ? av - bv : bv - av;
-        }
-        return originalOrder.get(a)! - originalOrder.get(b)!;
-      });
-      cards.forEach((card,index) => {card.dataset.page = String(Math.floor(index / 12) + 1);grid?.appendChild(card);});
-      current = 1;
-      showPage();
-    });
-    previous?.addEventListener('click', () => {if(current>1){current--;showPage(true);}});
-    next?.addEventListener('click', () => {if(current<total){current++;showPage(true);}});
-    showPage();
+    const grid=document.querySelector<HTMLElement>('#property-grid');
+    if(grid){
+      const cards=Array.from(grid.querySelectorAll<HTMLElement>('.property-card'));
+      const order=new Map(cards.map((card,index)=>[card,index]));
+      const filters=document.querySelector<HTMLElement>('.filter-box');
+      const sort=document.querySelector<HTMLSelectElement>('#sort-listings');
+      const pagination=document.querySelector<HTMLElement>('#pagination');
+      const prev=pagination?.querySelector<HTMLButtonElement>('[data-action="previous"]'),next=pagination?.querySelector<HTMLButtonElement>('[data-action="next"]');
+      const status=document.querySelector<HTMLElement>('#page-status'),count=document.querySelector<HTMLElement>('#region-result-count'),empty=document.querySelector<HTMLElement>('#region-empty-filter');
+      const number=(card:HTMLElement,key:string)=>{const value=card.dataset[key as keyof DOMStringMap];return value===undefined||value===''?null:Number(value);};
+      const choice=(name:string)=>filters?.querySelector<HTMLInputElement>(`input[name="region-${name}"]:checked`)?.value||'';
+      const range=(raw:string|undefined,filter:string)=>{
+        if(!filter)return true;if(raw===undefined||raw==='')return false;
+        const value=Number(raw);if(!Number.isFinite(value))return false;
+        if(filter.endsWith('+'))return value>=Number(filter.slice(0,-1));
+        const [low,high]=filter.split('-').map(Number);return value>=low&&value<high;
+      };
+      let selected=cards.slice(),page=1,pages=Math.max(1,Math.ceil(cards.length/12));
+      const show=(scroll=false)=>{
+        const visible=new Set(selected.slice((page-1)*12,page*12));
+        cards.forEach(card=>{card.hidden=!visible.has(card);});
+        if(pagination)pagination.hidden=pages<=1;
+        if(prev)prev.disabled=page===1;if(next)next.disabled=page===pages;
+        if(status)status.textContent=`Trang ${page} / ${pages}`;
+        if(count)count.textContent=`Có ${selected.length} bất động sản phù hợp`;
+        if(empty)empty.hidden=selected.length!==0;
+        if(scroll)document.querySelector('.heading')?.scrollIntoView({behavior:'smooth',block:'start'});
+      };
+      const apply=()=>{
+        const price=choice('price'),area=choice('area'),beds=choice('bedrooms');
+        selected=cards.filter(card=>range(card.dataset.price,price)&&range(card.dataset.area,area)&&(!beds||(beds==='4+'?Number(card.dataset.bedrooms)>=4:card.dataset.bedrooms===beds)));
+        const mode=sort?.value||'default';
+        selected.sort((a,b)=>{
+          if(mode==='newest')return (number(b,'date')||0)-(number(a,'date')||0)||order.get(a)!-order.get(b)!;
+          if(['price-asc','price-desc','area-desc'].includes(mode)){
+            const key=mode==='area-desc'?'area':'price',av=number(a,key),bv=number(b,key);
+            if(av===null&&bv!==null)return 1;if(bv===null&&av!==null)return -1;
+            if(av!==null&&bv!==null&&av!==bv)return mode==='price-asc'?av-bv:bv-av;
+          }
+          return order.get(a)!-order.get(b)!;
+        });
+        selected.forEach(card=>grid.appendChild(card));page=1;pages=Math.max(1,Math.ceil(selected.length/12));show();
+      };
+      filters?.addEventListener('change',apply);sort?.addEventListener('change',apply);
+      document.querySelector('#region-reset-filters')?.addEventListener('click',()=>{filters?.querySelectorAll<HTMLInputElement>('input[type="radio"][value=""]').forEach(input=>{input.checked=true;});apply();});
+      prev?.addEventListener('click',()=>{if(page>1){page--;show(true);}});
+      next?.addEventListener('click',()=>{if(page<pages){page++;show(true);}});
+      apply();
+    }
   </script>
   <style>
     .listing-page{background:#f5f8fb;color:#19334d;min-height:65vh;padding:28px 0 70px}
@@ -145,6 +161,8 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
     .result-count{font-size:14px;color:#60758a;margin:0}
     .result-toolbar label{display:flex;align-items:center;gap:12px;white-space:nowrap;font-size:14px;font-weight:600;color:#36536a}
     .result-toolbar select{min-height:40px;max-width:100%;padding:0 9px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#19334d;font-size:16px}
+    .region-listing-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(250px,3fr);gap:24px;align-items:start}
+    .region-listing-primary{min-width:0}
     .property-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
     .property-card{background:#fff;border:1px solid #e6ebf0;border-radius:14px;overflow:hidden;box-shadow:0 5px 18px rgba(26,60,90,.055);display:flex;flex-direction:column;min-width:0}
     .property-card[hidden]{display:none!important}
@@ -168,10 +186,14 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
     .pagination button{border:1px solid #ccd8e2;border-radius:8px;background:#fff;padding:10px 16px;color:#184b70;font:inherit;cursor:pointer}
     .pagination button:disabled{opacity:.45;cursor:not-allowed}
     .pagination span{font-size:14px;color:#536b7e}
+    .empty-filter{padding:22px;background:#fff;border-radius:12px;color:#536b81;text-align:center;margin-top:18px}
+    .empty-filter[hidden],.pagination[hidden]{display:none!important}
     .empty-state{padding:45px 25px;text-align:center;border-radius:14px;background:#fff;border:1px solid #e5edf3}
     .empty-state h2{margin:0 0 10px;font-size:23px}
     .empty-state p{color:#60758a;line-height:1.6}
     .empty-state a{color:#1b648f;font-weight:700}
+    @media(max-width:900px){.region-listing-layout{grid-template-columns:minmax(0,1fr) 250px;gap:16px}}
+    @media(max-width:760px){.region-listing-layout{display:flex;flex-direction:column;gap:18px}.region-listing-primary{width:100%}}
     @media(max-width:900px){.property-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
     @media(max-width:600px){.result-count{display:none}.result-toolbar{justify-content:flex-end}.result-toolbar label{gap:14px}.result-toolbar select{max-width:calc(100vw - 145px)}}
     @media(max-width:600px){.container{padding:0 14px}.property-grid{grid-template-columns:1fr;gap:15px}.card-content{padding:15px}.listing-page{padding-top:20px}.pagination{gap:10px}.pagination button{padding:9px 12px}}

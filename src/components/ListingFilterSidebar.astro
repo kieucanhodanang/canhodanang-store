@@ -1,0 +1,47 @@
+---
+interface AreaLink {name:string;slug:string;count:number}
+interface Project {id:string;name:string}
+interface Props {kind:'house'|'apartment';areaLinks:AreaLink[];activeSlug?:string;isRegion?:boolean;projects?:Project[]}
+const {kind,areaLinks,activeSlug='',isRegion=false,projects=[]}=Astro.props;
+const apt=kind==='apartment',label=apt?'căn hộ':'nhà đất',base=apt?'/can-ho/':'/nha-dat-tho-cu/';
+const areas=[{name:'Sơn Trà',slug:'son-tra',key:apt?'son tra':'Sơn Trà'},{name:'Hải Châu',slug:'hai-chau',key:apt?'hai chau':'Hải Châu'},{name:'Thanh Khê',slug:'thanh-khe',key:apt?'thanh khe':'Thanh Khê'},{name:'Ngũ Hành Sơn',slug:'ngu-hanh-son',key:apt?'ngu hanh son':'Ngũ Hành Sơn'}];
+const prices=apt?[['','Tất cả mức giá'],['0-1000','Dưới 1 tỷ'],['1000-2000','1 – 2 tỷ'],['2000-3000','2 – 3 tỷ'],['3000-5000','3 – 5 tỷ'],['5000-7000','5 – 7 tỷ'],['7000+','Trên 7 tỷ']]:[['','Tất cả mức giá'],['0-3000','Dưới 3 tỷ'],['3000-5000','3 – 5 tỷ'],['5000-7000','5 – 7 tỷ'],['7000-10000','7 – 10 tỷ'],['10000+','Trên 10 tỷ']];
+const sizes=apt?[['','Tất cả diện tích'],['30-45','30 – 45 m²'],['45-60','45 – 60 m²'],['60-80','60 – 80 m²'],['80+','Trên 80 m²']]:[['','Tất cả diện tích'],['0-60','Dưới 60 m²'],['60-100','60 – 100 m²'],['100-150','100 – 150 m²'],['150+','Trên 150 m²']];
+const beds=apt?[['','Tất cả phòng ngủ'],['0','Studio'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','4+ phòng ngủ']]:[['','Tất cả phòng ngủ'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','4+ phòng ngủ']];
+const groups=[{name:'price',title:'Khoảng giá',options:prices},{name:'area',title:'Diện tích',options:sizes},{name:'bedrooms',title:'Phòng ngủ',options:beds}];
+const groupName=(name:string)=>isRegion?'region-'+name:name;
+const linked=areaLinks.filter(area=>area.count>0);
+---
+<aside class:list={['listing-sidebar',{'region-mode':isRegion}]} aria-label={`Bộ lọc và danh mục ${label}`}>
+  <section class="filter-box">
+    <div class="filter-top"><h2>Bộ lọc {label}</h2><button type="button" id={isRegion?'region-reset-filters':'reset-filters'}>Xóa lọc</button></div>
+    {!isRegion&&<fieldset><legend>Khu vực</legend><label><input type="radio" name="district" value="" checked/> Tất cả khu vực</label>{areas.map(area=><label><input type="radio" name="district" value={area.key}/> {area.name}</label>)}</fieldset>}
+    {groups.map(group=><fieldset><legend>{group.title}</legend>{group.options.map(([value,text])=><label><input type="radio" name={groupName(group.name)} value={value} checked={value===''}/> {text}</label>)}</fieldset>)}
+    {apt&&<div class="project-filter"><label for={isRegion?'region-project-select':'project-select'}>Dự án</label><select id={isRegion?'region-project-select':'project-select'}><option value="">Tất cả dự án</option>{projects.map(project=><option value={project.id}>{project.name}</option>)}</select></div>}
+  </section>
+  <nav class="area-links-box" aria-label={apt?'Căn hộ theo khu vực':'Nhà đất theo khu vực'}>
+    <h2>{apt?'Căn hộ':'Nhà đất'} theo khu vực</h2>
+    {linked.length?<ul>{linked.map(area=><li><a href={`${base}${area.slug}/`} aria-current={activeSlug===area.slug?'page':undefined}><span>{area.name}</span><small>{area.count} {apt?'căn':'tin'}</small></a></li>)}</ul>:<p>Đang cập nhật danh sách theo khu vực.</p>}
+  </nav>
+</aside>
+<style>
+  .listing-sidebar{min-width:0;align-self:start;position:sticky;top:85px;max-height:calc(100vh - 103px);max-height:calc(100dvh - 103px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;display:grid;gap:14px;padding-bottom:1px}
+  .filter-box,.area-links-box{background:#fff;border:1px solid #e1e7ed;border-radius:13px;padding:19px}
+  .filter-top{display:flex;justify-content:space-between;align-items:center;gap:9px}
+  .filter-top h2,.area-links-box h2{font-size:19px;color:#173a58;margin:0;line-height:1.35}
+  .filter-top button{border:0;background:transparent;color:#a77630;font:inherit;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
+  fieldset{border:0;border-bottom:1px solid #e9eef3;padding:16px 0;margin:0;display:grid;gap:10px;min-width:0}
+  legend,.project-filter label{font-size:16px;font-weight:800;color:#173a58;padding:0 0 4px}
+  fieldset label{display:flex;align-items:center;gap:8px;font-size:14px;color:#314f67;cursor:pointer;line-height:1.4}
+  input{accent-color:#a77630;flex:none}
+  .project-filter{padding-top:16px;display:grid;gap:10px}
+  .project-filter select{width:100%;min-width:0;padding:10px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#173a58;font:inherit}
+  .area-links-box h2{margin:0 0 11px}
+  .area-links-box ul{margin:0;padding:0;list-style:none}
+  .area-links-box li+li{border-top:1px solid #ecf0f3}
+  .area-links-box a{display:flex;align-items:center;justify-content:space-between;gap:8px;text-decoration:none;color:#244a67;font-size:14px;padding:11px 3px;font-weight:650}
+  .area-links-box a:hover,.area-links-box a[aria-current="page"]{color:#a77630}
+  .area-links-box small{white-space:nowrap;font-size:12px;font-weight:500;color:#698094}
+  .area-links-box p{color:#60758a;font-size:13px}
+  @media(max-width:760px){.listing-sidebar:not(.region-mode){display:none}.listing-sidebar.region-mode{position:static;max-height:none;overflow:visible;order:-1;width:100%}}
+</style>

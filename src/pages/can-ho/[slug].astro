@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ListingFilterSidebar from '../../components/ListingFilterSidebar.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import PropertyDetail from '../../components/PropertyDetail.astro';
 import { listingUrl } from '../../utils/listingUrl';
@@ -65,6 +66,11 @@ const regionGuides: Record<string, { intro: string; highlights: string[]; advice
 const regionGuide = region ? regionGuides[region.slug] : undefined;
 const regionProjects = region ? await getCollection('du-an') : [];
 const regionProjectNames = new Map(regionProjects.map(project => [project.id, project.data.title]));
+const areaSlugs=[{name:'Sơn Trà',slug:'son-tra'},{name:'Hải Châu',slug:'hai-chau'},{name:'Thanh Khê',slug:'thanh-khe'},{name:'Ngũ Hành Sơn',slug:'ngu-hanh-son'}];
+const normalizeListingArea=(value:unknown)=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().trim();
+const regionAreaSource=region?(await getCollection('can-ho')).filter(item=>item.data.status!=='draft'&&item.data.listingStatus==='available'):[];
+const areaLinks=areaSlugs.map(area=>({...area,count:regionAreaSource.filter(item=>normalizeListingArea(item.data.district||item.data.ward)===normalizeListingArea(area.name)).length}));
+const regionProjectOptions=regionProjects.filter(item=>regionApartments.some(unit=>unit.data.project===item.id)).map(item=>({id:item.id,name:item.data.title}));
 const formatRegionPostedDate = (value: unknown) => {
   if (!value) return '';
   const date = value instanceof Date ? value : new Date(String(value));
@@ -231,15 +237,16 @@ const schema = {
         </nav>
         <h1>Căn Hộ {region.name} Đà Nẵng</h1>
         <p class="region-lead">Khám phá căn hộ đang bán và cho thuê tại khu vực {region.name}, Đà Nẵng. Danh sách cập nhật từ hệ thống quản trị.</p>
+        <div class="region-listing-layout"><div class="region-listing-primary">
         <div class="region-toolbar">
-          <p class="region-count">{regionApartments.length} căn hộ đang giao dịch</p>
+          <p class="region-count" id="region-result-count">{regionApartments.length} căn hộ đang giao dịch</p>
           {regionApartments.length > 0 && <label class="region-sort-label" for="region-sort">Sắp xếp <select id="region-sort" aria-label="Sắp xếp căn hộ"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label>}
         </div>
         {regionApartments.length ? (
           <>
             <div class="region-grid">
               {regionApartments.map((item, index) => (
-                <article class="region-card" data-region-card data-page={Math.floor(index / 12) + 1} data-region-price={item.data.priceValue ?? ''} data-region-area={item.data.areaValue ?? ''} data-region-date={item.data.date ? new Date(item.data.date).getTime() || 0 : 0} hidden={index >= 12}>
+                <article class="region-card" data-region-card data-page={Math.floor(index / 12) + 1} data-region-price={item.data.priceValue ?? ''} data-region-area={item.data.areaValue ?? ''} data-region-bedrooms={item.data.bedrooms ?? ''} data-region-project={item.data.project || ''} data-region-date={item.data.date ? new Date(item.data.date).getTime() || 0 : 0} hidden={index >= 12}>
                   <a class="region-image" href={listingUrl('can-ho', item.id, item.data.transaction)}>
                     {item.data.image && <img src={item.data.image} alt={item.data.imageAlt || item.data.title} loading="lazy" />}
                     {item.data.featured && <span class="region-pin">Nổi bật</span>}
@@ -264,6 +271,7 @@ const schema = {
                 </article>
               ))}
             </div>
+            <p class="region-empty-filter" id="region-empty-filter" hidden>Không tìm thấy căn hộ phù hợp với bộ lọc đã chọn.</p>
             {regionApartments.length > 12 && (
               <nav class="region-pagination" aria-label="Phân trang căn hộ">
                 <button type="button" id="region-prev" disabled>← Trước</button>
@@ -287,6 +295,7 @@ const schema = {
           </section>
         )}
         <p class="back-link"><a href="/can-ho/">← Xem tất cả căn hộ Đà Nẵng</a></p>
+        </div><ListingFilterSidebar kind="apartment" isRegion areaLinks={areaLinks} activeSlug={region.slug} projects={regionProjectOptions} /></div>
       </div>
     </section>
   ) : (
@@ -353,43 +362,44 @@ const schema = {
   </main>
   )}
   <script is:inline>
-    (() => {
-      const cards = [...document.querySelectorAll('[data-region-card]')];
-      if (!cards.length) return;
-      const total = Math.ceil(cards.length / 12);
-      const grid = document.querySelector('.region-grid');
-      const sort = document.getElementById('region-sort');
-      const originalOrder = new Map(cards.map((card, index) => [card, index]));
-      const number = (card, key) => { const value = card.dataset[key]; return value === undefined || value === '' ? null : Number(value); };
-      let page = 1;
-      const sortCards = () => {
-        const mode = sort?.value || 'default';
-        cards.sort((a, b) => {
-          if (mode === 'newest') return (number(b, 'regionDate') || 0) - (number(a, 'regionDate') || 0) || originalOrder.get(a) - originalOrder.get(b);
-          if (mode === 'price-asc' || mode === 'price-desc' || mode === 'area-desc') {
-            const key = mode === 'area-desc' ? 'regionArea' : 'regionPrice';
-            const left = number(a, key), right = number(b, key);
-            if (left === null && right !== null) return 1;
-            if (right === null && left !== null) return -1;
-            if (left !== null && right !== null && left !== right) return mode === 'price-asc' ? left - right : right - left;
+    (()=>{
+      const grid=document.querySelector('.region-grid');if(!grid)return;
+      const cards=[...grid.querySelectorAll('[data-region-card]')],order=new Map(cards.map((card,index)=>[card,index]));
+      const filters=document.querySelector('.filter-box'),sort=document.getElementById('region-sort'),project=document.getElementById('region-project-select');
+      const count=document.getElementById('region-result-count'),empty=document.getElementById('region-empty-filter');
+      const pagination=document.querySelector('.region-pagination'),prev=document.getElementById('region-prev'),next=document.getElementById('region-next'),label=document.getElementById('region-page-label');
+      const number=(card,key)=>{const value=card.dataset[key];return value===undefined||value===''?null:Number(value);};
+      const choice=name=>filters?.querySelector(`input[name="region-${name}"]:checked`)?.value||'';
+      const range=(raw,filter)=>{if(!filter)return true;if(raw===undefined||raw==='')return false;const value=Number(raw);if(!Number.isFinite(value))return false;if(filter.endsWith('+'))return value>=Number(filter.slice(0,-1));const [low,high]=filter.split('-').map(Number);return value>=low&&value<high;};
+      let selected=cards.slice(),page=1,pages=Math.max(1,Math.ceil(cards.length/12));
+      const show=()=>{
+        const visible=new Set(selected.slice((page-1)*12,page*12));cards.forEach(card=>{card.hidden=!visible.has(card);});
+        if(pagination)pagination.hidden=pages<=1;
+        if(prev)prev.disabled=page===1;if(next)next.disabled=page===pages;
+        if(label)label.textContent=`Trang ${page} / ${pages}`;
+        if(count)count.textContent=`${selected.length} căn hộ phù hợp`;
+        if(empty)empty.hidden=selected.length!==0;
+      };
+      const apply=()=>{
+        const price=choice('price'),area=choice('area'),beds=choice('bedrooms');
+        selected=cards.filter(card=>range(card.dataset.regionPrice,price)&&range(card.dataset.regionArea,area)&&(!beds||(beds==='4+'?Number(card.dataset.regionBedrooms)>=4:card.dataset.regionBedrooms===beds))&&(!project?.value||card.dataset.regionProject===project.value));
+        const mode=sort?.value||'default';
+        selected.sort((a,b)=>{
+          if(mode==='newest')return (number(b,'regionDate')||0)-(number(a,'regionDate')||0)||order.get(a)-order.get(b);
+          if(['price-asc','price-desc','area-desc'].includes(mode)){
+            const key=mode==='area-desc'?'regionArea':'regionPrice',av=number(a,key),bv=number(b,key);
+            if(av===null&&bv!==null)return 1;if(bv===null&&av!==null)return -1;
+            if(av!==null&&bv!==null&&av!==bv)return mode==='price-asc'?av-bv:bv-av;
           }
-          return originalOrder.get(a) - originalOrder.get(b);
+          return order.get(a)-order.get(b);
         });
-        cards.forEach((card, index) => { card.dataset.page = String(Math.floor(index / 12) + 1); grid?.appendChild(card); });
+        selected.forEach(card=>grid.appendChild(card));page=1;pages=Math.max(1,Math.ceil(selected.length/12));show();
       };
-      const prev = document.getElementById('region-prev');
-      const next = document.getElementById('region-next');
-      const label = document.getElementById('region-page-label');
-      const show = () => {
-        cards.forEach((card) => { card.hidden = Number(card.dataset.page) !== page; });
-        if (prev) prev.disabled = page === 1;
-        if (next) next.disabled = page === total;
-        if (label) label.textContent = `Trang ${page} / ${total}`;
-      };
-      sort?.addEventListener('change', () => { page = 1; sortCards(); show(); });
-      prev?.addEventListener('click', () => { if (page > 1) { page--; show(); } });
-      next?.addEventListener('click', () => { if (page < total) { page++; show(); } });
-      show();
+      filters?.addEventListener('change',apply);sort?.addEventListener('change',apply);
+      document.getElementById('region-reset-filters')?.addEventListener('click',()=>{filters?.querySelectorAll('input[type="radio"][value=""]').forEach(input=>{input.checked=true;});if(project)project.value='';apply();});
+      prev?.addEventListener('click',()=>{if(page>1){page--;show();}});
+      next?.addEventListener('click',()=>{if(page<pages){page++;show();}});
+      apply();
     })();
   </script>
 
@@ -401,6 +411,8 @@ const schema = {
     .region-count {font-weight:700;margin:0}
     .region-sort-label {display:flex;align-items:center;gap:12px;font-weight:600;color:#36536a;white-space:nowrap}
     .region-sort-label select {min-height:40px;max-width:100%;padding:0 9px;border:1px solid #cbd7e3;border-radius:8px;background:#fff;color:#19334d;font-size:16px}
+    .region-listing-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(250px,3fr);gap:24px;align-items:start}
+    .region-listing-primary{min-width:0}
     .region-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
     .region-card { display:flex;flex-direction:column;min-width:0;overflow:hidden;background:#fff;border:1px solid #e1e8ee;border-radius:16px;box-shadow:0 8px 24px #102b4508; }
     .region-card[hidden] { display:none!important; }
@@ -423,6 +435,10 @@ const schema = {
     .region-pagination button { padding:10px 16px; border:1px solid #cbd7e3; background:#fff; border-radius:8px; cursor:pointer; }
     .region-pagination button:disabled { opacity:.45; cursor:default; }
     .region-empty { padding:28px; background:#fff; border-radius:12px; }
+    .region-empty-filter{padding:22px;background:#fff;border-radius:12px;color:#536b81;text-align:center;margin-top:18px}
+    .region-empty-filter[hidden],.region-pagination[hidden]{display:none!important}
+    @media(max-width:900px){.region-listing-layout{grid-template-columns:minmax(0,1fr) 250px;gap:16px}}
+    @media(max-width:760px){.region-listing-layout{display:flex;flex-direction:column;gap:18px}.region-listing-primary{width:100%}}
     .region-seo-content { margin-top:38px; padding:28px 30px; background:#fff; border:1px solid #e1e8ee; border-radius:12px; line-height:1.8; }
     .region-seo-content h2 { font-size:clamp(19px,2.4vw,24px); line-height:1.4; margin:22px 0 10px; }
     .region-seo-content h2:first-child { margin-top:0; }

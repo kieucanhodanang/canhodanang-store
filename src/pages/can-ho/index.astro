@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ListingFilterSidebar from '../../components/ListingFilterSidebar.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
@@ -16,6 +17,9 @@ const pagination = paginateListings(apartments, 1, pageSize);
 const totalPages = pagination.totalPages;
 const projects = (await getCollection('du-an')).filter((item) => item.data.status !== 'draft').sort((a,b) => a.data.title.localeCompare(b.data.title, 'vi'));
 const projectNames = new Map(projects.map(item => [item.id, item.data.title]));
+const areaSlugs=[{name:'Sơn Trà',slug:'son-tra'},{name:'Hải Châu',slug:'hai-chau'},{name:'Thanh Khê',slug:'thanh-khe'},{name:'Ngũ Hành Sơn',slug:'ngu-hanh-son'}];
+const normalizeListingArea=(value:unknown)=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().trim();
+const areaLinks=areaSlugs.map(area=>({...area,count:apartments.filter(item=>normalizeListingArea(item.data.district||item.data.ward)===normalizeListingArea(area.name)).length}));
 const description = 'Tìm mua căn hộ Đà Nẵng đang bán theo khu vực Sơn Trà, Hải Châu, Thanh Khê, Ngũ Hành Sơn. Xem giá chào bán, diện tích, phòng ngủ và thông tin dự án.';
 const plain = (value: unknown) => typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : '';
 const formatArea = (value: string | null | undefined, fallback?: number | null) => {
@@ -117,43 +121,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
           <div class="empty-state"><h2>Đang cập nhật căn hộ</h2><p>Hiện chưa có căn hộ đang bán phù hợp. Anh/chị có thể liên hệ để được tư vấn.</p></div>
         )}
           </div>
-          <aside class="listing-sidebar" aria-label="Bộ lọc căn hộ">
-            <div class="filter-box">
-              <div class="filter-top"><h2>Bộ lọc căn hộ</h2><button type="button" id="reset-filters">Xóa lọc</button></div>
-              <fieldset><legend>Khu vực</legend>
-                <label><input type="radio" name="district" value="" checked /> Tất cả khu vực</label>
-                <label><input type="radio" name="district" value="son tra" /> Sơn Trà</label>
-                <label><input type="radio" name="district" value="hai chau" /> Hải Châu</label>
-                <label><input type="radio" name="district" value="thanh khe" /> Thanh Khê</label>
-                <label><input type="radio" name="district" value="ngu hanh son" /> Ngũ Hành Sơn</label>
-              </fieldset>
-              <fieldset><legend>Khoảng giá</legend>
-                <label><input type="radio" name="price" value="" checked /> Tất cả mức giá</label>
-                <label><input type="radio" name="price" value="0-1000" /> Dưới 1 tỷ</label>
-                <label><input type="radio" name="price" value="1000-2000" /> 1 tỷ – 2 tỷ</label>
-                <label><input type="radio" name="price" value="2000-3000" /> 2 tỷ – 3 tỷ</label>
-                <label><input type="radio" name="price" value="3000-5000" /> 3 tỷ – 5 tỷ</label>
-                <label><input type="radio" name="price" value="5000-7000" /> 5 tỷ – 7 tỷ</label>
-                <label><input type="radio" name="price" value="7000+" /> Trên 7 tỷ</label>
-              </fieldset>
-              <fieldset><legend>Diện tích</legend>
-                <label><input type="radio" name="area" value="" checked /> Tất cả diện tích</label>
-                <label><input type="radio" name="area" value="30-45" /> 30m² – 45m²</label>
-                <label><input type="radio" name="area" value="45-60" /> 45m² – 60m²</label>
-                <label><input type="radio" name="area" value="60-80" /> 60m² – 80m²</label>
-                <label><input type="radio" name="area" value="80+" /> Trên 80m²</label>
-              </fieldset>
-              <fieldset><legend>Phòng ngủ</legend>
-                <label><input type="radio" name="bedrooms" value="" checked /> Tất cả phòng ngủ</label>
-                <label><input type="radio" name="bedrooms" value="0" /> Studio</label>
-                <label><input type="radio" name="bedrooms" value="1" /> 1 phòng ngủ</label>
-                <label><input type="radio" name="bedrooms" value="2" /> 2 phòng ngủ</label>
-                <label><input type="radio" name="bedrooms" value="3" /> 3 phòng ngủ</label>
-                <label><input type="radio" name="bedrooms" value="4+" /> 4+ phòng ngủ</label>
-              </fieldset>
-              <div class="project-filter"><label for="project-select">Dự án</label><select id="project-select"><option value="">Tất cả dự án</option>{projects.map(item => <option value={item.id}>{item.data.title}</option>)}</select></div>
-            </div>
-          </aside>
+          <ListingFilterSidebar kind="apartment" areaLinks={areaLinks} projects={projects.map(item=>({id:item.id,name:item.data.title}))} />
         </div>
       </div>
     </section>

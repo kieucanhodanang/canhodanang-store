@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ListingFilterSidebar from '../../components/ListingFilterSidebar.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
 import { sortFeaturedFirst, paginateListings } from '../../utils/listingSort';
@@ -15,6 +16,9 @@ const properties = sortFeaturedFirst(
 );
 const { totalItems } = paginateListings(properties, 1, 12);
 const areas = ['Sơn Trà', 'Hải Châu', 'Thanh Khê', 'Ngũ Hành Sơn'];
+const areaSlugs=[{name:'Sơn Trà',slug:'son-tra'},{name:'Hải Châu',slug:'hai-chau'},{name:'Thanh Khê',slug:'thanh-khe'},{name:'Ngũ Hành Sơn',slug:'ngu-hanh-son'}];
+const normalizeListingArea=(value:unknown)=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().trim();
+const areaLinks=areaSlugs.map(area=>({...area,count:properties.filter(item=>normalizeListingArea(item.data.district||item.data.ward)===normalizeListingArea(area.name)).length}));
 const formatArea = (value: unknown, fallback?: number | null) => {
   const raw = String(value ?? fallback ?? '').trim();
   return raw ? (/m²|m2|mét vuông/i.test(raw) ? raw : `${raw} m²`) : '';
@@ -93,38 +97,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
         <div class="empty-state"><h2>Đang cập nhật nhà đất</h2><p>Hiện chưa có bất động sản đang bán phù hợp. Anh/chị vui lòng quay lại sau hoặc liên hệ để được tư vấn.</p><a href="tel:0869437415">Gọi 0869 437 415</a></div>
       )}
       </div>
-      <aside class="listing-sidebar" aria-label="Bộ lọc nhà đất">
-        <div class="filter-box">
-          <div class="filter-top"><h2>Bộ lọc nhà đất</h2><button type="button" id="reset-filters">Xóa lọc</button></div>
-          <fieldset><legend>Khu vực</legend>
-            <label><input type="radio" name="district" value="" checked /> Tất cả khu vực</label>
-            {areas.map(area => <label><input type="radio" name="district" value={area} /> {area}</label>)}
-          </fieldset>
-          <fieldset><legend>Khoảng giá</legend>
-            <label><input type="radio" name="price" value="" checked /> Tất cả mức giá</label>
-            <label><input type="radio" name="price" value="0-3000" /> Dưới 3 tỷ</label>
-            <label><input type="radio" name="price" value="3000-5000" /> 3 – 5 tỷ</label>
-            <label><input type="radio" name="price" value="5000-7000" /> 5 – 7 tỷ</label>
-            <label><input type="radio" name="price" value="7000-10000" /> 7 – 10 tỷ</label>
-            <label><input type="radio" name="price" value="10000+" /> Trên 10 tỷ</label>
-          </fieldset>
-          <fieldset><legend>Diện tích</legend>
-            <label><input type="radio" name="area" value="" checked /> Tất cả diện tích</label>
-            <label><input type="radio" name="area" value="0-60" /> Dưới 60 m²</label>
-            <label><input type="radio" name="area" value="60-100" /> 60 – 100 m²</label>
-            <label><input type="radio" name="area" value="100-150" /> 100 – 150 m²</label>
-            <label><input type="radio" name="area" value="150+" /> Trên 150 m²</label>
-          </fieldset>
-          <fieldset><legend>Phòng ngủ</legend>
-            <label><input type="radio" name="bedrooms" value="" checked /> Tất cả phòng ngủ</label>
-            <label><input type="radio" name="bedrooms" value="1" /> 1 phòng ngủ</label>
-            <label><input type="radio" name="bedrooms" value="2" /> 2 phòng ngủ</label>
-            <label><input type="radio" name="bedrooms" value="3" /> 3 phòng ngủ</label>
-            <label><input type="radio" name="bedrooms" value="4+" /> 4+ phòng ngủ</label>
-          </fieldset>
-          <div class="project-filter"><label for="sidebar-area">Khu vực</label><select id="sidebar-area"><option value="">Tất cả khu vực</option>{areas.map(area => <option value={area}>{area}</option>)}</select></div>
-        </div>
-      </aside></div>
+      <ListingFilterSidebar kind="house" areaLinks={areaLinks} /></div>
     </div>
   </main>
   <script>
@@ -137,7 +110,6 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     const type = document.querySelector<HTMLSelectElement>('#search-type');
     const bedrooms = document.querySelector<HTMLSelectElement>('#search-bedrooms');
     const sidebar = document.querySelector<HTMLElement>('.filter-box');
-    const sidebarArea = document.querySelector<HTMLSelectElement>('#sidebar-area');
     const selected = (name: string) => sidebar?.querySelector<HTMLInputElement>(`input[name="${name}"]:checked`)?.value || '';
     const sort = document.querySelector<HTMLSelectElement>('#sort-listings');
     const grid = document.querySelector<HTMLElement>('#property-grid');
@@ -164,7 +136,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
       if (reset) current = 1;
       const tokens = normalize(keyword?.value || '').split(/\s+/).filter(Boolean);
       const selectedArea = normalize(area?.value || '');
-      const selectedSidebarArea = normalize(sidebarArea?.value || selected('district'));
+      const selectedSidebarArea = normalize(selected('district'));
       const selectedPrice = selected('price') || price?.value || '';
       const selectedSize = selected('area') || size?.value || '';
       const selectedBedrooms = selected('bedrooms') || bedrooms?.value || '';
@@ -203,13 +175,14 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     };
     sort?.addEventListener('change', () => render());
     form?.addEventListener('submit', event => { event.preventDefault(); keyword?.blur(); render(); });
-    [area,price,size,type,bedrooms,sidebarArea].forEach(el => el?.addEventListener('change', () => render()));
+    const syncRadio=(name:string,value:string)=>sidebar?.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`).forEach(input=>{input.checked=input.value===value;});
+    [area,price,size,bedrooms].forEach((el,index)=>el?.addEventListener('change',()=>{syncRadio(['district','price','area','bedrooms'][index],el.value);render();}));
+    type?.addEventListener('change',()=>render());
     sidebar?.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach(el => el.addEventListener('change', () => {
       if (el.name === 'district' && area) area.value = el.value;
       if (el.name === 'price' && price) price.value = el.value;
       if (el.name === 'area' && size) size.value = el.value;
       if (el.name === 'bedrooms' && bedrooms) bedrooms.value = el.value;
-      if (el.name === 'district' && sidebarArea) sidebarArea.value = el.value;
       render();
     }));
     document.querySelector('#clear-search')?.addEventListener('click', () => {
@@ -219,7 +192,6 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
       if (size) size.value = '';
       if (type) type.value = '';
       if (bedrooms) bedrooms.value = '';
-      if (sidebarArea) sidebarArea.value = '';
       sidebar?.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach(el => { el.checked = el.value === ''; });
       render();
     });
@@ -233,7 +205,6 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     const matchedWard = validWards.find(name => normalize(name) === normalize(requestedWard));
     if (matchedWard) {
       if (area) area.value = matchedWard;
-      if (sidebarArea) sidebarArea.value = matchedWard;
       sidebar?.querySelectorAll<HTMLInputElement>('input[name="district"]').forEach(input => { input.checked = input.value === matchedWard; });
     }
     render();
