@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import ListingFilterSidebar from '../../components/ListingFilterSidebar.astro';
 import { formatListingPrice } from '../../utils/formatListingPrice';
 import { getCollection } from 'astro:content';
 import { listingUrl } from '../../utils/listingUrl';
@@ -13,6 +14,9 @@ const apartments = sortFeaturedFirst(
     && item.data.listingStatus === 'available'
     && ['cho-thue', 'cho-thue-ngay'].includes(item.data.transaction))
 );
+const rentalAreas=[{name:'Sơn Trà',slug:'son-tra'},{name:'Hải Châu',slug:'hai-chau'},{name:'Thanh Khê',slug:'thanh-khe'},{name:'Ngũ Hành Sơn',slug:'ngu-hanh-son'}];
+const normalizeArea=(value:unknown)=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().trim();
+const areaLinks=rentalAreas.map(area=>({...area,count:apartments.filter(item=>normalizeArea(item.data.district||item.data.ward)===normalizeArea(area.name)).length}));
 const pageSize = 12;
 const pagination = paginateListings(apartments, 1, pageSize);
 const totalPages = pagination.totalPages;
@@ -40,9 +44,10 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
 
     <section class="listing-section" aria-label="Danh sách bất động sản cho thuê">
       <div class="listing-container">
+        <div class="rental-listing-layout"><div class="rental-listing-primary">
         <div class="section-heading">
           <div><p class="eyebrow">DANH SÁCH CHO THUÊ</p><h2>Bất động sản đang cho thuê</h2></div>
-          <div class="listing-sort-row"><span class="count">{apartments.length} bất động sản</span><label for="sort-rentals">Sắp xếp <select id="sort-rentals"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label></div>
+          <div class="listing-sort-row"><span class="count" id="rental-result-count">{apartments.length} bất động sản</span><label for="sort-rentals">Sắp xếp <select id="sort-rentals"><option value="default">Nổi bật / Mới nhất</option><option value="newest">Mới nhất</option><option value="price-asc">Giá thấp đến cao</option><option value="price-desc">Giá cao đến thấp</option><option value="area-desc">Diện tích lớn nhất</option></select></label></div>
         </div>
         {apartments.length ? (
           <>
@@ -52,7 +57,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 const image = imageFor(d);
                 const href = listingUrl(item.rentalType, item.id, d.transaction);
                 return (
-                  <article class="listing-card" data-listing-index={index} data-price={d.priceValue ?? ''} data-area={d.areaValue ?? ''} data-date={d.date ? new Date(d.date).getTime() || 0 : 0} hidden={index >= pageSize}>
+                  <article class="listing-card" data-listing-index={index} data-price={d.priceValue ?? ''} data-monthly-price={d.transaction === 'cho-thue' ? d.priceValue ?? '' : ''} data-district={normalizeArea(d.district || d.ward)} data-bedrooms={d.bedrooms ?? ''} data-area={d.areaValue ?? ''} data-date={d.date ? new Date(d.date).getTime() || 0 : 0} hidden={index >= pageSize}>
                     <a class="listing-image" href={href} aria-label={`Xem ${d.title}`}>
                       {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">BẤT ĐỘNG SẢN ĐÀ NẴNG</div>}
                       {d.featured && <span class="pin-label">Nổi bật</span>}
@@ -79,83 +84,113 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
               </nav>
             )}
             <p class="page-summary" id="rental-page-summary" aria-live="polite">Hiển thị {Math.min(pageSize, apartments.length)} / {apartments.length} bất động sản</p>
+            <p class="rental-empty-filter" id="rental-empty-filter" hidden>Không tìm thấy bất động sản cho thuê phù hợp. Hãy thử xóa bộ lọc.</p>
           </>
         ) : (
           <div class="empty-state"><h2>Đang cập nhật căn hộ</h2><p>Hiện chưa có căn hộ cho thuê phù hợp. Anh/chị có thể liên hệ để được tư vấn.</p></div>
         )}
+        </div><ListingFilterSidebar kind="rental" areaLinks={areaLinks} /></div>
       </div>
     </section>
     <section class="listing-contact"><div class="listing-container contact-inner"><div><h2>Cần thuê căn hộ hoặc nhà đất tại Đà Nẵng?</h2><p>Liên hệ để được tư vấn bất động sản cho thuê phù hợp nhu cầu và ngân sách.</p></div><a href="tel:0869437415">Gọi 0869 437 415</a></div></section>
   </main>
 </Base>
 
-<script define:vars={{ pageSize, totalPages }} is:inline>
+<script is:inline>
   (() => {
-    const grid = document.getElementById('rental-grid');
-    const pagination = document.getElementById('rental-pagination');
-    if (!grid) return;
-    const cards = [...grid.querySelectorAll('[data-listing-index]')];
-    const numbers = document.getElementById('pagination-numbers');
-    const sort = document.getElementById('sort-rentals');
-    const originalOrder = new Map(cards.map((card, index) => [card, index]));
-    const numeric = (card, key) => {
-      const value = card.dataset[key];
-      return value === undefined || value === '' ? null : Number(value);
+    const grid=document.getElementById('rental-grid');if(!grid)return;
+    const cards=[...grid.querySelectorAll('[data-listing-index]')];
+    const sidebar=document.querySelector('.rental-listing-layout .filter-box');
+    const pagination=document.getElementById('rental-pagination');
+    const numbers=document.getElementById('pagination-numbers');
+    const sort=document.getElementById('sort-rentals');
+    const summary=document.getElementById('rental-page-summary');
+    const counter=document.getElementById('rental-result-count');
+    const empty=document.getElementById('rental-empty-filter');
+    const originalOrder=new Map(cards.map((card,index)=>[card,index]));
+    const numeric=(card,key)=>{const raw=card.dataset[key];return raw===undefined||raw===''?null:Number(raw);};
+    const chosen=name=>sidebar?.querySelector(`input[name="${name}"]:checked`)?.value||'';
+    const monthlyInRange=(card,range)=>{
+      if(!range)return true;
+      const raw=card.dataset.monthlyPrice;
+      if(raw===undefined||raw==='')return false; // Loại giá thuê ngày khỏi lọc tháng
+      const value=Number(raw);
+      if(!Number.isFinite(value))return false;
+      if(range==='30+')return value>30;
+      const [low,high]=range.split('-').map(Number);
+      return value>=low&&(range==='20-30'?value<=30:value<high);
     };
-    const sortCards = () => {
-      const mode = sort?.value || 'default';
-      cards.sort((a, b) => {
-        if (mode === 'newest') return (numeric(b,'date') || 0) - (numeric(a,'date') || 0) || originalOrder.get(a) - originalOrder.get(b);
-        if (['price-asc','price-desc','area-desc'].includes(mode)) {
-          const key = mode === 'area-desc' ? 'area' : 'price';
-          const av = numeric(a,key), bv = numeric(b,key);
-          if (av === null && bv !== null) return 1;
-          if (bv === null && av !== null) return -1;
-          if (av !== null && bv !== null && av !== bv) return mode === 'price-asc' ? av-bv : bv-av;
-        }
-        return originalOrder.get(a) - originalOrder.get(b);
-      });
-      cards.forEach(card => grid.appendChild(card));
+    const inArea=(raw,range)=>{
+      if(!range)return true;
+      if(raw===undefined||raw==='')return false;
+      const value=Number(raw);
+      if(!Number.isFinite(value))return false;
+      if(range.endsWith('+'))return value>=Number(range.slice(0,-1));
+      const [low,high]=range.split('-').map(Number);
+      return value>=low&&value<high;
     };
-    const summary = document.getElementById('rental-page-summary');
-    const readPage = () => {
-      const raw = Number(new URLSearchParams(location.search).get('page'));
-      return Number.isInteger(raw) && raw >= 1 && raw <= totalPages ? raw : 1;
-    };
-    let currentPage = readPage();
-    const render = (page, scroll = false) => {
-      currentPage = Math.min(totalPages, Math.max(1, page));
-      const start = (currentPage - 1) * pageSize;
-      cards.forEach((card, i) => { card.hidden = i < start || i >= start + pageSize; });
+    const pageSize=12;
+    let filtered=cards.slice(),currentPage=1;
+    const readPage=()=>{const n=Number(new URLSearchParams(location.search).get('page'));return Number.isInteger(n)&&n>=1?n:1;};
+    const render=(scroll=false)=>{
+      const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize));
+      currentPage=Math.max(1,Math.min(currentPage,totalPages));
+      const start=(currentPage-1)*pageSize;
+      const visible=new Set(filtered.slice(start,start+pageSize));
+      cards.forEach(card=>{card.hidden=!visible.has(card);});
+      if(counter)counter.textContent=`${filtered.length} bất động sản`;
+      if(summary)summary.textContent=filtered.length?`Hiển thị ${start+1}–${Math.min(start+pageSize,filtered.length)} / ${filtered.length} bất động sản`:'Không có bất động sản phù hợp';
+      if(empty)empty.hidden=filtered.length!==0;
+      if(pagination)pagination.hidden=totalPages<=1;
       numbers?.replaceChildren();
-      for (let n = 1; n <= totalPages; n++) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = String(n);
-        button.className = n === currentPage ? 'active' : '';
-        if (n === currentPage) button.setAttribute('aria-current', 'page');
-        button.addEventListener('click', () => go(n));
-        numbers?.append(button);
+      for(let n=1;n<=totalPages&&totalPages>1;n++){
+        const button=document.createElement('button');
+        button.type='button';button.textContent=String(n);button.className=n===currentPage?'active':'';
+        if(n===currentPage)button.setAttribute('aria-current','page');
+        button.addEventListener('click',()=>go(n));numbers?.append(button);
       }
-      if (pagination) {
-        pagination.querySelector('[data-action="prev"]').disabled = currentPage === 1;
-        pagination.querySelector('[data-action="next"]').disabled = currentPage === totalPages;
-      }
-      summary.textContent = `Hiển thị ${start + 1}–${Math.min(start + pageSize, cards.length)} / ${cards.length} bất động sản`;
-      if (scroll) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const previous=pagination?.querySelector('[data-action="prev"]'),next=pagination?.querySelector('[data-action="next"]');
+      if(previous)previous.disabled=currentPage===1;
+      if(next)next.disabled=currentPage===totalPages;
+      if(scroll)grid.scrollIntoView({behavior:'smooth',block:'start'});
     };
-    const go = (page) => {
-      const url = new URL(location.href);
-      if (page === 1) url.searchParams.delete('page');
-      else url.searchParams.set('page', String(page));
-      history.pushState({ page }, '', url);
-      render(page, true);
+    const apply=(resetPage=true)=>{
+      const district=chosen('district'),price=chosen('price'),area=chosen('area'),bedrooms=chosen('bedrooms');
+      filtered=cards.filter(card=>
+        (!district||card.dataset.district===district)
+        &&monthlyInRange(card,price)
+        &&inArea(card.dataset.area,area)
+        &&(!bedrooms||(bedrooms==='4+'?Number(card.dataset.bedrooms)>3:card.dataset.bedrooms===bedrooms))
+      );
+      const mode=sort?.value||'default';
+      filtered.sort((a,b)=>{
+        if(mode==='newest')return (numeric(b,'date')||0)-(numeric(a,'date')||0)||originalOrder.get(a)-originalOrder.get(b);
+        if(['price-asc','price-desc','area-desc'].includes(mode)){
+          const key=mode==='area-desc'?'area':'price',av=numeric(a,key),bv=numeric(b,key);
+          if(av===null&&bv!==null)return 1;if(bv===null&&av!==null)return -1;
+          if(av!==null&&bv!==null&&av!==bv)return mode==='price-asc'?av-bv:bv-av;
+        }
+        return originalOrder.get(a)-originalOrder.get(b);
+      });
+      filtered.forEach(card=>grid.appendChild(card));
+      if(resetPage){currentPage=1;const url=new URL(location.href);url.searchParams.delete('page');history.replaceState(null,'',url);}
+      render();
     };
-    pagination?.querySelector('[data-action="prev"]').addEventListener('click', () => go(currentPage - 1));
-    pagination?.querySelector('[data-action="next"]').addEventListener('click', () => go(currentPage + 1));
-    sort?.addEventListener('change', () => {sortCards();go(1);});
-    addEventListener('popstate', () => render(readPage()));
-    render(currentPage);
+    const go=n=>{
+      currentPage=n;const url=new URL(location.href);
+      if(n===1)url.searchParams.delete('page');else url.searchParams.set('page',String(n));
+      history.pushState(null,'',url);render(true);
+    };
+    sidebar?.addEventListener('change',()=>apply());
+    document.getElementById('reset-filters')?.addEventListener('click',()=>{
+      sidebar?.querySelectorAll('input[type="radio"][value=""]').forEach(input=>{input.checked=true;});
+      apply();
+    });
+    sort?.addEventListener('change',()=>apply());
+    pagination?.querySelector('[data-action="prev"]')?.addEventListener('click',()=>go(currentPage-1));
+    pagination?.querySelector('[data-action="next"]')?.addEventListener('click',()=>go(currentPage+1));
+    addEventListener('popstate',()=>{currentPage=readPage();render();});
+    currentPage=readPage();apply(false);
   })();
 </script>
 
@@ -170,7 +205,9 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   .listing-section{padding:58px 0 75px;background:#f6f8fb}
   .section-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:26px}
   .section-heading h2{font-size:clamp(24px,3vw,32px);color:#173a58;margin:0}.count{color:#62778b;font-size:14px;white-space:nowrap}
-  .listing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;scroll-margin-top:24px}
+  .rental-listing-layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(250px,3fr);gap:24px;align-items:start}
+  .rental-listing-primary{min-width:0}
+  .listing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;scroll-margin-top:24px}
   .listing-card{overflow:hidden;border:1px solid #e1e7ed;border-radius:15px;background:#fff;box-shadow:0 8px 25px #102c490d;display:flex;flex-direction:column}
   .listing-card[hidden]{display:none!important}
   .listing-image{height:220px;display:block;position:relative;overflow:hidden;background:#dbe6ee}
@@ -184,9 +221,13 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
   .pagination{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:35px;flex-wrap:wrap}.page-numbers{display:flex;gap:6px;flex-wrap:wrap}
   .pagination button{border:1px solid #ccd8e3;background:#fff;color:#173a58;border-radius:8px;min-width:40px;padding:10px 12px;font:inherit;font-weight:700;cursor:pointer}
   .pagination button.active{background:#153d61;color:#fff;border-color:#153d61}.pagination button:disabled{opacity:.4;cursor:not-allowed}
-  .page-summary{text-align:center;color:#64798a;font-size:13px;margin:18px 0 0}.empty-state{padding:50px 24px;border-radius:15px;text-align:center;background:#fff;border:1px solid #e1e7ed}.empty-state h2{color:#173a58}.empty-state p{color:#62778b}
+  .page-summary{text-align:center;color:#64798a;font-size:13px;margin:18px 0 0}
+  .rental-empty-filter{padding:22px;background:#fff;border:1px solid #e1e7ed;border-radius:12px;color:#536b81;text-align:center;margin-top:18px}
+  .rental-empty-filter[hidden],.pagination[hidden]{display:none!important}.empty-state{padding:50px 24px;border-radius:15px;text-align:center;background:#fff;border:1px solid #e1e7ed}.empty-state h2{color:#173a58}.empty-state p{color:#62778b}
   .listing-contact{background:#102c49;color:#fff;padding:35px 0}.contact-inner{display:flex;align-items:center;justify-content:space-between;gap:25px}
   .contact-inner h2{font-size:24px;margin:0 0 8px}.contact-inner p{color:#d4e2ee;margin:0}.contact-inner>a{display:inline-block;background:#c99b56;color:#fff;padding:14px 22px;border-radius:9px;font-weight:800;text-decoration:none;white-space:nowrap}
+  @media(max-width:980px){.rental-listing-layout{grid-template-columns:minmax(0,1fr) 255px;gap:16px}}
+  @media(max-width:760px){.rental-listing-layout{display:flex;flex-direction:column;gap:18px}.rental-listing-primary{width:100%}}
   @media(max-width:900px){.listing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   .listing-sort-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
   .listing-sort-row label{display:flex;align-items:center;gap:12px;white-space:nowrap;font-weight:600}

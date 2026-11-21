@@ -1,26 +1,26 @@
 ---
 interface AreaLink {name:string;slug:string;count:number}
 interface Project {id:string;name:string}
-interface Props {kind:'house'|'apartment';areaLinks:AreaLink[];activeSlug?:string;isRegion?:boolean;projects?:Project[]}
+interface Props {kind:'house'|'apartment'|'rental';areaLinks:AreaLink[];activeSlug?:string;isRegion?:boolean;projects?:Project[]}
 const {kind,areaLinks,activeSlug='',isRegion=false,projects=[]}=Astro.props;
-const apt=kind==='apartment',label=apt?'căn hộ':'nhà đất',base=apt?'/can-ho/':'/nha-dat-tho-cu/';
-const areas=[{name:'Sơn Trà',slug:'son-tra',key:apt?'son tra':'Sơn Trà'},{name:'Hải Châu',slug:'hai-chau',key:apt?'hai chau':'Hải Châu'},{name:'Thanh Khê',slug:'thanh-khe',key:apt?'thanh khe':'Thanh Khê'},{name:'Ngũ Hành Sơn',slug:'ngu-hanh-son',key:apt?'ngu hanh son':'Ngũ Hành Sơn'}];
-const prices=apt?[['','Tất cả mức giá'],['0-1000','Dưới 1 tỷ'],['1000-2000','1 – 2 tỷ'],['2000-3000','2 – 3 tỷ'],['3000-5000','3 – 5 tỷ'],['5000-7000','5 – 7 tỷ'],['7000+','Trên 7 tỷ']]:[['','Tất cả mức giá'],['0-3000','Dưới 3 tỷ'],['3000-5000','3 – 5 tỷ'],['5000-7000','5 – 7 tỷ'],['7000-10000','7 – 10 tỷ'],['10000+','Trên 10 tỷ']];
+const apt=kind==='apartment',rent=kind==='rental',label=rent?'cho thuê':apt?'căn hộ':'nhà đất',base=rent?'/cho-thue/':apt?'/can-ho/':'/nha-dat-tho-cu/';
+const areas=[{name:'Sơn Trà',slug:'son-tra',key:apt||rent?'son tra':'Sơn Trà'},{name:'Hải Châu',slug:'hai-chau',key:apt||rent?'hai chau':'Hải Châu'},{name:'Thanh Khê',slug:'thanh-khe',key:apt||rent?'thanh khe':'Thanh Khê'},{name:'Ngũ Hành Sơn',slug:'ngu-hanh-son',key:apt||rent?'ngu hanh son':'Ngũ Hành Sơn'}];
+const prices=rent?[['','Tất cả mức giá'],['0-10','Dưới 10 triệu/tháng'],['10-15','10 – 15 triệu/tháng'],['15-20','15 – 20 triệu/tháng'],['20-30','20 – 30 triệu/tháng'],['30+','Trên 30 triệu/tháng']]:apt?[['','Tất cả mức giá'],['0-1000','Dưới 1 tỷ'],['1000-2000','1 – 2 tỷ'],['2000-3000','2 – 3 tỷ'],['3000-5000','3 – 5 tỷ'],['5000-7000','5 – 7 tỷ'],['7000+','Trên 7 tỷ']]:[['','Tất cả mức giá'],['0-3000','Dưới 3 tỷ'],['3000-5000','3 – 5 tỷ'],['5000-7000','5 – 7 tỷ'],['7000-10000','7 – 10 tỷ'],['10000+','Trên 10 tỷ']];
 const sizes=apt?[['','Tất cả diện tích'],['30-45','30 – 45 m²'],['45-60','45 – 60 m²'],['60-80','60 – 80 m²'],['80+','Trên 80 m²']]:[['','Tất cả diện tích'],['0-60','Dưới 60 m²'],['60-100','60 – 100 m²'],['100-150','100 – 150 m²'],['150+','Trên 150 m²']];
-const beds=apt?[['','Tất cả phòng ngủ'],['0','Studio'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','4+ phòng ngủ']]:[['','Tất cả phòng ngủ'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','4+ phòng ngủ']];
+const beds=rent?[['','Tất cả phòng ngủ'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','Trên 3 phòng ngủ']]:apt?[['','Tất cả phòng ngủ'],['0','Studio'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','4+ phòng ngủ']]:[['','Tất cả phòng ngủ'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','4+ phòng ngủ']];
 const groups=[{name:'price',title:'Khoảng giá',options:prices},{name:'area',title:'Diện tích',options:sizes},{name:'bedrooms',title:'Phòng ngủ',options:beds}];
 const groupName=(name:string)=>isRegion?'region-'+name:name;
 const linked=areaLinks.filter(area=>area.count>0);
 ---
-<aside class:list={['listing-sidebar',{'region-mode':isRegion}]} aria-label={`Bộ lọc và danh mục ${label}`}>
+<aside class:list={['listing-sidebar',{'region-mode':isRegion,'rental-mode':rent}]} aria-label={`Bộ lọc và danh mục ${label}`}>
   <section class="filter-box">
     <div class="filter-top"><h2>Bộ lọc {label}</h2><button type="button" id={isRegion?'region-reset-filters':'reset-filters'}>Xóa lọc</button></div>
     {!isRegion&&<fieldset><legend>Khu vực</legend><label><input type="radio" name="district" value="" checked/> Tất cả khu vực</label>{areas.map(area=><label><input type="radio" name="district" value={area.key}/> {area.name}</label>)}</fieldset>}
     {groups.map(group=><fieldset><legend>{group.title}</legend>{group.options.map(([value,text])=><label><input type="radio" name={groupName(group.name)} value={value} checked={value===''}/> {text}</label>)}</fieldset>)}
     {apt&&<div class="project-filter"><label for={isRegion?'region-project-select':'project-select'}>Dự án</label><select id={isRegion?'region-project-select':'project-select'}><option value="">Tất cả dự án</option>{projects.map(project=><option value={project.id}>{project.name}</option>)}</select></div>}
   </section>
-  <nav class="area-links-box" aria-label={apt?'Căn hộ theo khu vực':'Nhà đất theo khu vực'}>
-    <h2>{apt?'Căn hộ':'Nhà đất'} theo khu vực</h2>
+  <nav class="area-links-box" aria-label={rent?'Cho thuê theo khu vực':apt?'Căn hộ theo khu vực':'Nhà đất theo khu vực'}>
+    <h2>{rent?'Cho thuê':apt?'Căn hộ':'Nhà đất'} theo khu vực</h2>
     {linked.length?<ul>{linked.map(area=><li><a href={`${base}${area.slug}/`} aria-current={activeSlug===area.slug?'page':undefined}><span>{area.name}</span><small>{area.count} {apt?'căn':'tin'}</small></a></li>)}</ul>:<p>Đang cập nhật danh sách theo khu vực.</p>}
   </nav>
 </aside>
@@ -43,5 +43,5 @@ const linked=areaLinks.filter(area=>area.count>0);
   .area-links-box a:hover,.area-links-box a[aria-current="page"]{color:#a77630}
   .area-links-box small{white-space:nowrap;font-size:12px;font-weight:500;color:#698094}
   .area-links-box p{color:#60758a;font-size:13px}
-  @media(max-width:760px){.listing-sidebar:not(.region-mode){display:none}.listing-sidebar.region-mode{position:static;max-height:none;overflow:visible;order:-1;width:100%}}
+  @media(max-width:760px){.listing-sidebar:not(.region-mode):not(.rental-mode){display:none}.listing-sidebar.region-mode,.listing-sidebar.rental-mode{position:static;max-height:none;overflow:visible;order:-1;width:100%}}
 </style>
