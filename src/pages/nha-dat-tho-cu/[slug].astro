@@ -7,7 +7,7 @@ import { getCollection, render } from 'astro:content';
 export async function getStaticPaths() {
   const properties = await getCollection('nha-dat-tho-cu');
   return properties
-    .filter((entry) => entry.data.status !== 'draft')
+    .filter((entry) => entry.data.status !== 'draft' && entry.data.transaction === 'ban')
     .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 

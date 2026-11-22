@@ -20,7 +20,7 @@ export async function getStaticPaths() {
   const collision = apartments.find((entry) => reserved.has(entry.id));
   if (collision) throw new Error(`Slug căn hộ ${collision.id} trùng URL khu vực. Hãy đổi slug bài đăng trước khi build.`);
   const detailPaths = apartments
-    .filter((entry) => entry.data.status !== 'draft' && !reserved.has(entry.id))
+    .filter((entry) => entry.data.status !== 'draft' && entry.data.transaction === 'ban' && !reserved.has(entry.id))
     .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
   const regionPaths = regions.map((region) => ({
     params: { slug: region.slug }, props: { region },
