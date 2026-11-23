@@ -24,7 +24,7 @@ const slides = rawSlides.filter((s) => s && s.enabled !== false && typeof s.imag
   image: s.image, mobileImage: s.mobileImage?.startsWith('/uploads/') ? s.mobileImage : '',
   imageAlt: s.imageAlt || s.title || 'Bất động sản Đà Nẵng',
   eyebrow: s.eyebrow || '', title: s.title || homepage.bannerTitle,
-  description: s.description || '', buttonText: s.buttonText || '',
+  description: s.description || homepage.bannerDescription || '', buttonText: s.buttonText || '',
   buttonLink: s.buttonLink?.startsWith('/') || s.buttonLink?.startsWith('#') ? s.buttonLink : '#tim-kiem'
 }));
 if (!slides.length) slides.push({
@@ -648,6 +648,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         ))}
       </div>
 
+      <a class="mobile-section-more" href="/du-an/">Xem tất cả dự án →</a>
     </div>
   </section>
 
@@ -658,7 +659,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         <div>
           <span class="eyebrow">MUA BÁN CĂN HỘ</span>
           <h2>Căn Hộ Đà Nẵng Đang Bán</h2>
-          <p>Tìm hiểu căn hộ theo vị trí, diện tích, số phòng ngủ và ngân sách. Danh sách được cập nhật từ hệ thống quản trị.</p>
+          <p>Tìm mua căn hộ Đà Nẵng theo dự án, vị trí, diện tích, số phòng ngủ và ngân sách; tham khảo các lựa chọn ven biển và trung tâm từ tin đăng thực tế.</p>
         </div>
         <a class="textlink" href="/can-ho/">Xem danh mục căn hộ →</a>
       </div>
@@ -695,6 +696,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           </article>
         ))}
       </div>
+      <a class="mobile-section-more" href="/can-ho/">Xem tất cả căn hộ đang bán →</a>
     </div>
   </section>
 
@@ -711,9 +713,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           <h2>Căn Hộ Đà Nẵng Theo Khu Vực</h2>
 
           <p>
-            Tìm hiểu đặc điểm vị trí,
-            giao thông và tiện ích của các
-            khu vực căn hộ tại Đà Nẵng.
+            Khám phá căn hộ Đà Nẵng gần biển tại Sơn Trà, Ngũ Hành Sơn, các lựa chọn view biển và căn hộ trung tâm; so sánh vị trí, giao thông và tiện ích trước khi mua.
           </p>
         </div>
       </div>
@@ -743,6 +743,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         ))}
       </div>
 
+      <a class="mobile-section-more" href="/can-ho/">Xem tất cả căn hộ Đà Nẵng →</a>
     </div>
   </section>
 
@@ -753,7 +754,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
         <div>
           <span class="eyebrow">DANH MỤC MỞ RỘNG</span>
           <h2>Nhà Đất Thổ Cư Đà Nẵng</h2>
-          <p>Danh mục nhà riêng và đất thổ cư tại Hải Châu, Sơn Trà, Ngũ Hành Sơn, Thanh Khê, Liên Chiểu và các khu vực khác. Nội dung sẽ được bổ sung trong thời gian tới.</p>
+          <p>Khám phá nhà trong kiệt, nhà phố, nhà mặt tiền và đất thổ cư tại Hải Châu, Sơn Trà, Ngũ Hành Sơn, Thanh Khê cùng các khu vực khác của Đà Nẵng.</p>
         </div>
         <a class="textlink" href="/nha-dat-tho-cu/">Xem tất cả nhà đất →</a>
       </div>
@@ -783,6 +784,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           </article>
         ))}
       </div>
+      <a class="mobile-section-more" href="/nha-dat-tho-cu/">Xem tất cả nhà đất →</a>
     </div>
   </section>
 
@@ -813,6 +815,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           </article>
         ))}
       </div>
+      <a class="mobile-section-more" href="/nha-dat-tho-cu/">Xem tất cả nhà đất →</a>
     </div>
   </section>
 
@@ -822,8 +825,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       <div class="sectionhead">
         <div>
           <span class="eyebrow">THỊ TRƯỜNG CHO THUÊ</span>
-          <h2>Bất Động Sản Đang Cho Thuê</h2>
-          <p>Tham khảo căn hộ và nhà đất thổ cư cho thuê tại Đà Nẵng. Thông tin được cập nhật từ hệ thống quản trị.</p>
+          <h2>Bất Động Sản Cho Thuê Tại Đà Nẵng</h2>
+          <p>Khám phá căn hộ Đà Nẵng cho thuê theo tháng hoặc ngắn ngày cùng nhà phố cho thuê tại các khu vực trung tâm và ven biển. Thông tin sản phẩm được cập nhật từ CMS.</p>
         </div>
         <a class="textlink" href="/cho-thue/">Xem tất cả bất động sản cho thuê →</a>
       </div>
@@ -860,6 +863,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           </article>
         ))}
       </div>
+      <a class="mobile-section-more" href="/cho-thue/">Xem tất cả bất động sản cho thuê →</a>
     </div>
   </section>
 
@@ -869,8 +873,8 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
       <div class="sectionhead">
         <div>
           <span class="eyebrow">CĂN HỘ & NHÀ ĐẤT CHO THUÊ</span>
-          <h2>Cho Thuê Theo Khu Vực</h2>
-          <p>Khám phá căn hộ và nhà đất cho thuê theo từng khu vực, với dữ liệu cập nhật từ CMS.</p>
+          <h2>Bất Động Sản Cho Thuê Theo Khu Vực Đà Nẵng</h2>
+          <p>Khám phá căn hộ và nhà đất cho thuê tại Sơn Trà, Hải Châu, Thanh Khê; tìm hiểu vị trí và sản phẩm đang có trước khi liên hệ.</p>
         </div>
         <a class="textlink" href="/cho-thue/">Xem tất cả cho thuê →</a>
       </div>
@@ -890,6 +894,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           </article>
         ))}
       </div>
+      <a class="mobile-section-more" href="/cho-thue/">Xem tất cả cho thuê →</a>
     </div>
   </section>
 
@@ -954,6 +959,7 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
           ))}
         </div>
       )}
+      <a class="mobile-section-more" href="/du-an/vinhomes-hai-van-bay/">Xem tất cả sản phẩm Hải Vân Bay →</a>
     </div>
   </section>
 
@@ -1019,6 +1025,20 @@ const seoDescription = 'Khám phá căn hộ Đà Nẵng mua bán, cho thuê, d�
   </section>
 
   <style>
+
+    /* Desktop: giữ nút cạnh tiêu đề; mobile: nút nằm sau thẻ cuối cùng. */
+    .mobile-section-more{display:none}
+    @media(max-width:767px){
+      #du-an .sectionhead>.textlink,
+      #can-ho-ban .sectionhead>.textlink,
+      #tho-cu .sectionhead>.textlink,
+      #nha-dat-theo-khu-vuc .sectionhead>.textlink,
+      #can-ho-thue .sectionhead>.textlink,
+      #cho-thue-theo-khu-vuc .sectionhead>.textlink,
+      #biet-thu .sectionhead>.textlink{display:none}
+      .section .mobile-section-more{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:100%;min-height:46px;margin-top:18px;padding:11px 16px;border:1px solid #d4ad73;border-radius:10px;background:#fff;color:#8b5e1c;font-size:14px;font-weight:700;text-align:center;text-decoration:none}
+      .section .mobile-section-more:focus-visible{outline:3px solid #176c87;outline-offset:2px}
+    }
 
     #khu-vuc .visual img{display:block;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .4s ease}#khu-vuc .card:hover .visual img{transform:scale(1.045)}
     .home-news-card{display:flex;flex-direction:column}.home-news-photo{display:block;aspect-ratio:16/9;overflow:hidden;background:#e4edf3}.home-news-photo img{display:block;width:100%;height:100%;object-fit:cover}.home-news-card .cardbody{flex:1;display:flex;flex-direction:column}.home-news-card .cardbody h3,.home-news-card .cardbody p{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}.home-news-card .cardbody h3{-webkit-line-clamp:2;line-clamp:2}.home-news-card .cardbody p{-webkit-line-clamp:3;line-clamp:3}.home-news-card .cardbody .textlink{margin-top:auto}
