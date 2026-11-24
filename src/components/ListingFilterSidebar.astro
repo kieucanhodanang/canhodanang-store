@@ -8,15 +8,24 @@ const areas=[{name:'Sơn Trà',slug:'son-tra',key:apt||rent?'son tra':'Sơn Trà
 const prices=rent?[['','Tất cả mức giá'],['0-10','Dưới 10 triệu/tháng'],['10-15','10 – 15 triệu/tháng'],['15-20','15 – 20 triệu/tháng'],['20-30','20 – 30 triệu/tháng'],['30+','Trên 30 triệu/tháng']]:apt?[['','Tất cả mức giá'],['0-1000','Dưới 1 tỷ'],['1000-2000','1 – 2 tỷ'],['2000-3000','2 – 3 tỷ'],['3000-5000','3 – 5 tỷ'],['5000-7000','5 – 7 tỷ'],['7000+','Trên 7 tỷ']]:[['','Tất cả mức giá'],['0-3000','Dưới 3 tỷ'],['3000-5000','3 – 5 tỷ'],['5000-7000','5 – 7 tỷ'],['7000-10000','7 – 10 tỷ'],['10000+','Trên 10 tỷ']];
 const sizes=apt?[['','Tất cả diện tích'],['30-45','30 – 45 m²'],['45-60','45 – 60 m²'],['60-80','60 – 80 m²'],['80+','Trên 80 m²']]:[['','Tất cả diện tích'],['0-60','Dưới 60 m²'],['60-100','60 – 100 m²'],['100-150','100 – 150 m²'],['150+','Trên 150 m²']];
 const beds=rent?[['','Tất cả phòng ngủ'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','Trên 3 phòng ngủ']]:apt?[['','Tất cả phòng ngủ'],['0','Studio'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','4+ phòng ngủ']]:[['','Tất cả phòng ngủ'],['1','1 phòng ngủ'],['2','2 phòng ngủ'],['3','3 phòng ngủ'],['4+','4+ phòng ngủ']];
-const groups=[{name:'price',title:'Khoảng giá',options:prices},{name:'area',title:'Diện tích',options:sizes},{name:'bedrooms',title:'Phòng ngủ',options:beds}];
+const floors=[['','Tất cả số tầng'],['1','1 tầng'],['1.5','1,5 tầng'],['2','2 tầng'],['3','3 tầng'],['4+','Từ 4 tầng']];
+const groups=[{name:'price',title:'Khoảng giá',options:prices},{name:'area',title:'Diện tích',options:sizes},{name:'bedrooms',title:'Phòng ngủ',options:beds},...(!apt&&!rent?[{name:'floors',title:'Số tầng',options:floors}]:[])];
 const groupName=(name:string)=>isRegion?'region-'+name:name;
 const linked=areaLinks.filter(area=>area.count>0);
 ---
 <aside class:list={['listing-sidebar',{'region-mode':isRegion,'rental-mode':rent}]} aria-label={`Bộ lọc và danh mục ${label}`}>
+  <div class="mobile-listing-filter" role="group" aria-label={`Lọc nhanh ${label} trên điện thoại`}>
+    <div class="mobile-filter-heading"><strong>Bộ lọc {label}</strong><button type="button" class="mobile-clear-filter">Xóa lọc</button></div>
+    <div class="mobile-filter-choices">
+      {groups.map(group=><label><span>{group.title}</span><select data-mobile-filter={group.name} aria-label={group.title}>{group.options.map(([value,name])=><option value={value}>{name}</option>)}</select></label>)}
+      {apt&&<label><span>Dự án</span><select data-mobile-filter="project" aria-label="Lọc theo dự án"><option value="">Tất cả dự án</option>{projects.map(project=><option value={project.id}>{project.name}</option>)}</select></label>}
+      {rent&&<label><span>Loại hình</span><select data-mobile-filter="type" aria-label="Lọc loại bất động sản cho thuê"><option value="">Tất cả loại hình</option><option value="can-ho">Căn hộ</option><option value="nha-dat-tho-cu">Nhà đất</option></select></label>}
+    </div>
+  </div>
   <section class="filter-box">
     <div class="filter-top"><h2>Bộ lọc {label}</h2><button type="button" id={isRegion?'region-reset-filters':'reset-filters'}>Xóa lọc</button></div>
     {!isRegion&&<fieldset><legend>Khu vực</legend><label><input type="radio" name="district" value="" checked/> Tất cả khu vực</label>{areas.map(area=><label><input type="radio" name="district" value={area.key}/> {area.name}</label>)}</fieldset>}
-    {groups.map(group=><fieldset><legend>{group.title}</legend>{group.options.map(([value,text])=><label><input type="radio" name={groupName(group.name)} value={value} checked={value===''}/> {text}</label>)}</fieldset>)}
+    {groups.map(group=><fieldset class={group.name==='floors' ? 'mobile-only-group' : undefined}><legend>{group.title}</legend>{group.options.map(([value,text])=><label><input type="radio" name={groupName(group.name)} value={value} checked={value===''}/> {text}</label>)}</fieldset>)}
     {apt&&<div class="project-filter"><label for={isRegion?'region-project-select':'project-select'}>Dự án</label><select id={isRegion?'region-project-select':'project-select'}><option value="">Tất cả dự án</option>{projects.map(project=><option value={project.id}>{project.name}</option>)}</select></div>}
   </section>
   <nav class="area-links-box" aria-label={rent?'Cho thuê theo khu vực':apt?'Căn hộ theo khu vực':'Nhà đất theo khu vực'}>
@@ -43,5 +52,57 @@ const linked=areaLinks.filter(area=>area.count>0);
   .area-links-box a:hover,.area-links-box a[aria-current="page"]{color:#a77630}
   .area-links-box small{white-space:nowrap;font-size:12px;font-weight:500;color:#698094}
   .area-links-box p{color:#60758a;font-size:13px}
-  @media(max-width:760px){.listing-sidebar:not(.region-mode):not(.rental-mode){display:none}.listing-sidebar.region-mode,.listing-sidebar.rental-mode{position:static;max-height:none;overflow:visible;order:-1;width:100%}}
+  .mobile-listing-filter,.filter-box .mobile-only-group{display:none}
+  @media(max-width:760px){
+    .listing-sidebar:not(.region-mode):not(.rental-mode){display:none}
+    .listing-sidebar.region-mode,.listing-sidebar.rental-mode{position:sticky;top:calc(var(--mobile-listing-top,72px) + 4px);z-index:950;max-height:none;overflow:visible;order:-1;width:100%;align-self:stretch;padding:0}
+    .listing-sidebar.region-mode .filter-box,.listing-sidebar.rental-mode .filter-box,.listing-sidebar.region-mode .area-links-box,.listing-sidebar.rental-mode .area-links-box{display:none!important}
+    .mobile-listing-filter{display:block;background:#fff;border:1px solid #dbe5ed;border-radius:12px;padding:11px;box-shadow:0 6px 18px #102c4920}
+    .mobile-filter-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;color:#173a58;font-size:15px}
+    .mobile-clear-filter{border:0;background:transparent;color:#80591f;font-size:13px;font-weight:700;padding:5px;cursor:pointer}
+    .mobile-filter-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 10px}
+    .mobile-filter-choices label{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:13px;font-weight:700;color:#173a58}
+    .mobile-filter-choices select{width:100%;min-width:0;height:52px;min-height:52px;border-radius:9px;padding:0 8px;border:1px solid #cbd7e3;background:#fff;color:#1d3950;font-size:16px;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+    .mobile-filter-choices select:focus-visible{outline:2px solid #2675ad;outline-offset:2px}
+  }
 </style>
+
+<script is:inline>
+  (()=>{
+    const aside=document.querySelector('.listing-sidebar');if(!aside)return;
+    const mobile=aside.querySelector('.mobile-listing-filter'),box=aside.querySelector('.filter-box');
+    if(!mobile||!box)return;
+    const selects=[...mobile.querySelectorAll('select[data-mobile-filter]')];
+    const isRegion=aside.classList.contains('region-mode');
+    const nameOf=key=>(isRegion?'region-':'')+key;
+    const updateMobile=()=>{
+      selects.forEach(select=>{
+        const key=select.dataset.mobileFilter;
+        if(key==='type')return;
+        if(key==='project'){const el=box.querySelector('#region-project-select, #project-select');if(el)select.value=el.value;return;}
+        const active=box.querySelector('input[name="'+nameOf(key)+'"]:checked');if(active)select.value=active.value;
+      });
+    };
+    selects.forEach(select=>select.addEventListener('change',()=>{
+      const key=select.dataset.mobileFilter;
+      if(key==='type'){box.dispatchEvent(new Event('change',{bubbles:true}));return;}
+      if(key==='project'){
+        const input=box.querySelector('#region-project-select, #project-select');
+        if(input){input.value=select.value;input.dispatchEvent(new Event('change',{bubbles:true}));}return;
+      }
+      const input=[...box.querySelectorAll('input[name="'+nameOf(key)+'"]')].find(r=>r.value===select.value);
+      if(input){input.checked=true;input.dispatchEvent(new Event('change',{bubbles:true}));}
+    }));
+    box.addEventListener('change',updateMobile);
+    mobile.querySelector('.mobile-clear-filter')?.addEventListener('click',()=>{
+      selects.forEach(select=>{select.value='';});
+      box.querySelectorAll('input[type="radio"][value=""]').forEach(input=>{input.checked=true;});
+      const project=box.querySelector('#region-project-select, #project-select');if(project)project.value='';
+      box.dispatchEvent(new Event('change',{bubbles:true}));
+    });
+    const header=document.querySelector('.site-gold-header');
+    const measure=()=>{if(header)document.documentElement.style.setProperty('--mobile-listing-top',Math.ceil(header.getBoundingClientRect().height)+'px');};
+    if(header&&typeof ResizeObserver!=='undefined')new ResizeObserver(measure).observe(header);
+    measure();updateMobile();
+  })();
+</script>

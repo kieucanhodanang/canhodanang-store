@@ -796,3 +796,14 @@ footer a:hover {
     animation-duration: .01ms !important;
   }
 }
+
+/* Danh sách trên điện thoại: hiển thị 20 sản phẩm/lần, desktop giữ phân trang */
+.mobile-load-more{display:none;border:1px solid #c3d0dc;background:#fff;color:#173a58;border-radius:10px;padding:15px 20px;font-size:16px;font-weight:750;min-height:52px;width:100%;margin:20px 0 12px;cursor:pointer}
+.mobile-load-more[hidden]{display:none!important}
+@media(max-width:760px){.mobile-load-more:not([hidden]){display:block}}
+
+@media(max-width:760px){
+  .quick-filters[aria-label="Bộ lọc nhanh căn hộ"] label:nth-child(4){order:0!important}
+  .quick-filters[aria-label="Bộ lọc nhanh căn hộ"] label:nth-child(5){order:4!important}
+  .quick-filters[aria-label="Bộ lọc nhanh căn hộ"] label:nth-child(6){order:3!important}
+}

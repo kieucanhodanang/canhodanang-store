@@ -940,8 +940,9 @@ collections:
   - label: Số tầng
     name: floors
     widget: number
-    value_type: int
-    min: 1
+    value_type: float
+    step: 0.5
+    min: 0.5
     required: false
     hint: Nhập số tầng của nhà hoặc biệt thự, ví dụ 3. Để trống nếu không áp dụng.
   - *id026

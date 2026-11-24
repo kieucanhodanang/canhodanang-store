@@ -43,11 +43,13 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
         <button type="submit">Tìm kiếm</button>
       </form>
       <div class="quick-filters" aria-label="Bộ lọc nhanh nhà đất">
-        <label>Khu vực<select id="search-area"><option value="">Tất cả khu vực</option>{areas.map(area => <option value={area}>{area}</option>)}</select></label>
+        <div class="mobile-quick-heading"><strong>Bộ lọc</strong><button type="button" class="quick-clear-mobile">Xóa lọc</button></div>
+        <label class="desktop-only-filter">Khu vực<select id="search-area"><option value="">Tất cả khu vực</option>{areas.map(area => <option value={area}>{area}</option>)}</select></label>
         <label>Khoảng giá<select id="search-price"><option value="">Tất cả mức giá</option><option value="0-3000">Dưới 3 tỷ</option><option value="3000-5000">3 – 5 tỷ</option><option value="5000-7000">5 – 7 tỷ</option><option value="7000-10000">7 – 10 tỷ</option><option value="10000+">Trên 10 tỷ</option></select></label>
         <label>Diện tích<select id="search-size"><option value="">Tất cả diện tích</option><option value="0-60">Dưới 60 m²</option><option value="60-100">60 – 100 m²</option><option value="100-150">100 – 150 m²</option><option value="150+">Trên 150 m²</option></select></label>
-        <label>Loại nhà đất<select id="search-type"><option value="">Tất cả loại</option><option value="nha">Nhà ở</option><option value="dat">Đất thổ cư</option></select></label>
+        <label class="desktop-only-filter">Loại nhà đất<select id="search-type"><option value="">Tất cả loại</option><option value="nha">Nhà ở</option><option value="dat">Đất thổ cư</option></select></label>
         <label>Phòng ngủ<select id="search-bedrooms"><option value="">Tất cả phòng ngủ</option><option value="1">1 phòng</option><option value="2">2 phòng</option><option value="3">3 phòng</option><option value="4+">4+ phòng</option></select></label>
+        <label class="mobile-only-filter">Số tầng<select id="search-floors"><option value="">Tất cả số tầng</option><option value="1">1 tầng</option><option value="1.5">1,5 tầng</option><option value="2">2 tầng</option><option value="3">3 tầng</option><option value="4+">Từ 4 tầng</option></select></label>
       </div>
       <button class="clear-search" type="button" id="clear-search">Xóa bộ lọc</button>
       <div class="listing-layout"><div class="listing-primary">
@@ -65,7 +67,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
               const wardOrDistrict = String(data.ward || data.district || '').trim();
               const location = [street, wardOrDistrict && !street.toLocaleLowerCase('vi').includes(wardOrDistrict.toLocaleLowerCase('vi')) ? wardOrDistrict : ''].filter(Boolean).join(', ');
               return (
-                <article class="property-card" data-keywords={[data.title,data.description,data.address,data.district,data.ward].filter(Boolean).join(' ')} data-district={data.district || ''} data-ward={data.ward || ''} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-type={data.propertyType || ''} data-bedrooms={data.bedrooms ?? ''} data-date={data.date instanceof Date ? data.date.getTime() : 0} data-featured={data.featured ? '1' : '0'} hidden={index >= 12}>
+                <article class="property-card" data-keywords={[data.title,data.description,data.address,data.district,data.ward].filter(Boolean).join(' ')} data-district={data.district || ''} data-ward={data.ward || ''} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-type={data.propertyType || ''} data-bedrooms={data.bedrooms ?? ''} data-floors={data.floors ?? ''} data-date={data.date instanceof Date ? data.date.getTime() : 0} data-featured={data.featured ? '1' : '0'} hidden={index >= 12}>
                   <a href={`/nha-dat-tho-cu/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
                     <img src={data.image} alt={data.imageAlt || data.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
                     {data.featured && <span class="featured-tag">Nổi bật</span>}
@@ -91,6 +93,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
             <span id="page-status" aria-live="polite"></span>
             <button type="button" data-action="next">Sau ›</button>
           </nav>
+          <button type="button" class="mobile-load-more" id="mobile-load-more" hidden>Xem thêm 20 sản phẩm</button>
           <p class="empty-filter" id="empty-filter" hidden>Không tìm thấy nhà đất phù hợp. Hãy thử thay đổi bộ lọc.</p>
         </>
       ) : (
@@ -109,6 +112,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     const size = document.querySelector<HTMLSelectElement>('#search-size');
     const type = document.querySelector<HTMLSelectElement>('#search-type');
     const bedrooms = document.querySelector<HTMLSelectElement>('#search-bedrooms');
+    const floors = document.querySelector<HTMLSelectElement>('#search-floors');
     const sidebar = document.querySelector<HTMLElement>('.filter-box');
     const selected = (name: string) => sidebar?.querySelector<HTMLInputElement>(`input[name="${name}"]:checked`)?.value || '';
     const sort = document.querySelector<HTMLSelectElement>('#sort-listings');
@@ -132,14 +136,18 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
       return value >= min && value <= max;
     };
     let current = 1;
+    const mobile=()=>matchMedia('(max-width:760px)').matches;
+    const loadMore=document.querySelector<HTMLButtonElement>('#mobile-load-more');
+    let mobileLimit=20;
     const render = (reset = true) => {
-      if (reset) current = 1;
+      if (reset){current = 1;mobileLimit=20;}
       const tokens = normalize(keyword?.value || '').split(/\s+/).filter(Boolean);
       const selectedArea = normalize(area?.value || '');
       const selectedSidebarArea = normalize(selected('district'));
       const selectedPrice = selected('price') || price?.value || '';
       const selectedSize = selected('area') || size?.value || '';
       const selectedBedrooms = selected('bedrooms') || bedrooms?.value || '';
+      const selectedFloors = selected('floors') || floors?.value || '';
       const matches = cards.filter(card => {
         const searchable = normalize(card.dataset.keywords || '');
         if (tokens.some(token => !searchable.includes(token))) return false;
@@ -147,6 +155,7 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
         if (selectedSidebarArea && !normalize([card.dataset.district,card.dataset.ward].join(' ')).includes(selectedSidebarArea)) return false;
         if (type?.value && !normalize(card.dataset.type || '').includes(normalize(type.value))) return false;
         if (selectedBedrooms && (selectedBedrooms === '4+' ? Number(card.dataset.bedrooms) < 4 : card.dataset.bedrooms !== selectedBedrooms)) return false;
+        if(selectedFloors){const n=card.dataset.floors===''?NaN:Number(card.dataset.floors);if(!Number.isFinite(n)||(selectedFloors==='4+'?n<4:n!==Number(selectedFloors)))return false;}
         return inRange(card.dataset.price,selectedPrice) && inRange(card.dataset.area,selectedSize);
       });
       const sortMode = sort?.value || 'default';
@@ -164,11 +173,12 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
       if (grid) matches.forEach(card => grid.appendChild(card));
       const pages = Math.max(1,Math.ceil(matches.length / 12));
       current = Math.min(current,pages);
-      const visible = new Set(matches.slice((current-1)*12,current*12));
+      const visible = new Set(matches.slice(mobile()?0:(current-1)*12,mobile()?mobileLimit:current*12));
       cards.forEach(card => { card.hidden = !visible.has(card); });
       if (count) count.textContent = `Có ${matches.length} bất động sản đang bán`;
       if (empty) empty.hidden = matches.length > 0;
-      if (pagination) pagination.hidden = pages <= 1;
+      if (pagination) pagination.hidden = mobile() || pages <= 1;
+      if(loadMore){loadMore.hidden=!mobile()||mobileLimit>=matches.length;loadMore.textContent=`Xem thêm ${Math.min(20,Math.max(0,matches.length-mobileLimit))} sản phẩm`;}
       if (status) status.textContent = `Trang ${current} / ${pages}`;
       if (previous) previous.disabled = current === 1;
       if (next) next.disabled = current === pages;
@@ -176,13 +186,14 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     sort?.addEventListener('change', () => render());
     form?.addEventListener('submit', event => { event.preventDefault(); keyword?.blur(); render(); });
     const syncRadio=(name:string,value:string)=>sidebar?.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`).forEach(input=>{input.checked=input.value===value;});
-    [area,price,size,bedrooms].forEach((el,index)=>el?.addEventListener('change',()=>{syncRadio(['district','price','area','bedrooms'][index],el.value);render();}));
+    [area,price,size,bedrooms,floors].forEach((el,index)=>el?.addEventListener('change',()=>{syncRadio(['district','price','area','bedrooms','floors'][index],el.value);render();}));
     type?.addEventListener('change',()=>render());
     sidebar?.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach(el => el.addEventListener('change', () => {
       if (el.name === 'district' && area) area.value = el.value;
       if (el.name === 'price' && price) price.value = el.value;
       if (el.name === 'area' && size) size.value = el.value;
       if (el.name === 'bedrooms' && bedrooms) bedrooms.value = el.value;
+      if (el.name === 'floors' && floors) floors.value = el.value;
       render();
     }));
     document.querySelector('#clear-search')?.addEventListener('click', () => {
@@ -192,11 +203,15 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
       if (size) size.value = '';
       if (type) type.value = '';
       if (bedrooms) bedrooms.value = '';
+      if (floors) floors.value = '';
       sidebar?.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach(el => { el.checked = el.value === ''; });
       render();
     });
     document.querySelector('#reset-filters')?.addEventListener('click', () => document.querySelector<HTMLButtonElement>('#clear-search')?.click());
     const go = (delta: number) => { current += delta; render(false); document.querySelector('.heading')?.scrollIntoView({behavior:'smooth',block:'start'}); };
+    loadMore?.addEventListener('click',()=>{mobileLimit+=20;render(false);});
+    document.querySelector('.quick-clear-mobile')?.addEventListener('click',()=>document.getElementById('clear-search')?.click());
+    matchMedia('(max-width:760px)').addEventListener('change',()=>render());
     previous?.addEventListener('click', () => go(-1));
     next?.addEventListener('click', () => go(1));
     // Cho phép thẻ khu vực và sidebar chi tiết liên kết trực tiếp tới bộ lọc phường.
@@ -273,5 +288,17 @@ const description = 'Tìm mua bán nhà đất thổ cư Đà Nẵng theo vị t
     .empty-state a{color:#1b648f;font-weight:700}
     @media(max-width:900px){.property-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
     @media(max-width:600px){.apartment-search button{padding:0 12px}.container{padding:0 14px}.property-grid{grid-template-columns:1fr;gap:15px}.card-content{padding:15px}.listing-page{padding-top:20px}.pagination{gap:10px}.pagination button{padding:9px 12px}}
-  </style>
+  
+  @media(min-width:761px){.quick-filters .mobile-only-filter{display:none}}
+  .mobile-quick-heading{display:none}
+  @media(max-width:760px){
+    .quick-filters{position:sticky;top:calc(var(--mobile-listing-top,72px) + 4px);z-index:950;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 10px;padding:11px;margin-top:10px;background:#fff;box-shadow:0 6px 18px #102c4920}
+    .quick-filters .desktop-only-filter{display:none!important}
+    .quick-filters label{gap:4px;min-width:0;font-size:13px}
+    .quick-filters select{height:52px;min-height:52px;font-size:16px;text-overflow:ellipsis;white-space:nowrap;padding-inline:8px}
+    .mobile-quick-heading{display:flex;grid-column:1/-1;align-items:center;justify-content:space-between;color:#173a58;font-weight:700;font-size:15px}
+    .quick-clear-mobile{background:transparent;color:#80591f;font-weight:700;font-size:13px;border:0;padding:5px}
+  }
+  @media(max-width:380px){.quick-filters{grid-template-columns:repeat(2,minmax(0,1fr));}}
+</style>
 </Base>

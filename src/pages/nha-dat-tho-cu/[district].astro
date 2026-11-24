@@ -59,7 +59,7 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
               const data = entry.data;
               const location = [data.ward, data.district].filter(Boolean).join(' · ') || data.address;
               return (
-                <article class="property-card" data-page={Math.floor(index / 12) + 1} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-bedrooms={data.bedrooms ?? ''} data-date={data.date ? new Date(data.date).getTime() || 0 : 0} hidden={index >= 12}>
+                <article class="property-card" data-page={Math.floor(index / 12) + 1} data-price={data.priceValue ?? ''} data-area={data.areaValue ?? ''} data-bedrooms={data.bedrooms ?? ''} data-floors={data.floors ?? ''} data-date={data.date ? new Date(data.date).getTime() || 0 : 0} hidden={index >= 12}>
                   <a href={`/nha-dat-tho-cu/${entry.id}/`} class="image-link" aria-label={`Xem ${data.title}`}>
                     <img src={data.image} alt={data.imageAlt || data.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
                     {data.featured && <span class="featured-tag">Nổi bật</span>}
@@ -84,6 +84,7 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
             })}
           </div>
           <p class="empty-filter" id="region-empty-filter" hidden>Không tìm thấy nhà đất phù hợp với bộ lọc đã chọn.</p>
+          <button type="button" id="region-mobile-more" class="mobile-load-more" hidden>Xem thêm 20 sản phẩm</button>
           {totalPages > 1 && (
             <nav class="pagination" id="pagination" aria-label="Phân trang nhà đất" data-total-pages={totalPages}>
               <button type="button" data-action="previous" disabled>‹ Trước</button>
@@ -116,11 +117,15 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
         if(filter.endsWith('+'))return value>=Number(filter.slice(0,-1));
         const [low,high]=filter.split('-').map(Number);return value>=low&&value<high;
       };
+      const mobile=()=>matchMedia('(max-width:760px)').matches;
+      const more=document.querySelector<HTMLButtonElement>('#region-mobile-more');
+      let mobileLimit=20;
       let selected=cards.slice(),page=1,pages=Math.max(1,Math.ceil(cards.length/12));
       const show=(scroll=false)=>{
-        const visible=new Set(selected.slice((page-1)*12,page*12));
+        const visible=new Set(selected.slice(mobile()?0:(page-1)*12,mobile()?mobileLimit:page*12));
+        if(more){more.hidden=!mobile()||mobileLimit>=selected.length;more.textContent=`Xem thêm ${Math.min(20,Math.max(0,selected.length-mobileLimit))} sản phẩm`;}
         cards.forEach(card=>{card.hidden=!visible.has(card);});
-        if(pagination)pagination.hidden=pages<=1;
+        if(pagination)pagination.hidden=mobile()||pages<=1;
         if(prev)prev.disabled=page===1;if(next)next.disabled=page===pages;
         if(status)status.textContent=`Trang ${page} / ${pages}`;
         if(count)count.textContent=`Có ${selected.length} bất động sản phù hợp`;
@@ -128,8 +133,8 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
         if(scroll)document.querySelector('.heading')?.scrollIntoView({behavior:'smooth',block:'start'});
       };
       const apply=()=>{
-        const price=choice('price'),area=choice('area'),beds=choice('bedrooms');
-        selected=cards.filter(card=>range(card.dataset.price,price)&&range(card.dataset.area,area)&&(!beds||(beds==='4+'?Number(card.dataset.bedrooms)>=4:card.dataset.bedrooms===beds)));
+        const price=choice('price'),area=choice('area'),beds=choice('bedrooms'),floors=choice('floors');
+        selected=cards.filter(card=>range(card.dataset.price,price)&&range(card.dataset.area,area)&&(!beds||(beds==='4+'?Number(card.dataset.bedrooms)>=4:card.dataset.bedrooms===beds))&&(!floors||(card.dataset.floors!==''&&(floors==='4+'?Number(card.dataset.floors)>=4:Number(card.dataset.floors)===Number(floors)))));
         const mode=sort?.value||'default';
         selected.sort((a,b)=>{
           if(mode==='newest')return (number(b,'date')||0)-(number(a,'date')||0)||order.get(a)!-order.get(b)!;
@@ -140,10 +145,12 @@ const description = `Mua bán nhà đất thổ cư ${area.name}, Đà Nẵng. X
           }
           return order.get(a)!-order.get(b)!;
         });
-        selected.forEach(card=>grid.appendChild(card));page=1;pages=Math.max(1,Math.ceil(selected.length/12));show();
+        selected.forEach(card=>grid.appendChild(card));page=1;mobileLimit=20;pages=Math.max(1,Math.ceil(selected.length/12));show();
       };
       filters?.addEventListener('change',apply);sort?.addEventListener('change',apply);
       document.querySelector('#region-reset-filters')?.addEventListener('click',()=>{filters?.querySelectorAll<HTMLInputElement>('input[type="radio"][value=""]').forEach(input=>{input.checked=true;});apply();});
+      more?.addEventListener('click',()=>{mobileLimit+=20;show();});
+      matchMedia('(max-width:760px)').addEventListener('change',()=>{mobileLimit=20;show();});
       prev?.addEventListener('click',()=>{if(page>1){page--;show(true);}});
       next?.addEventListener('click',()=>{if(page<pages){page++;show(true);}});
       apply();

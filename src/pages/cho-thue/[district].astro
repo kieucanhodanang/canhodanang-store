@@ -60,7 +60,7 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
               const data = entry.data;
               const location = [data.ward, data.district].filter(Boolean).join(' · ') || data.address;
               return (
-                <article class="property-card" data-page={Math.floor(index / 12) + 1} data-price={data.priceValue ?? ''} data-monthly-price={data.transaction === 'cho-thue' ? data.priceValue ?? '' : ''} data-bedrooms={data.bedrooms ?? ''} data-area={data.areaValue ?? ''} data-date={data.date ? new Date(data.date).getTime() || 0 : 0} hidden={index >= 12}>
+                <article class="property-card" data-page={Math.floor(index / 12) + 1} data-price={data.priceValue ?? ''} data-monthly-price={data.transaction === 'cho-thue' ? data.priceValue ?? '' : ''} data-bedrooms={data.bedrooms ?? ''} data-rental-type={entry.rentalType} data-area={data.areaValue ?? ''} data-date={data.date ? new Date(data.date).getTime() || 0 : 0} hidden={index >= 12}>
                   <a href={listingUrl(entry.rentalType, entry.id, data.transaction)} class="image-link" aria-label={`Xem ${data.title}`}>
                     <img src={data.image} alt={data.imageAlt || data.title} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
                     {data.featured && <span class="featured-tag">Nổi bật</span>}
@@ -85,6 +85,7 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
             })}
           </div>
           <p class="empty-filter" id="rental-region-empty" hidden>Không tìm thấy bất động sản cho thuê phù hợp với bộ lọc đã chọn.</p>
+          <button type="button" id="region-mobile-more" class="mobile-load-more" hidden>Xem thêm 20 sản phẩm</button>
           {totalPages > 1 && (
             <nav class="pagination" id="pagination" aria-label="Phân trang bất động sản cho thuê" data-total-pages={totalPages}>
               <button type="button" data-action="previous" disabled>‹ Trước</button>
@@ -124,11 +125,15 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
         if(filter.endsWith('+'))return value>=Number(filter.slice(0,-1));
         const [low,high]=filter.split('-').map(Number);return value>=low&&value<high;
       };
+      const mobile=()=>matchMedia('(max-width:760px)').matches;
+      const more=document.querySelector<HTMLButtonElement>('#region-mobile-more');
+      let mobileLimit=20;
       let filtered=cards.slice(),current=1,pages=Math.max(1,Math.ceil(cards.length/12));
       const show=(scroll=false)=>{
-        const visible=new Set(filtered.slice((current-1)*12,current*12));
+        const visible=new Set(filtered.slice(mobile()?0:(current-1)*12,mobile()?mobileLimit:current*12));
+        if(more){more.hidden=!mobile()||mobileLimit>=filtered.length;more.textContent=`Xem thêm ${Math.min(20,Math.max(0,filtered.length-mobileLimit))} sản phẩm`;}
         cards.forEach(card=>{card.hidden=!visible.has(card);});
-        if(pagination)pagination.hidden=pages<=1;
+        if(pagination)pagination.hidden=mobile()||pages<=1;
         if(prev)prev.disabled=current===1;if(next)next.disabled=current===pages;
         if(status)status.textContent=`Trang ${current} / ${pages}`;
         if(counter)counter.textContent=`Có ${filtered.length} bất động sản cho thuê phù hợp`;
@@ -137,7 +142,8 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
       };
       const apply=()=>{
         const price=choice('price'),area=choice('area'),beds=choice('bedrooms');
-        filtered=cards.filter(card=>monthlyInRange(card.dataset.monthlyPrice,price)&&inArea(card.dataset.area,area)&&(!beds||(beds==='4+'?Number(card.dataset.bedrooms)>3:card.dataset.bedrooms===beds)));
+        const type=mobile()?document.querySelector<HTMLSelectElement>('.mobile-listing-filter select[data-mobile-filter="type"]')?.value||'':'';
+        filtered=cards.filter(card=>monthlyInRange(card.dataset.monthlyPrice,price)&&inArea(card.dataset.area,area)&&(!type||card.dataset.rentalType===type)&&(!beds||(beds==='4+'?Number(card.dataset.bedrooms)>3:card.dataset.bedrooms===beds)));
         const mode=sort?.value||'default';
         filtered.sort((a,b)=>{
           if(mode==='newest')return (number(b,'date')||0)-(number(a,'date')||0)||order.get(a)!-order.get(b)!;
@@ -148,7 +154,7 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
           }
           return order.get(a)!-order.get(b)!;
         });
-        filtered.forEach(card=>grid.appendChild(card));current=1;pages=Math.max(1,Math.ceil(filtered.length/12));show();
+        filtered.forEach(card=>grid.appendChild(card));current=1;mobileLimit=20;pages=Math.max(1,Math.ceil(filtered.length/12));show();
       };
       sidebar?.addEventListener('change',apply);
       sort?.addEventListener('change',apply);
@@ -156,6 +162,8 @@ const description = `Cho thuê căn hộ, nhà đất tại ${area.name}, Đà N
         sidebar?.querySelectorAll<HTMLInputElement>('input[type="radio"][value=""]').forEach(input=>{input.checked=true;});
         apply();
       });
+      more?.addEventListener('click',()=>{mobileLimit+=20;show();});
+      matchMedia('(max-width:760px)').addEventListener('change',()=>{mobileLimit=20;apply();});
       prev?.addEventListener('click',()=>{if(current>1){current--;show(true);}});
       next?.addEventListener('click',()=>{if(current<pages){current++;show(true);}});
       apply();

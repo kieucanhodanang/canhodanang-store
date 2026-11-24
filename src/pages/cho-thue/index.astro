@@ -57,7 +57,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 const image = imageFor(d);
                 const href = listingUrl(item.rentalType, item.id, d.transaction);
                 return (
-                  <article class="listing-card" data-listing-index={index} data-price={d.priceValue ?? ''} data-monthly-price={d.transaction === 'cho-thue' ? d.priceValue ?? '' : ''} data-district={normalizeArea(d.district || d.ward)} data-bedrooms={d.bedrooms ?? ''} data-area={d.areaValue ?? ''} data-date={d.date ? new Date(d.date).getTime() || 0 : 0} hidden={index >= pageSize}>
+                  <article class="listing-card" data-listing-index={index} data-price={d.priceValue ?? ''} data-monthly-price={d.transaction === 'cho-thue' ? d.priceValue ?? '' : ''} data-district={normalizeArea(d.district || d.ward)} data-bedrooms={d.bedrooms ?? ''} data-rental-type={item.rentalType} data-area={d.areaValue ?? ''} data-date={d.date ? new Date(d.date).getTime() || 0 : 0} hidden={index >= pageSize}>
                     <a class="listing-image" href={href} aria-label={`Xem ${d.title}`}>
                       {image ? <img src={image} alt={d.imageAlt || `Căn hộ ${d.title}`} loading="lazy" /> : <div class="image-placeholder" aria-hidden="true">BẤT ĐỘNG SẢN ĐÀ NẴNG</div>}
                       {d.featured && <span class="pin-label">Nổi bật</span>}
@@ -83,6 +83,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
                 <button type="button" data-action="next" aria-label="Trang sau">Sau ›</button>
               </nav>
             )}
+            <button type="button" id="rental-mobile-more" class="mobile-load-more" hidden>Xem thêm 20 sản phẩm</button>
             <p class="page-summary" id="rental-page-summary" aria-live="polite">Hiển thị {Math.min(pageSize, apartments.length)} / {apartments.length} bất động sản</p>
             <p class="rental-empty-filter" id="rental-empty-filter" hidden>Không tìm thấy bất động sản cho thuê phù hợp. Hãy thử xóa bộ lọc.</p>
           </>
@@ -130,18 +131,23 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       return value>=low&&value<high;
     };
     const pageSize=12;
+    const isMobile=()=>matchMedia('(max-width:760px)').matches;
+    const more=document.getElementById('rental-mobile-more');
+    let mobileLimit=20;
     let filtered=cards.slice(),currentPage=1;
     const readPage=()=>{const n=Number(new URLSearchParams(location.search).get('page'));return Number.isInteger(n)&&n>=1?n:1;};
     const render=(scroll=false)=>{
       const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize));
       currentPage=Math.max(1,Math.min(currentPage,totalPages));
-      const start=(currentPage-1)*pageSize;
-      const visible=new Set(filtered.slice(start,start+pageSize));
+      const mobile=isMobile();
+      const start=mobile?0:(currentPage-1)*pageSize;
+      const visible=new Set(filtered.slice(start,start+(mobile?mobileLimit:pageSize)));
       cards.forEach(card=>{card.hidden=!visible.has(card);});
       if(counter)counter.textContent=`${filtered.length} bất động sản`;
-      if(summary)summary.textContent=filtered.length?`Hiển thị ${start+1}–${Math.min(start+pageSize,filtered.length)} / ${filtered.length} bất động sản`:'Không có bất động sản phù hợp';
+      if(summary)summary.textContent=filtered.length?`Hiển thị ${start+1}–${Math.min(start+(mobile?mobileLimit:pageSize),filtered.length)} / ${filtered.length} bất động sản`:'Không có bất động sản phù hợp';
       if(empty)empty.hidden=filtered.length!==0;
-      if(pagination)pagination.hidden=totalPages<=1;
+      if(pagination)pagination.hidden=mobile||totalPages<=1;
+      if(more){more.hidden=!mobile||mobileLimit>=filtered.length;more.textContent=`Xem thêm ${Math.min(20,Math.max(0,filtered.length-mobileLimit))} sản phẩm`;}
       numbers?.replaceChildren();
       for(let n=1;n<=totalPages&&totalPages>1;n++){
         const button=document.createElement('button');
@@ -156,10 +162,12 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
     };
     const apply=(resetPage=true)=>{
       const district=chosen('district'),price=chosen('price'),area=chosen('area'),bedrooms=chosen('bedrooms');
+      const type=isMobile()?document.querySelector('.mobile-listing-filter select[data-mobile-filter="type"]')?.value||'':'';
       filtered=cards.filter(card=>
         (!district||card.dataset.district===district)
         &&monthlyInRange(card,price)
         &&inArea(card.dataset.area,area)
+        &&(!type||card.dataset.rentalType===type)
         &&(!bedrooms||(bedrooms==='4+'?Number(card.dataset.bedrooms)>3:card.dataset.bedrooms===bedrooms))
       );
       const mode=sort?.value||'default';
@@ -173,7 +181,7 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
         return originalOrder.get(a)-originalOrder.get(b);
       });
       filtered.forEach(card=>grid.appendChild(card));
-      if(resetPage){currentPage=1;const url=new URL(location.href);url.searchParams.delete('page');history.replaceState(null,'',url);}
+      if(resetPage){currentPage=1;mobileLimit=20;const url=new URL(location.href);url.searchParams.delete('page');history.replaceState(null,'',url);}
       render();
     };
     const go=n=>{
@@ -187,6 +195,8 @@ const imageFor = (data: { image?: string | null; gallery?: string[] | null }) =>
       apply();
     });
     sort?.addEventListener('change',()=>apply());
+    more?.addEventListener('click',()=>{mobileLimit+=20;render();});
+    matchMedia('(max-width:760px)').addEventListener('change',()=>{mobileLimit=20;apply();});
     pagination?.querySelector('[data-action="prev"]')?.addEventListener('click',()=>go(currentPage-1));
     pagination?.querySelector('[data-action="next"]')?.addEventListener('click',()=>go(currentPage+1));
     addEventListener('popstate',()=>{currentPage=readPage();render();});
