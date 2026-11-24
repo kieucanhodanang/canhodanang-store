@@ -9,7 +9,8 @@ export default defineConfig({
   output: 'static',
 
   build: {
-    format: 'directory'
+    format: 'directory',
+    inlineStylesheets: 'always'
   },
 
   integrations: [
@@ -18,7 +19,7 @@ export default defineConfig({
         const pathname = new URL(page).pathname;
 
         // Không đưa trang quản trị vào Sitemap
-        return !pathname.startsWith('/admin') && !['/mau-giao-dien-du-an', '/mau-giao-dien-du-an/'].includes(pathname);
+        return !pathname.startsWith('/admin') && pathname !== '/search-index.json' && !['/mau-giao-dien-du-an', '/mau-giao-dien-du-an/'].includes(pathname);
       }
     }),
     rentalRedirects()
