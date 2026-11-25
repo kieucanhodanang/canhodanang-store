@@ -25,10 +25,14 @@
     @media (max-width: 480px) {
       .pin-management-link { right: 12px; bottom: 12px; padding: 10px 13px; font-size: 12px; }
     }
+      .seo-management-link { bottom: 70px; background: #176347; }
+    .seo-management-link:hover, .seo-management-link:focus-visible { background:#124c38; }
+    @media (max-width:480px) { .seo-management-link { bottom:56px; } }
   </style>
 </head>
 <body>
   <a class="pin-management-link" href="/admin/quan-ly-ghim.html" title="Xem các nội dung đang ghim trên trang chủ">📌 Quản lý ghim trang chủ</a>
+  <a class="pin-management-link seo-management-link" href="/admin/quan-ly-seo.html">Quản lý SEO</a>
   <script src="https://unpkg.com/decap-cms@3/dist/decap-cms.js"></script>
 </body>
 </html>
