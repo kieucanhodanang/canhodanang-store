@@ -1,0 +1,27 @@
+---
+interface Props {
+  faq?: {question: string; answer: string}[] | null;
+  videoUrl?: string | null;
+}
+const { faq, videoUrl } = Astro.props;
+const items = (faq ?? []).filter(x => x.question?.trim() && x.answer?.trim());
+let media = '';
+let youtube = '';
+try {
+  const u = new URL(videoUrl ?? '');
+  if (u.protocol === 'https:') {
+    const id = u.hostname === 'youtu.be' ? u.pathname.slice(1) : ['www.youtube.com','youtube.com','m.youtube.com'].includes(u.hostname) ? (u.searchParams.get('v') || u.pathname.match(/^\/(?:shorts|embed)\/([^/]+)$/)?.[1] || '') : '';
+    if (/^[A-Za-z0-9_-]{11}$/.test(id)) youtube = 'https://www.youtube-nocookie.com/embed/' + id;
+    else if (/\.(mp4|webm)$/i.test(u.pathname)) media = u.href;
+  }
+} catch {}
+const json = JSON.stringify({'@context':'https://schema.org','@type':'FAQPage',mainEntity:items.map(x=>({'@type':'Question',name:x.question,acceptedAnswer:{'@type':'Answer',text:x.answer}}))}).replace(/</g,'\\u003c');
+---
+{(items.length > 0 || media || youtube) && <section class="content-extras">
+  {(media || youtube) && <div class="content-video"><h2>Video thực tế</h2>{youtube ? <iframe src={youtube} title="Video bất động sản" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe> : <video src={media} controls preload="none" playsinline></video>}</div>}
+  {items.length > 0 && <div class="faq"><h2>Câu hỏi thường gặp</h2>{items.map(x=><details><summary>{x.question}</summary><p>{x.answer}</p></details>)}
+  <script type="application/ld+json" set:html={json} /></div>}
+</section>}
+<style>
+.content-extras{max-width:1100px;margin:24px auto;padding:16px;width:100%;box-sizing:border-box;color:#24343c}.content-extras h2{font-size:22px;margin:0 0 16px}.faq details{background:white;border:1px solid #dce4e8;border-radius:8px;margin:8px 0;padding:12px 16px}.faq summary{cursor:pointer;font-weight:650}.faq p{white-space:pre-line;line-height:1.7;margin:12px 0 0}.content-video{margin-bottom:24px}.content-video iframe,.content-video video{width:100%;aspect-ratio:16/9;border:0;background:#111}
+</style>

@@ -33,7 +33,7 @@ const siteUrl = 'https://canhodanang.store';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const absoluteImage = (path: string) => new URL(path, siteUrl).href;
 const seoTitle = data.seoTitle || data.title;
-const seoDescription = data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`;
+const seoDescription = data.seoDescription?.trim() || data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`;
 const isRent = data.transaction === 'cho-thue' || data.transaction === 'cho-thue-ngay';
 const isAvailable = data.listingStatus === 'available';
 const statusLabel = isAvailable ? (isRent ? 'Đang cho thuê' : 'Đang bán') : data.listingStatus === 'paused' ? 'Tạm ngừng giao dịch' : (isRent ? 'Đã cho thuê' : 'Đã bán');

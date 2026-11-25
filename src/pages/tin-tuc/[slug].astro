@@ -1,4 +1,5 @@
 ---
+import ContentExtras from '../../components/ContentExtras.astro';
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 
@@ -100,7 +101,7 @@ const schema = {
   ],
 };
 ---
-<Base title={seoTitle} description={description} image={image} imageAlt={data.imageAlt || data.title} type="article" publishedTime={dateText} modifiedTime={updatedText}>
+<Base title={seoTitle} description={data.seoDescription?.trim() || description} image={image} imageAlt={data.imageAlt || data.title} type="article" publishedTime={dateText} modifiedTime={updatedText}>
   <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
   <main class="news-page">
     <div class="news-layout"><article class="news-wrap">
@@ -153,6 +154,7 @@ const schema = {
           </section>)}
         </div> : <Content />}
       </div>
+      <ContentExtras faq={data.faq} videoUrl={data.contentVideoUrl} />
       <!-- CMS shortcode: place [[FORM_TU_VAN]] on its own line in article Markdown. -->
       <template id="news-lead-template">
         <section class="news-lead-box" aria-label="Đăng ký nhận tư vấn">

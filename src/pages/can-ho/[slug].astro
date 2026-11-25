@@ -155,7 +155,7 @@ const sidebarProjects = allProjectsForSidebar.filter(item => projectSaleCounts.h
   .sort((a, b) => (projectSaleCounts.get(b.id) || 0) - (projectSaleCounts.get(a.id) || 0));
 const sidebarRegions = sidebarDistricts.filter(area => districtSaleCounts.has(area.slug)).sort((a,b) => (districtSaleCounts.get(b.slug) || 0) - (districtSaleCounts.get(a.slug) || 0));
 const seoTitle = region ? regionSeoTitle : (data.seoTitle || data.title);
-const seoDescription = region ? regionSeoDescription : (data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`);
+const seoDescription = region ? regionSeoDescription : (data.seoDescription?.trim() || data.description || `Thông tin ${data.title}. Liên hệ 0869 437 415 để được tư vấn.`);
 const locationLine = [data.address, data.ward, data.district].filter(Boolean).join(' · ');
 
 // Schema.org: chỉ sử dụng dữ liệu thực tế từ CMS.

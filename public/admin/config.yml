@@ -22,6 +22,35 @@ collections:
   slug: '{{slug}}'
   identifier_field: title
   fields:
+  - label: Từ khóa SEO chính
+    name: focusKeyword
+    widget: string
+    required: false
+    hint: 'Chỉ phục vụ quản trị SEO; không xuất meta keywords.'
+  - label: Từ khóa SEO phụ
+    name: secondaryKeywords
+    widget: list
+    required: false
+    field: { label: Từ khóa, name: keyword, widget: string }
+  - label: Câu hỏi thường gặp (FAQ)
+    name: faq
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.question}}'
+    fields:
+    - { label: Câu hỏi, name: question, widget: string }
+    - { label: Câu trả lời, name: answer, widget: text }
+  - label: Video nội dung (URL HTTPS)
+    name: contentVideoUrl
+    widget: string
+    required: false
+    hint: 'URL YouTube hoặc file MP4/WebM lưu trữ ngoài. Không tự phát.'
+  - label: Meta Description riêng
+    name: seoDescription
+    widget: text
+    required: false
+    hint: 'Để trống sẽ dùng mô tả ngắn hiện tại. Viết tự nhiên, khoảng 140–160 ký tự.'
   - &id002
     label: Tiêu đề bài đăng
     name: title
@@ -274,7 +303,7 @@ collections:
     - label: ALT mô tả ảnh (SEO)
       name: imageAlt
       widget: string
-      hint: 'Mô tả đúng nội dung ảnh, ngắn gọn, không nhồi từ khóa. Ví dụ: Phòng khách villa mini kiệt Lương Thế Vinh Sơn Trà.'
+      hint: 'Mô tả đúng nội dung ảnh, kèm tên đường hoặc tên dự án và khu vực khi phù hợp, không nhồi từ khóa. Ví dụ: Phòng khách villa mini kiệt Lương Thế Vinh Sơn Trà.'
   - &id006
     label: Ảnh chia sẻ mạng xã hội
     name: ogImage
@@ -359,6 +388,30 @@ collections:
   slug: '{{fields.slug}}'
   identifier_field: title
   fields:
+  - label: Từ khóa SEO chính
+    name: focusKeyword
+    widget: string
+    required: false
+    hint: 'Chỉ phục vụ quản trị SEO; không xuất meta keywords.'
+  - label: Từ khóa SEO phụ
+    name: secondaryKeywords
+    widget: list
+    required: false
+    field: { label: Từ khóa, name: keyword, widget: string }
+  - label: Câu hỏi thường gặp (FAQ)
+    name: faq
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.question}}'
+    fields:
+    - { label: Câu hỏi, name: question, widget: string }
+    - { label: Câu trả lời, name: answer, widget: text }
+  - label: Video nội dung (URL HTTPS)
+    name: contentVideoUrl
+    widget: string
+    required: false
+    hint: 'URL YouTube hoặc file MP4/WebM lưu trữ ngoài. Không tự phát.'
   - *id002
   - label: SEO Title riêng (để trống để hệ thống tự tạo)
     name: seoTitle
@@ -834,6 +887,35 @@ collections:
   slug: '{{slug}}'
   identifier_field: title
   fields:
+  - label: Từ khóa SEO chính
+    name: focusKeyword
+    widget: string
+    required: false
+    hint: 'Chỉ phục vụ quản trị SEO; không xuất meta keywords.'
+  - label: Từ khóa SEO phụ
+    name: secondaryKeywords
+    widget: list
+    required: false
+    field: { label: Từ khóa, name: keyword, widget: string }
+  - label: Câu hỏi thường gặp (FAQ)
+    name: faq
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.question}}'
+    fields:
+    - { label: Câu hỏi, name: question, widget: string }
+    - { label: Câu trả lời, name: answer, widget: text }
+  - label: Video nội dung (URL HTTPS)
+    name: contentVideoUrl
+    widget: string
+    required: false
+    hint: 'URL YouTube hoặc file MP4/WebM lưu trữ ngoài. Không tự phát.'
+  - label: Meta Description riêng
+    name: seoDescription
+    widget: text
+    required: false
+    hint: 'Để trống sẽ dùng mô tả ngắn hiện tại. Viết tự nhiên, khoảng 140–160 ký tự.'
   - *id002
   - *id003
   - *id004
@@ -975,6 +1057,35 @@ collections:
   slug: '{{slug}}'
   identifier_field: title
   fields:
+  - label: Từ khóa SEO chính
+    name: focusKeyword
+    widget: string
+    required: false
+    hint: 'Chỉ phục vụ quản trị SEO; không xuất meta keywords.'
+  - label: Từ khóa SEO phụ
+    name: secondaryKeywords
+    widget: list
+    required: false
+    field: { label: Từ khóa, name: keyword, widget: string }
+  - label: Câu hỏi thường gặp (FAQ)
+    name: faq
+    widget: list
+    required: false
+    collapsed: true
+    summary: '{{fields.question}}'
+    fields:
+    - { label: Câu hỏi, name: question, widget: string }
+    - { label: Câu trả lời, name: answer, widget: text }
+  - label: Video nội dung (URL HTTPS)
+    name: contentVideoUrl
+    widget: string
+    required: false
+    hint: 'URL YouTube hoặc file MP4/WebM lưu trữ ngoài. Không tự phát.'
+  - label: Meta Description riêng
+    name: seoDescription
+    widget: text
+    required: false
+    hint: 'Để trống sẽ dùng mô tả ngắn hiện tại. Viết tự nhiên, khoảng 140–160 ký tự.'
   - *id002
   - *id003
   - *id004
