@@ -11,8 +11,6 @@ district: Ngũ Hành Sơn
 address: K20
 price: 6,2 Tỷ
 priceValue: 6200
-area: "130"
-areaValue: 130
 ward: Ngũ Hành Sơn
 frontage: 5,7 m
 roadWidth: 5
@@ -46,6 +44,23 @@ status: published
 showOnHome: true
 featured: true
 featuredOrder: 6
+focusKeyword: "Bán nhà kiệt ô tô K20"
+secondaryKeywords: 
+  - "Nhà 2 tầng Ngũ Hành Sơn"
+  - "nhà gần Bệnh viện Phụ sản Nhi Đà Nẵng"
+  - "nhà kiệt ô tô 3 phòng ngủ"
+seoDescription: "Bán nhà 2 tầng kiệt ô tô K20, Ngũ Hành Sơn. Diện tích 130,4m², ngang 5,7m, 3PN, cách đường chính 20m, gần Bệnh viện Phụ sản – Nhi Đà Nẵng."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Khu vực K20, Ngũ Hành Sơn."
+  - question: "Diện tích bao nhiêu?"
+    answer: "130,4m², ngang 5,7m."
+  - question: "Nhà cách đường chính bao xa?"
+    answer: "Khoảng 20m."
+  - question: "Có bao nhiêu phòng ngủ?"
+    answer: "Nhà 2 tầng, 3 phòng ngủ."
+area: "130,4"
+areaValue: 130.4
 ---
 Sở hữu diện tích đất rộng 130,4m², ngang 5,7m và chiều sâu 22,8m, căn nhà 2 tầng tại kiệt ô tô K20, phường Ngũ Hành Sơn, Đà Nẵng là lựa chọn đáng chú ý dành cho khách hàng tìm kiếm nhà ở có sân rộng, công năng đầy đủ và vị trí thuận tiện ngay sau Bệnh viện Phụ sản – Nhi Đà Nẵng.
 
@@ -189,3 +204,5 @@ Khách hàng quan tâm căn nhà 2 tầng diện tích 130,4m² tại khu vực 
 **Hotline/Zalo: 0869437415**
 
 **Website: canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Ngũ Hành Sơn](/nha-dat-tho-cu/ngu-hanh-son/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

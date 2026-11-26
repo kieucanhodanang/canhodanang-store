@@ -36,6 +36,21 @@ date: 2026-11-20T16:12:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán nhà cấp 4 Võ Duy Ninh"
+secondaryKeywords: 
+  - "Nhà đất gần biển Mân Thái"
+  - "đất 85m² Sơn Trà"
+  - "nhà cấp 4 gần biển"
+seoDescription: "Bán nhà cấp 4 kiệt Võ Duy Ninh, Sơn Trà, Đà Nẵng. Diện tích đất 85m², ngang 4,2m, cách đường chính 50m, vị trí gần khu vực biển Mân Thái."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt Võ Duy Ninh, Sơn Trà."
+  - question: "Diện tích bao nhiêu?"
+    answer: "85m², ngang 4,2m."
+  - question: "Nhà cách đường chính bao xa?"
+    answer: "Khoảng 50m."
+  - question: "Nhà có gần biển không?"
+    answer: "Gần khu vực biển Mân Thái."
 ---
 Nhà cấp 4 kiệt Võ Duy Ninh, phường Sơn Trà, diện tích đất 85m² (ngang 4,2m, dài 20,1m), full thổ cư, sổ đỏ và hoàn công đầy đủ. Cách mặt tiền đường chính khoảng 50m, gần biển Mân Thái, chợ Chiều, chợ Mai và các tiện ích dân sinh. Phù hợp xây nhà mới, an cư hoặc đầu tư khai thác cho thuê gần biển.
 
@@ -136,3 +151,5 @@ Khách hàng quan tâm bất động sản diện tích 85m² tại kiệt Võ D
 **Hotline/Zalo: 0869437415**
 
 **Website: canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

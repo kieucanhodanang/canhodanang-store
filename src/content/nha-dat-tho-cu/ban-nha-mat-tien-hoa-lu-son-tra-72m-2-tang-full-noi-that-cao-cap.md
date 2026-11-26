@@ -45,6 +45,21 @@ date: 2026-11-19T12:17:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán nhà mặt tiền Hoa Lư"
+secondaryKeywords: 
+  - "Nhà 2 tầng Hoa Lư"
+  - "nhà mặt tiền Sơn Trà"
+  - "nhà 3 phòng ngủ đầy đủ nội thất"
+seoDescription: "Bán nhà mặt tiền Hoa Lư, Sơn Trà, Đà Nẵng. Diện tích 72m², ngang 4m, nhà 2 tầng, 3 phòng ngủ, đầy đủ nội thất, gần đường Trần Thánh Tông."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Mặt tiền đường Hoa Lư, Sơn Trà."
+  - question: "Diện tích bao nhiêu?"
+    answer: "72m², ngang 4m."
+  - question: "Nhà có bao nhiêu phòng ngủ?"
+    answer: "Nhà 2 tầng, 3 phòng ngủ."
+  - question: "Nhà có gần Trần Thánh Tông không?"
+    answer: "Có, vị trí gần đường Trần Thánh Tông."
 ---
 Nhà mặt tiền đường Hoa Lư, phường Sơn Trà, diện tích 72m² (4 × 18m), kết cấu 2 tầng, 3 phòng ngủ, đầy đủ nội thất hiện đại. Vị trí gần đường Trần Thánh Tông, khu dân cư hiện hữu, thuận tiện ở lâu dài, kinh doanh hoặc khai thác cho thuê.
 
@@ -165,3 +180,5 @@ Khách hàng quan tâm nhà mặt tiền Hoa Lư, phường Sơn Trà, diện t�
 **Hotline/Zalo: 0869437415**
 
 **Website: canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để tìm hiểu các lựa chọn bất động sản liên quan.

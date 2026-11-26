@@ -46,6 +46,21 @@ highlightTags:
   - Giá Tốt
   - Sẵn Dòng Tiền
 featuredOrder: 1
+focusKeyword: "Bán nhà kiệt Trần Hưng Đạo Sơn Trà"
+secondaryKeywords: 
+  - "Nhà gần cầu Sông Hàn"
+  - "nhà đất ngang 8m"
+  - "nhà có dòng tiền Sơn Trà"
+seoDescription: "Bán nhà kiệt Trần Hưng Đạo, Sơn Trà, Đà Nẵng. Diện tích 133m², ngang 8m, gần cầu Sông Hàn, nhà chia thành hai phần, một phần đang cho thuê."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt Trần Hưng Đạo, Sơn Trà."
+  - question: "Diện tích bao nhiêu?"
+    answer: "133m², ngang 8m."
+  - question: "Nhà có gần cầu Sông Hàn không?"
+    answer: "Có, vị trí gần cầu Sông Hàn."
+  - question: "Nhà đang khai thác cho thuê không?"
+    answer: "Theo thông tin sản phẩm, một phần nhà đang cho thuê."
 ---
 Nhà kiệt thông Trần Hưng Đạo, Sơn Trà, diện tích đất 133m², ngang rộng 8m, cách khu vực ô tô khoảng 30m, gần cầu Sông Hàn. Bất động sản chia thành hai phần độc lập về công năng: một bên gia đình đang ở với 3PN, 2WC; một bên 2 tầng đang khai thác cho thuê. Phù hợp khách mua vừa ở vừa có dòng tiền hoặc đầu tư lâu dài.
 

@@ -37,6 +37,21 @@ date: 2026-11-19T12:30:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán biệt thự Phú Lộc 16"
+secondaryKeywords: 
+  - "Biệt thự Thanh Khê"
+  - "biệt thự gần biển Nguyễn Tất Thành"
+  - "biệt thự 3 tầng Đà Nẵng"
+seoDescription: "Bán biệt thự 3 tầng Phú Lộc 16, Thanh Khê, Đà Nẵng. Diện tích 80m², ngang 5m, 3PN, 4WC, nội thất cao cấp, cách biển Nguyễn Tất Thành 200m."
+faq: 
+  - question: "Biệt thự nằm ở đâu?"
+    answer: "Đường Phú Lộc 16, khu vực Thanh Khê, Đà Nẵng."
+  - question: "Biệt thự cách biển bao xa?"
+    answer: "Khoảng 200m đến biển Nguyễn Tất Thành."
+  - question: "Diện tích và chiều ngang bao nhiêu?"
+    answer: "80m², ngang 5m."
+  - question: "Có bao nhiêu phòng ngủ?"
+    answer: "Nhà 3 tầng, 3 phòng ngủ và 4WC."
 ---
 Biệt thự 3 tầng tại đường Phú Lộc 16, phường Thanh Khê, diện tích 80m² (5 × 16m), thiết kế 3 phòng ngủ, 4WC, full nội thất cao cấp. Cách biển Nguyễn Tất Thành khoảng 200m, đường 5,5m có lề 3m, gần chợ và Hồ Quý Ly. Phù hợp an cư, nghỉ dưỡng hoặc khai thác cho thuê gần biển.
 
@@ -166,3 +181,5 @@ Khách hàng quan tâm căn biệt thự 3 tầng tại Phú Lộc 16, phường
 **Hotline/Zalo: 0869437415**
 
 **Website: canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Thanh Khê](/nha-dat-tho-cu/thanh-khe/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

@@ -32,6 +32,21 @@ date: 2026-11-21T12:09:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán đất kiệt K420 Lê Văn Hiến"
+secondaryKeywords: 
+  - "Đất nở hậu Ngũ Hành Sơn"
+  - "đất đường Lê Văn Hiến"
+  - "đất hướng Đông Nam Đà Nẵng"
+seoDescription: "Bán đất kiệt K420 Lê Văn Hiến, Ngũ Hành Sơn, Đà Nẵng. Diện tích 76,5m², ngang 3,56m, đất nở hậu, hướng Đông Nam, gần biển Xuân Thủy."
+faq: 
+  - question: "Lô đất nằm ở đâu?"
+    answer: "Kiệt K420 Lê Văn Hiến, Ngũ Hành Sơn."
+  - question: "Diện tích bao nhiêu?"
+    answer: "76,5m², ngang 3,56m."
+  - question: "Đất hướng gì?"
+    answer: "Hướng Đông Nam."
+  - question: "Đất có nở hậu không?"
+    answer: "Có, lô đất có hình dáng nở hậu."
 ---
 Bán đất kiệt K420 Lê Văn Hiến, khu vực Khuê Mỹ, phường Ngũ Hành Sơn, Đà Nẵng. Lô đất có diện tích 76,5m², ngang 3,56m, chiều sâu khoảng 22m, đặc biệt sở hữu thế đất nở hậu và hướng Đông Nam.
 
@@ -173,3 +188,5 @@ Khách hàng quan tâm lô đất 76,5m² tại K420 Lê Văn Hiến, phường 
 **Hotline/Zalo: 0869437415**
 
 **Website: canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Ngũ Hành Sơn](/nha-dat-tho-cu/ngu-hanh-son/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

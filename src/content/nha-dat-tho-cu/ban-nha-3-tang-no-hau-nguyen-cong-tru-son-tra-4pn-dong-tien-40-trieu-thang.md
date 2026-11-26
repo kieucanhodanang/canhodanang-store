@@ -5,7 +5,7 @@ secondaryKeywords:
   - bán nhà 4 phòng ngủ Nguyễn Công Trứ
   - nhà gần cầu Rồng Đà Nẵng
 faq:
-  - question: Đường Nguyễn Công Trữ Đà Nẵng ở đâu
+  - question: Đường Nguyễn Công Trứ Đà Nẵng ở đâu
     answer: Là tuyến đường 7,5m tại phường Sơn Trà, kết nối Ngô Quyền, Trần Hưng
       Đạo, sông Hàn với biển Mỹ Khê.
   - question: Nhà kiệt Nguyễn Công Trứ có phù hợp đầu tư cho thuê không?
@@ -24,7 +24,7 @@ propertyType: nha-rieng
 transaction: ban
 listingStatus: available
 district: Sơn Trà
-address: Nguyễn Công Trữ
+address: Nguyễn Công Trứ
 price: 9,5 Tỷ
 priceValue: 9500
 area: 60,8
@@ -131,3 +131,5 @@ Bên cạnh vị trí và công năng, căn nhà còn sở hữu một số đ�
 **Hotline/Zalo:** 0869 437 415
 
 **Website:** <https://canhodanang.store>
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

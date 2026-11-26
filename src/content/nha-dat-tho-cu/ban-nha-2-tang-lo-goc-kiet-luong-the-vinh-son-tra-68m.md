@@ -55,6 +55,23 @@ highlightTags:
   - Lô góc
   - Villa hiện đại
 featuredOrder: 1
+focusKeyword: "Bán villa mini Lương Thế Vinh"
+secondaryKeywords: 
+  - "Villa mini có jacuzzi"
+  - "nhà lô góc Sơn Trà"
+  - "villa mini kiệt ô tô"
+seoDescription: "Bán villa mini 2 tầng lô góc kiệt Lương Thế Vinh, Sơn Trà. Diện tích 68m², 2PN, 3WC, đầy đủ nội thất, có jacuzzi, kiệt ô tô và sổ chính chủ."
+faq: 
+  - question: "Villa nằm ở đâu?"
+    answer: "Kiệt Lương Thế Vinh, Sơn Trà."
+  - question: "Villa có phải lô góc không?"
+    answer: "Có, villa nằm tại vị trí lô góc."
+  - question: "Có bao nhiêu phòng ngủ?"
+    answer: "2 phòng ngủ và 3WC."
+  - question: "Tiện ích nổi bật là gì?"
+    answer: "Có jacuzzi và đầy đủ nội thất."
+  - question: "Ô tô có vào được không?"
+    answer: "Theo thông tin sản phẩm, ô tô có thể vào kiệt."
 ---
 Nhà 2 tầng phong cách villa mini nằm trong kiệt đường Lương Thế Vinh, khu vực Sơn Trà, Đà Nẵng. Bất động sản sở hữu diện tích đất 68m², thiết kế lô góc hai mặt thoáng, đường ô tô 7 chỗ có thể tiếp cận. Không gian sống được hoàn thiện đầy đủ nội thất, nổi bật với bồn tắm jacuzzi và thiết kế tận dụng ánh sáng tự nhiên.
 
@@ -139,3 +156,5 @@ Bên cạnh giá chào, người mua nên cân nhắc giá trị đất, chất 
 Điện thoại/Zalo: **0869 437 415**
 
 Website: **canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

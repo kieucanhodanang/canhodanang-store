@@ -1,6 +1,4 @@
 ---
-title: Bán Nhà 2 Tầng Kiệt Phan Bôi Thông Ngô Quyền, Sơn Trà – Full Nội Thất,
-  Giá 3,35 Tỷ
 description: Bán nhà 2 tầng kiệt Phan Bôi thông Ngô Quyền, Sơn Trà, Đà Nẵng.
   Diện tích 36m², ngang 8m, 2 phòng ngủ, full nội thất. Giá 3,35 tỷ.
 propertyType: nha-rieng
@@ -32,6 +30,23 @@ date: 2026-11-08T11:00:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán nhà kiệt Phan Bôi"
+secondaryKeywords: 
+  - "Nhà 2 tầng Phan Bôi"
+  - "nhà Sơn Trà tầm 3 tỷ"
+  - "nhà kiệt thông Ngô Quyền"
+seoDescription: "Bán nhà 2 tầng kiệt Phan Bôi thông Ngô Quyền, Sơn Trà, Đà Nẵng. Diện tích 36m², ngang 8m, 2 phòng ngủ, đầy đủ nội thất, thuận tiện sinh sống."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt Phan Bôi thông Ngô Quyền, Sơn Trà."
+  - question: "Diện tích bao nhiêu?"
+    answer: "36m², ngang 8m."
+  - question: "Có bao nhiêu phòng ngủ?"
+    answer: "Nhà 2 tầng, 2 phòng ngủ và 2WC."
+  - question: "Pháp lý thế nào?"
+    answer: "Sổ hồng chính chủ theo thông tin sản phẩm."
+seoTitle: "Bán Nhà 2 Tầng Kiệt Phan Bôi Sơn Trà – 36m², 2PN"
+title: "Bán Nhà 2 Tầng Kiệt Phan Bôi Thông Ngô Quyền, Sơn Trà – Full Nội Thất"
 ---
 Cơ hội sở hữu căn nhà 2 tầng mới đẹp tại kiệt Phan Bôi, thông ra đường Ngô Quyền, ngay trung tâm quận Sơn Trà, Đà Nẵng. Vị trí thuận tiện di chuyển đến trung tâm thành phố, bãi biển Mỹ Khê và các địa điểm du lịch nổi tiếng. Nhà đã hoàn thiện đầy đủ nội thất, khách mua có thể vào ở ngay hoặc khai thác cho thuê.
 
@@ -79,3 +94,5 @@ Căn nhà đã hoàn thiện, có đầy đủ nội thất cơ bản phục v�
 Với mức giá **3,35 tỷ đồng**, đây là lựa chọn đáng tham khảo cho khách hàng tìm kiếm nhà 2 tầng tại Sơn Trà, vừa phục vụ nhu cầu an cư vừa có khả năng khai thác cho thuê.
 
 **Liên hệ xem nhà và nhận thông tin chi tiết: 0869 437 415.**
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

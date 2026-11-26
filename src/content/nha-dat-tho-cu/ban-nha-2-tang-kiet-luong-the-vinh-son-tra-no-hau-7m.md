@@ -34,6 +34,21 @@ status: published
 showOnHome: true
 featured: true
 featuredOrder: 1
+focusKeyword: "Bán nhà nở hậu Lương Thế Vinh"
+secondaryKeywords: 
+  - "Nhà 2 tầng An Hải"
+  - "nhà kiệt gần cầu Rồng"
+  - "nhà nở hậu Sơn Trà"
+seoDescription: "Bán nhà 2 tầng kiệt Lương Thế Vinh, Sơn Trà, Đà Nẵng. Diện tích 42m², ngang 5,25m, nở hậu 7m, gần cầu Rồng, pháp lý sổ chính chủ."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt Lương Thế Vinh, khu vực An Hải, Sơn Trà."
+  - question: "Diện tích bao nhiêu?"
+    answer: "42m², nhà 2 tầng."
+  - question: "Nhà nở hậu bao nhiêu?"
+    answer: "Ngang trước 5,25m, nở hậu 7m."
+  - question: "Pháp lý thế nào?"
+    answer: "Thông tin sản phẩm ghi nhận sổ chính chủ."
 ---
 Nhà 2 tầng nằm trong kiệt đường Lương Thế Vinh, khu vực Sơn Trà, Đà Nẵng, sở hữu diện tích đất 42m² với chiều ngang 5,25m và chiều sâu khoảng 8m. Bất động sản có giá chào bán 4,98 tỷ đồng, phù hợp với người mua tìm kiếm nhà riêng tại khu vực phía Đông sông Hàn, thuận tiện kết nối các tuyến đường trung tâm và khu du lịch biển.
 
@@ -86,3 +101,5 @@ Nhà xây dựng 2 tầng, tọa lạc trong kiệt đường Lương Thế Vinh
 Liên hệ **0869 437 415 (Gọi/Zalo)** để nhận thêm thông tin, tư vấn và sắp xếp lịch xem nhà.
 
 Website: **canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

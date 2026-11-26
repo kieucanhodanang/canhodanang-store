@@ -46,6 +46,23 @@ featured: true
 highlightTags:
   - Giá Tốt
 featuredOrder: 1
+focusKeyword: "Liền kề VU1-169 Vinhomes Hải Vân Bay"
+secondaryKeywords: 
+  - "Liền kề Vân Uyển"
+  - "nhà liền kề phân khu Bạch Vân"
+  - "liền kề Hải Vân Bay 70m²"
+seoDescription: "Liền kề VU1-169 Vinhomes Hải Vân Bay, phân khu Bạch Vân. Diện tích đất 70m², xây dựng 212,9m², 4 tầng, đường Vân Uyển 13m, gần khu cao tầng."
+faq: 
+  - question: "Căn VU1-169 thuộc phân khu nào?"
+    answer: "Phân khu Bạch Vân, Vinhomes Hải Vân Bay."
+  - question: "Căn nằm trên đường nào?"
+    answer: "Đường Vân Uyển rộng 13m."
+  - question: "Diện tích bao nhiêu?"
+    answer: "Đất 70m², xây dựng 212,9m²."
+  - question: "Nhà có bao nhiêu tầng?"
+    answer: "4 tầng."
+  - question: "Gần tiện ích nào?"
+    answer: "Theo thông tin sản phẩm, vị trí gần Vinmec và khu căn hộ cao tầng."
 ---
 VU1-169 là sản phẩm nhà liền kề 4 tầng thuộc tiểu khu Vân Uyển, phân khu Bạch Vân tại Vinhomes Hải Vân Bay Đà Nẵng. Sở hữu diện tích đất 70m², tổng diện tích xây dựng 212,9m², hướng Đông Bắc và mặt đường Vân Uyển rộng 13m, sản phẩm có lợi thế về không gian sử dụng, vị trí gần góc và khả năng kết hợp giữa an cư với kinh doanh.
 
@@ -169,3 +186,5 @@ Khách hàng quan tâm sản phẩm VU1-169 tại phân khu Bạch Vân – Vinh
 **Hotline: 0869437415**
 
 Giá bán và các chính sách ưu đãi được cập nhật theo giỏ hàng và chương trình áp dụng tại thời điểm giao dịch.
+
+Tham khảo thêm [dự án Vinhomes Hải Vân Bay](/du-an/vinhomes-hai-van-bay/) để tìm hiểu các lựa chọn bất động sản liên quan.

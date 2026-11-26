@@ -52,6 +52,21 @@ highlightTags:
   - Nhà Mới
   - Giá Tốt
 featuredOrder: 2
+focusKeyword: "Bán nhà kiệt 482 Nguyễn Phước Nguyên"
+secondaryKeywords: 
+  - "Nhà 2 tầng An Khê"
+  - "nhà 3 phòng ngủ Nguyễn Phước Nguyên"
+  - "nhà kiệt gần Trường Chinh"
+seoDescription: "Bán nhà 2 tầng kiệt 482 Nguyễn Phước Nguyên, An Khê, Đà Nẵng. Diện tích 52m², 3PN, 2WC, đầy đủ nội thất, vị trí kiệt thông gần Trường Chinh."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt 482 Nguyễn Phước Nguyên, An Khê."
+  - question: "Diện tích bao nhiêu?"
+    answer: "52m², nhà 2 tầng."
+  - question: "Có bao nhiêu phòng ngủ?"
+    answer: "3 phòng ngủ và 2WC."
+  - question: "Nhà có gần Trường Chinh không?"
+    answer: "Có, kiệt gần khu vực đường Trường Chinh."
 ---
 Căn nhà 2 tầng xây mới tại kiệt 482 Nguyễn Phước Nguyên, phường An Khê, Đà Nẵng, nổi bật với thiết kế hiện đại, nội thất được hoàn thiện đồng bộ và không gian sinh hoạt sáng thoáng. Diện tích đất 52m², bố trí 3 phòng ngủ, 2 phòng vệ sinh, phù hợp gia đình muốn sở hữu nhà riêng để ổn định cuộc sống lâu dài.
 
@@ -195,3 +210,5 @@ Căn nhà là lựa chọn đáng cân nhắc đối với khách hàng muốn s
 **Hotline/Zalo: 0869 437 415**
 
 **Website: <https://canhodanang.store>**
+
+Tham khảo thêm [nhà đất đang bán tại Đà Nẵng](/nha-dat-tho-cu/) để tìm hiểu các lựa chọn bất động sản liên quan.

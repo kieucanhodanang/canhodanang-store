@@ -11,8 +11,6 @@ district: Hải Châu
 address: Hòa Cường
 price: 8,5 Tỷ
 priceValue: 8500
-area: "82"
-areaValue: 82
 ward: Hòa Cường
 frontage: 5 m
 roadWidth: 5.5
@@ -35,6 +33,23 @@ date: 2026-11-20T18:04:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán nhà mặt tiền Hòa Cường"
+secondaryKeywords: 
+  - "Nhà 3 tầng Hải Châu"
+  - "nhà mặt tiền có vỉa hè"
+  - "nhà 3 phòng ngủ Hòa Cường"
+seoDescription: "Bán nhà mặt tiền 3 tầng khu Hòa Cường, Hải Châu, Đà Nẵng. Diện tích 88m², ngang 5m, đường rộng 5,5m, vỉa hè 3m, 3PN và 4WC."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Khu vực Hòa Cường, Hải Châu, Đà Nẵng."
+  - question: "Diện tích bao nhiêu?"
+    answer: "88m², ngang 5m."
+  - question: "Đường trước nhà rộng bao nhiêu?"
+    answer: "Đường rộng 5,5m, vỉa hè 3m."
+  - question: "Nhà có bao nhiêu phòng ngủ?"
+    answer: "Nhà 3 tầng, 3 phòng ngủ và 4WC."
+area: "88"
+areaValue: 88
 ---
 ## Nhà Mặt Tiền 3 Tầng Tại Hòa Cường – Vị Trí Thuận Lợi Để Ở Và Kinh Doanh
 
@@ -69,3 +84,5 @@ Thiết kế 3 tầng cùng 3 phòng ngủ, 4 phòng vệ sinh phù hợp gia đ
 **Giá bán: 8,5 tỷ đồng.**
 
 Liên hệ **0869 437 415** để nhận thêm thông tin và đặt lịch xem nhà thực tế.
+
+Tham khảo thêm [nhà đất đang bán tại Hải Châu](/nha-dat-tho-cu/hai-chau/) để tìm hiểu các lựa chọn bất động sản liên quan.

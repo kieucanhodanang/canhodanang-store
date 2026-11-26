@@ -41,6 +41,21 @@ featured: false
 highlightTags:
   - Lô Góc
   - Nở Hậu
+focusKeyword: "Bán nhà mê lửng kiệt Ngô Quyền"
+secondaryKeywords: 
+  - "Nhà lô góc Ngô Quyền"
+  - "nhà 1,5 tầng Sơn Trà"
+  - "nhà có dòng tiền gần cầu Sông Hàn"
+seoDescription: "Bán nhà mê lửng lô góc kiệt Ngô Quyền, Sơn Trà. Diện tích 57,5m², 2PN, 2WC, đầy đủ nội thất, kiệt thông Trần Hưng Đạo, gần cầu Sông Hàn."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt Ngô Quyền, Sơn Trà."
+  - question: "Nhà có mấy tầng?"
+    answer: "Kết cấu mê lửng 1,5 tầng."
+  - question: "Diện tích và công năng thế nào?"
+    answer: "57,5m², 2 phòng ngủ và 2WC."
+  - question: "Kiệt thông đường nào?"
+    answer: "Thông đường Trần Hưng Đạo theo thông tin sản phẩm."
 ---
 Nhà mê lửng 1,5 tầng nằm trong kiệt đường Ngô Quyền, khu vực Sơn Trà, Đà Nẵng, sở hữu diện tích đất 57,5m², thiết kế lô góc với không gian thoáng sáng và đầy đủ nội thất. Bất động sản có 2 phòng ngủ, 2 phòng vệ sinh, phù hợp nhu cầu an cư hoặc đầu tư khai thác cho thuê.
 
@@ -154,3 +169,5 @@ Khách hàng có nhu cầu tìm hiểu chi tiết, xem hiện trạng căn nhà 
 **Hotline/Zalo: 0869 437 415**
 
 **Website: <https://canhodanang.store>**
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để tìm hiểu các lựa chọn bất động sản liên quan.

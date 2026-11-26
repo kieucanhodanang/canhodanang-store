@@ -1,9 +1,4 @@
 ---
-title: Villa 2 Tầng Nở Hậu - Đầu Tuyến Sơn Trà Full Nội Thất Vào Khai Thác Ngay,
-  Sát Biển
-description: Villa 2 tầng nở hậu ngay đầu tuyến Sơn Trà, kết nối các trục Lê Đức
-  Thọ, Ngô Quyền, Đặng Nhữ Lâm. Nhà full nội thất vào khai thác ngay. Diện tích
-  107m2 giá chỉ 8,5 tỷ thương lượng. 0869437415
 propertyType: nha-rieng
 transaction: ban
 listingStatus: available
@@ -12,7 +7,6 @@ address: Đặng Nhữ Lâm, Sơn Trà
 price: 8,5
 priceValue: 8500
 area: 106,8
-areaValue: 107
 frontage: 4,8
 roadWidth: 6
 interior: Đầy đủ nội thất
@@ -32,6 +26,27 @@ status: published
 showOnHome: true
 featured: true
 featuredOrder: 2
+focusKeyword: "Bán villa Đặng Nhữ Lâm Sơn Trà"
+secondaryKeywords: 
+  - "Villa nở hậu gần biển"
+  - "villa 2 tầng Sơn Trà"
+  - "villa đầu tư cho thuê Đà Nẵng"
+seoDescription: "Bán villa 2 tầng Đặng Nhữ Lâm, Sơn Trà, Đà Nẵng. Diện tích 106,8m², đất nở hậu, đầy đủ nội thất, thuận tiện kết nối Lê Đức Thọ và Ngô Quyền."
+faq: 
+  - question: "Villa nằm ở đâu?"
+    answer: "Kiệt K02 Đặng Nhữ Lâm, Sơn Trà."
+  - question: "Diện tích bao nhiêu?"
+    answer: "106,8m², nhà 2 tầng."
+  - question: "Đất có nở hậu không?"
+    answer: "Có, thửa đất nở hậu."
+  - question: "Villa kết nối tuyến đường nào?"
+    answer: "Lê Đức Thọ và Ngô Quyền."
+  - question: "Villa đã có nội thất chưa?"
+    answer: "Đã có đầy đủ nội thất theo thông tin sản phẩm."
+seoTitle: "Bán Villa 2 Tầng Đặng Nhữ Lâm Sơn Trà – Nở Hậu, Gần Biển"
+title: "Bán Villa 2 Tầng Nở Hậu Kiệt Đặng Nhữ Lâm, Sơn Trà – Full Nội Thất"
+areaValue: 106.8
+description: "Villa 2 tầng kiệt Đặng Nhữ Lâm, Sơn Trà, diện tích 106,8m², đất nở hậu, đầy đủ nội thất, kết nối Lê Đức Thọ và Ngô Quyền."
 ---
 Sở hữu vị trí thuận lợi ngay khu vực đầu tuyến Sơn Trà, căn villa 2 tầng tại K02 Đặng Nhữ Lâm là lựa chọn đáng chú ý dành cho khách hàng tìm kiếm bất động sản vừa để ở, vừa có thể khai thác kinh doanh hoặc cho thuê tại Đà Nẵng.
 
@@ -41,7 +56,7 @@ Căn nhà được thiết kế theo phong cách villa, đã hoàn thiện đầ
 
 * **Vị trí:** K02 Đặng Nhữ Lâm, Sơn Trà, Đà Nẵng
 * **Loại hình:** Villa 2 tầng
-* **Diện tích đất:** 107m²
+* **Diện tích đất:** 106,8m²
 * **Chiều ngang mặt tiền:** 4,4m
 * **Chiều ngang phía sau:** 5m – đất nở hậu
 * **Chiều dài:** 22,8m
@@ -69,7 +84,7 @@ Bên cạnh ý nghĩa phong thủy, chiều sâu 22,8m cũng tạo điều kiệ
 
 Căn villa sở hữu **sổ hồng chính chủ**, là lợi thế quan trọng giúp khách hàng an tâm khi tìm hiểu và giao dịch bất động sản.
 
-Với diện tích đất 107m², hình dáng nở hậu đẹp, nhà 2 tầng hoàn thiện full nội thất cùng vị trí thuận tiện tại K02 Đặng Nhữ Lâm, đây là lựa chọn đáng cân nhắc cho khách hàng có nhu cầu an cư lâu dài hoặc đầu tư khai thác cho thuê tại Sơn Trà, Đà Nẵng.
+Với diện tích đất 106,8m², hình dáng nở hậu đẹp, nhà 2 tầng hoàn thiện full nội thất cùng vị trí thuận tiện tại K02 Đặng Nhữ Lâm, đây là lựa chọn đáng cân nhắc cho khách hàng có nhu cầu an cư lâu dài hoặc đầu tư khai thác cho thuê tại Sơn Trà, Đà Nẵng.
 
 **Giá chào bán 8,5 tỷ đồng – Có thương lượng trực tiếp với chủ nhà.**
 
@@ -77,7 +92,7 @@ Với diện tích đất 107m², hình dáng nở hậu đẹp, nhà 2 tầng h
 
 Căn villa đã được hoàn thiện nội thất, mang đến sự thuận tiện cho khách hàng muốn nhận nhà và sử dụng ngay.
 
-Với diện tích đất 107m² cùng kết cấu 2 tầng, bất động sản phù hợp với nhiều mục đích:
+Với diện tích đất 106,8m² cùng kết cấu 2 tầng, bất động sản phù hợp với nhiều mục đích:
 
 * **An cư lâu dài:** Không gian nhà ở riêng biệt, phù hợp với gia đình muốn sinh sống tại Sơn Trà.
 * **Khai thác cho thuê:** Có thể nghiên cứu phương án cho thuê nhà nguyên căn hoặc lưu trú tùy điều kiện pháp lý.
@@ -95,3 +110,5 @@ Sự kết hợp giữa vị trí kết nối thuận tiện, thửa đất nở
 **Liên hệ xem nhà và thương lượng trực tiếp: 0869 437 415.**
 
 Nhận thông tin chi tiết, hình ảnh thực tế và lịch hẹn xem villa tại K02 Đặng Nhữ Lâm, Sơn Trà, Đà Nẵng.
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để tìm hiểu các lựa chọn bất động sản liên quan.

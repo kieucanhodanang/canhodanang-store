@@ -31,6 +31,22 @@ date: 2026-11-19T15:06:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán đất kiệt Lê Tấn Trung"
+secondaryKeywords: 
+  - "Đất gần biển Mân Thái"
+  - "đất ngang 7,5m Sơn Trà"
+  - "đất 60m² Đà Nẵng"
+seoDescription: "Bán đất kiệt Lê Tấn Trung, Sơn Trà, Đà Nẵng. Diện tích 60m², ngang rộng 7,5m, cách biển Mân Thái 300m, gần chợ Chiều và trường học."
+faq: 
+  - question: "Lô đất nằm ở đâu?"
+    answer: "Kiệt Lê Tấn Trung, Sơn Trà."
+  - question: "Cách biển bao xa?"
+    answer: "Khoảng 300m đến biển Mân Thái."
+  - question: "Diện tích và chiều ngang bao nhiêu?"
+    answer: "60m², ngang 7,5m."
+  - question: "Có gần chợ không?"
+    answer: "Gần chợ Chiều và trường học."
+seoTitle: "Bán Đất Kiệt Lê Tấn Trung Sơn Trà – 60m², Ngang 7,5m"
 ---
 Nằm trong khu dân cư phía sau đường Lê Tấn Trung, phường Sơn Trà, Đà Nẵng, lô đất có diện tích 60m² với chiều ngang rộng 7,5m, chiều sâu 8m. Vị trí cách biển Mân Thái và khu vực chèo SUP du lịch khoảng 300m, thuận tiện tiếp cận các tiện ích sinh hoạt, trường học và hoạt động du lịch ven biển.
 
@@ -125,3 +141,5 @@ Khách hàng quan tâm lô đất 60m² tại khu vực Lê Tấn Trung, phườ
 **Hotline/Zalo: 0869437415**
 
 **Website: canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

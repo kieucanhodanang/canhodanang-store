@@ -1,9 +1,6 @@
 ---
-title: Bán Nhà 3 Tầng Kiệt 60 Trưng Nữ Vương, Hải Châu – Lô Góc 2 Mặt Thoáng,
-  Giá 2,69 Tỷ
 description: Bán nhà 3 tầng kiệt 60 Trưng Nữ Vương, Hải Châu, Đà Nẵng. Lô góc 2
   mặt thoáng, diện tích 41m², full nội thất, vào ở ngay. Giá chỉ 2,69 tỷ.
-seoTitle: ""
 propertyType: nha-rieng
 transaction: ban
 listingStatus: available
@@ -31,6 +28,23 @@ date: 2026-11-08T00:54:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán nhà kiệt Trưng Nữ Vương"
+secondaryKeywords: 
+  - "Nhà lô góc Hải Châu"
+  - "nhà 3 tầng Trưng Nữ Vương"
+  - "nhà gần cầu Rồng"
+seoDescription: "Bán nhà 3 tầng kiệt 60 Trưng Nữ Vương, Hải Châu, Đà Nẵng. Diện tích 41m², lô góc 2 mặt thoáng, đầy đủ nội thất, phù hợp nhu cầu an cư."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt 60 Trưng Nữ Vương, Hải Châu."
+  - question: "Diện tích bao nhiêu?"
+    answer: "41m², nhà 3 tầng."
+  - question: "Nhà có phải lô góc không?"
+    answer: "Có, lô góc 2 mặt thoáng."
+  - question: "Nhà có thể vào ở ngay không?"
+    answer: "Nhà đã có đầy đủ nội thất theo thông tin sản phẩm."
+seoTitle: "Bán Nhà 3 Tầng Kiệt Trưng Nữ Vương Hải Châu – Lô Góc"
+title: "Bán Nhà 3 Tầng Kiệt 60 Trưng Nữ Vương, Hải Châu – Lô Góc 2 Mặt Thoáng"
 ---
 Cơ hội sở hữu nhà 3 tầng tại kiệt 60 Trưng Nữ Vương, quận Hải Châu, Đà Nẵng với mức giá chỉ **2,69 tỷ đồng**. Ngôi nhà nằm ở vị trí lô góc, có 2 mặt thoáng, kết cấu kiên cố, đầy đủ nội thất và có thể vào ở ngay.
 
@@ -80,3 +94,5 @@ Căn nhà 3 tầng diện tích 41 m², vị trí lô góc 2 mặt thoáng, full
 **Giá chào bán: 2.690.000.000 đồng.**
 
 Liên hệ **0869 437 415** để được tư vấn, nhận thêm hình ảnh thực tế và sắp xếp lịch xem nhà tại kiệt 60 Trưng Nữ Vương, Hải Châu, Đà Nẵng.
+
+Tham khảo thêm [nhà đất đang bán tại Hải Châu](/nha-dat-tho-cu/hai-chau/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

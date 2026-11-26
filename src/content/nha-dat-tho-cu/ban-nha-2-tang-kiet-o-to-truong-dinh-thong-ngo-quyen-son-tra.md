@@ -42,6 +42,21 @@ date: 2026-11-20T18:22:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán nhà kiệt ô tô Trương Định"
+secondaryKeywords: 
+  - "Nhà gần biển Mân Thái"
+  - "nhà kiệt thông Ngô Quyền"
+  - "nhà 2 tầng Sơn Trà"
+seoDescription: "Bán nhà 2 tầng kiệt ô tô Trương Định, Sơn Trà. Diện tích 71m², ngang 5,82m, kiệt thông Ngô Quyền và Trần Duy Chiến, gần biển Mân Thái."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt Trương Định, Sơn Trà."
+  - question: "Kiệt thông đường nào?"
+    answer: "Ngô Quyền và Trần Duy Chiến."
+  - question: "Diện tích bao nhiêu?"
+    answer: "71m², ngang 5,82m."
+  - question: "Nhà có gần biển không?"
+    answer: "Gần khu vực biển Mân Thái."
 ---
 Bán nhà 2 tầng kiệt Trương Định thông Ngô Quyền và Trần Duy Chiến, Sơn Trà. Diện tích 71m², ngang rộng 5,82m, ô tô vào tận nơi. Nhà kiên cố, có 2 phòng ngủ, phòng làm việc, gần bãi tắm Mân Thái, phù hợp an cư hoặc cho thuê.
 
@@ -177,3 +192,5 @@ Xét về nhu cầu sử dụng, đây là lựa chọn đáng cân nhắc đố
 **Giá bán: 5,9 tỷ đồng.**
 
 **Liên hệ: 0869 437 415** để nhận thông tin chi tiết và đặt lịch xem nhà thực tế.
+
+Tham khảo thêm [nhà đất đang bán tại Sơn Trà](/nha-dat-tho-cu/son-tra/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.

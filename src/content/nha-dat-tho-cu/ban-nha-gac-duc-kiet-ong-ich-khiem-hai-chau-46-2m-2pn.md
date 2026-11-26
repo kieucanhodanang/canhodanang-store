@@ -42,6 +42,21 @@ date: 2026-11-16T18:52:00
 status: published
 showOnHome: true
 featured: false
+focusKeyword: "Bán nhà gác đúc Ông Ích Khiêm"
+secondaryKeywords: 
+  - "Nhà kiệt Hải Châu"
+  - "nhà 2 phòng ngủ Ông Ích Khiêm"
+  - "nhà gác đúc Đà Nẵng"
+seoDescription: "Bán nhà gác đúc kiệt Ông Ích Khiêm, Hải Châu, Đà Nẵng. Diện tích 46,2m², ngang 4,4m, bố trí 2 phòng ngủ, nội thất cơ bản, sổ chính chủ."
+faq: 
+  - question: "Nhà nằm ở đâu?"
+    answer: "Kiệt Ông Ích Khiêm, Hải Châu."
+  - question: "Diện tích bao nhiêu?"
+    answer: "46,2m², ngang 4,4m."
+  - question: "Có bao nhiêu phòng ngủ?"
+    answer: "2 phòng ngủ."
+  - question: "Pháp lý thế nào?"
+    answer: "Thông tin sản phẩm ghi nhận sổ chính chủ."
 ---
 Nhà gác đúc nằm trong kiệt đường Ông Ích Khiêm, khu vực Hải Châu, Đà Nẵng, có diện tích đất 46,2m², chiều ngang 4,4m và chiều sâu khoảng 10,4m. Bất động sản được bố trí 2 phòng ngủ, không gian sinh hoạt gọn gàng, trang bị một số thiết bị cơ bản phục vụ nhu cầu ở thực.
 
@@ -148,3 +163,5 @@ Người mua nên kiểm tra thông tin quy hoạch, diện tích được công
 **Điện thoại/Zalo: 0869 437 415**
 
 **Website: canhodanang.store**
+
+Tham khảo thêm [nhà đất đang bán tại Hải Châu](/nha-dat-tho-cu/hai-chau/) để so sánh vị trí và đặc điểm các bất động sản cùng khu vực.
