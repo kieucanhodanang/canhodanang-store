@@ -87,9 +87,11 @@ const formatArea = (value: string | number | null | undefined): string | null =>
   return text;
 };
 const formattedArea = formatArea(property.area) ?? formatArea(property.areaValue);
+const isRentalHouse = kind === 'nha-dat-tho-cu' && !isSale;
 const specs = [
   { label: isSale ? 'Giá bán' : 'Giá thuê', value: displayPrice, price: true },
   { label: areaLabel, value: formattedArea ?? 'Đang cập nhật' },
+  ...(isRentalHouse ? [{ label: 'Phòng ngủ', value: typeof property.bedrooms === 'number' ? `${property.bedrooms} phòng` : 'Đang cập nhật', price: false }] : []),
   kind === 'can-ho'
     ? { label: 'Phòng ngủ', value: typeof property.bedrooms === 'number' ? `${property.bedrooms} PN` : 'Đang cập nhật' }
     : { label: 'Số tầng', value: typeof property.floors === 'number' ? `${property.floors} tầng` : 'Đang cập nhật' },
@@ -182,7 +184,7 @@ const uniqueId = `property-${Math.random().toString(36).slice(2, 10)}`;
   {property.listingStatus === 'closed' && <p class="property-status">Bất động sản này đã giao dịch</p>}
   {property.listingStatus === 'paused' && <p class="property-status">Bất động sản đang tạm ngừng giao dịch</p>}
 
-  <div class="spec-grid">
+  <div class:list={['spec-grid', { 'rental-house-specs': isRentalHouse }]}>
     {specs.map((spec) => (
       <div class="spec-card">
         <strong class:list={['spec-value', { 'price-text': spec.price }]}>{spec.value}</strong>
@@ -314,5 +316,5 @@ const uniqueId = `property-${Math.random().toString(36).slice(2, 10)}`;
   .property-info{background:#f5f6f7;border-radius:16px;padding:22px}.property-info h2{font-size:21px;margin:0 0 14px}.property-description{position:relative;line-height:1.75;overflow-wrap:anywhere}.property-description.is-collapsed{max-height:148px;overflow:hidden}.property-description.is-collapsed:after{content:"";position:absolute;left:0;right:0;bottom:0;height:66px;background:linear-gradient(transparent,#f5f6f7);pointer-events:none}.summary-description{margin:0 0 12px;white-space:pre-line}.details-list{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;margin:0 0 14px}.detail-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e3e7e9;padding:9px 0}.detail-row dt{color:#6a777e}.detail-row dd{margin:0;font-weight:600;text-align:right}.cms-body :global(img){max-width:100%;height:auto;border-radius:10px}.cms-body :global(p){margin:0 0 12px}.cms-body :global(h2),.cms-body :global(h3){margin:18px 0 10px}
   .description-toggle{display:flex;align-items:center;justify-content:center;gap:5px;width:max-content;max-width:100%;min-height:36px;margin:8px auto 0;padding:4px 8px;background:transparent;border:0;border-radius:0;color:#176347;font-weight:700;font-size:14px;cursor:pointer}.description-toggle:hover{background:transparent;text-decoration:underline}.description-hover-icon{width:16px;height:16px;opacity:0;transform:translateX(-5px);transition:opacity .18s ease,transform .18s ease}.description-toggle:hover .description-hover-icon,.description-toggle:focus-visible .description-hover-icon{opacity:1;transform:translateX(0)}
   .property-parameters{margin-top:22px;background:#fff;border:1px solid #e5e9eb;border-radius:16px;padding:24px}.property-parameters h2{font-size:22px;margin:0 0 16px}.parameters-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:30px;margin:0}.parameter-row{display:grid;grid-template-columns:25px minmax(100px,1fr) minmax(0,1fr);align-items:center;gap:12px;min-height:50px;border-bottom:1px solid #e9edef;padding:10px 0}.parameter-icon{width:22px;height:22px;color:#263c49}.parameter-row dt{font-size:14px;font-weight:550}.parameter-row dd{font-size:14px;margin:0;overflow-wrap:anywhere}
-  @media(max-width:640px){.gallery-main{aspect-ratio:4/3;border-radius:13px}.gallery-thumb{flex-basis:78px;height:57px}.spec-grid{gap:5px}.spec-card,.unit-price-card{padding:9px 3px;min-height:76px}.spec-value{font-size:13px}.unit-price-card strong{font-size:12px}.spec-label,.unit-price-card span{font-size:10px}.contact-actions{gap:8px}.contact-actions a{font-size:14px;min-height:49px}.property-info{padding:16px}.property-info h2{font-size:19px}.parameters-grid{grid-template-columns:1fr}.property-parameters{padding:16px}.parameter-row{grid-template-columns:24px minmax(95px,1fr) minmax(0,1fr);gap:9px}.gallery-arrow{width:35px;height:35px}}
+  @media(max-width:640px){.gallery-main{aspect-ratio:4/3;border-radius:13px}.gallery-thumb{flex-basis:78px;height:57px} .spec-grid{gap:5px}.spec-grid.rental-house-specs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.spec-card,.unit-price-card{padding:9px 3px;min-height:76px}.spec-value{font-size:13px}.unit-price-card strong{font-size:12px}.spec-label,.unit-price-card span{font-size:10px}.contact-actions{gap:8px}.contact-actions a{font-size:14px;min-height:49px}.property-info{padding:16px}.property-info h2{font-size:19px}.parameters-grid{grid-template-columns:1fr}.property-parameters{padding:16px}.parameter-row{grid-template-columns:24px minmax(95px,1fr) minmax(0,1fr);gap:9px}.gallery-arrow{width:35px;height:35px}}
 </style>
